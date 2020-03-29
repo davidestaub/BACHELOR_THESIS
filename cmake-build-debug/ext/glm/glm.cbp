@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="glm"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="gcc"/>
+		<Option virtualFolders="CMake Files\;CMake Files\ext\;CMake Files\ext\glfw\;CMake Files\ext\glfw\src\;CMake Files\ext\glfw\CMake\;CMake Files\ext\glad\;CMake Files\ext\glm\;CMake Files\ext\glm\glm\;CMake Files\ext\imgui\;CMake Files\ext\stb_image\;CMake Files\src\;CMake Files\src\app\;CMake Files\src\guiLib\;CMake Files\src\simulation\;CMake Files\cmake\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="/Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/ext/glm"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/ext/glm/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/ext/glm/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/ext/glm/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/ext/glm/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="/Users/davidestaub/Desktop/GITHUB/ETH/a0/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+		<Unit filename="/Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\ext\"/>
+		</Unit>
+		<Unit filename="/Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/glfw/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\ext\glfw\"/>
+		</Unit>
+		<Unit filename="/Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/glfw/src/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\ext\glfw\src\"/>
+		</Unit>
+		<Unit filename="/Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/glfw/src/glfw3.pc.in">
+			<Option virtualFolder="CMake Files\ext\glfw\src\"/>
+		</Unit>
+		<Unit filename="/Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/glfw/src/glfw3Config.cmake.in">
+			<Option virtualFolder="CMake Files\ext\glfw\src\"/>
+		</Unit>
+		<Unit filename="/Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/glfw/src/glfw_config.h.in">
+			<Option virtualFolder="CMake Files\ext\glfw\src\"/>
+		</Unit>
+		<Unit filename="/Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/glfw/CMake/cmake_uninstall.cmake.in">
+			<Option virtualFolder="CMake Files\ext\glfw\CMake\"/>
+		</Unit>
+		<Unit filename="/Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/glad/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\ext\glad\"/>
+		</Unit>
+		<Unit filename="/Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/glm/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\ext\glm\"/>
+		</Unit>
+		<Unit filename="/Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/glm/glm/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\ext\glm\glm\"/>
+		</Unit>
+		<Unit filename="/Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/imgui/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\ext\imgui\"/>
+		</Unit>
+		<Unit filename="/Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/stb_image/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\ext\stb_image\"/>
+		</Unit>
+		<Unit filename="/Users/davidestaub/Desktop/GITHUB/ETH/a0/src/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\src\"/>
+		</Unit>
+		<Unit filename="/Users/davidestaub/Desktop/GITHUB/ETH/a0/src/app/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\src\app\"/>
+		</Unit>
+		<Unit filename="/Users/davidestaub/Desktop/GITHUB/ETH/a0/src/guiLib/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\src\guiLib\"/>
+		</Unit>
+		<Unit filename="/Users/davidestaub/Desktop/GITHUB/ETH/a0/src/simulation/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\src\simulation\"/>
+		</Unit>
+		<Unit filename="/Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake/FindEigen3.cmake">
+			<Option virtualFolder="CMake Files\cmake\"/>
+		</Unit>
+		<Unit filename="/Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake/FindJson.cmake">
+			<Option virtualFolder="CMake Files\cmake\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>

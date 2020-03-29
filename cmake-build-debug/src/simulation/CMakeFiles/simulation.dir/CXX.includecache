@@ -1,0 +1,12 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/Users/davidestaub/Desktop/GITHUB/ETH/a0/src/simulation/particles.cpp
+
+/Users/davidestaub/Desktop/GITHUB/ETH/a0/src/simulation/simulation.cpp
+
