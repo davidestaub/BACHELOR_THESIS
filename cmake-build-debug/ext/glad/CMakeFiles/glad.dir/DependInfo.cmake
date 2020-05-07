@@ -4,7 +4,7 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_C
-  "/Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/glad/src/glad.c" "/Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/ext/glad/CMakeFiles/glad.dir/src/glad.c.o"
+  "/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/glad/src/glad.c" "/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/ext/glad/CMakeFiles/glad.dir/src/glad.c.o"
   )
 set(CMAKE_C_COMPILER_ID "AppleClang")
 

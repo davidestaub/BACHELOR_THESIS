@@ -44,10 +44,10 @@ RM = /Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /Users/davidestaub/Desktop/GITHUB/ETH/a0
+CMAKE_SOURCE_DIR = /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug
+CMAKE_BINARY_DIR = /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug
 
 #=============================================================================
 # Directory level rules for the build root directory
@@ -109,14 +109,14 @@ ext/preinstall: ext/stb_image/preinstall
 ext/CMakeFiles/nanovg.dir/all:
 	$(MAKE) -f ext/CMakeFiles/nanovg.dir/build.make ext/CMakeFiles/nanovg.dir/depend
 	$(MAKE) -f ext/CMakeFiles/nanovg.dir/build.make ext/CMakeFiles/nanovg.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/CMakeFiles --progress-num=31,32 "Built target nanovg"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/CMakeFiles --progress-num=31,32 "Built target nanovg"
 .PHONY : ext/CMakeFiles/nanovg.dir/all
 
 # Build rule for subdir invocation for target.
 ext/CMakeFiles/nanovg.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/CMakeFiles 2
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/CMakeFiles 2
 	$(MAKE) -f CMakeFiles/Makefile2 ext/CMakeFiles/nanovg.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/CMakeFiles 0
 .PHONY : ext/CMakeFiles/nanovg.dir/rule
 
 # Convenience name for target.
@@ -154,14 +154,14 @@ ext/glad/preinstall:
 ext/glad/CMakeFiles/glad.dir/all:
 	$(MAKE) -f ext/glad/CMakeFiles/glad.dir/build.make ext/glad/CMakeFiles/glad.dir/depend
 	$(MAKE) -f ext/glad/CMakeFiles/glad.dir/build.make ext/glad/CMakeFiles/glad.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/CMakeFiles --progress-num=3,4 "Built target glad"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/CMakeFiles --progress-num=3,4 "Built target glad"
 .PHONY : ext/glad/CMakeFiles/glad.dir/all
 
 # Build rule for subdir invocation for target.
 ext/glad/CMakeFiles/glad.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/CMakeFiles 2
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/CMakeFiles 2
 	$(MAKE) -f CMakeFiles/Makefile2 ext/glad/CMakeFiles/glad.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/CMakeFiles 0
 .PHONY : ext/glad/CMakeFiles/glad.dir/rule
 
 # Convenience name for target.
@@ -200,14 +200,14 @@ ext/glfw/preinstall: ext/glfw/src/preinstall
 ext/glfw/CMakeFiles/uninstall.dir/all:
 	$(MAKE) -f ext/glfw/CMakeFiles/uninstall.dir/build.make ext/glfw/CMakeFiles/uninstall.dir/depend
 	$(MAKE) -f ext/glfw/CMakeFiles/uninstall.dir/build.make ext/glfw/CMakeFiles/uninstall.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/CMakeFiles --progress-num= "Built target uninstall"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/CMakeFiles --progress-num= "Built target uninstall"
 .PHONY : ext/glfw/CMakeFiles/uninstall.dir/all
 
 # Build rule for subdir invocation for target.
 ext/glfw/CMakeFiles/uninstall.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/CMakeFiles 0
 	$(MAKE) -f CMakeFiles/Makefile2 ext/glfw/CMakeFiles/uninstall.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/CMakeFiles 0
 .PHONY : ext/glfw/CMakeFiles/uninstall.dir/rule
 
 # Convenience name for target.
@@ -245,14 +245,14 @@ ext/glfw/src/preinstall:
 ext/glfw/src/CMakeFiles/glfw.dir/all:
 	$(MAKE) -f ext/glfw/src/CMakeFiles/glfw.dir/build.make ext/glfw/src/CMakeFiles/glfw.dir/depend
 	$(MAKE) -f ext/glfw/src/CMakeFiles/glfw.dir/build.make ext/glfw/src/CMakeFiles/glfw.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/CMakeFiles --progress-num=5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20 "Built target glfw"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/CMakeFiles --progress-num=5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20 "Built target glfw"
 .PHONY : ext/glfw/src/CMakeFiles/glfw.dir/all
 
 # Build rule for subdir invocation for target.
 ext/glfw/src/CMakeFiles/glfw.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/CMakeFiles 16
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/CMakeFiles 16
 	$(MAKE) -f CMakeFiles/Makefile2 ext/glfw/src/CMakeFiles/glfw.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/CMakeFiles 0
 .PHONY : ext/glfw/src/CMakeFiles/glfw.dir/rule
 
 # Convenience name for target.
@@ -326,14 +326,14 @@ ext/imgui/preinstall:
 ext/imgui/CMakeFiles/imgui.dir/all:
 	$(MAKE) -f ext/imgui/CMakeFiles/imgui.dir/build.make ext/imgui/CMakeFiles/imgui.dir/depend
 	$(MAKE) -f ext/imgui/CMakeFiles/imgui.dir/build.make ext/imgui/CMakeFiles/imgui.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/CMakeFiles --progress-num=26,27,28,29,30 "Built target imgui"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/CMakeFiles --progress-num=26,27,28,29,30 "Built target imgui"
 .PHONY : ext/imgui/CMakeFiles/imgui.dir/all
 
 # Build rule for subdir invocation for target.
 ext/imgui/CMakeFiles/imgui.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/CMakeFiles 5
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/CMakeFiles 5
 	$(MAKE) -f CMakeFiles/Makefile2 ext/imgui/CMakeFiles/imgui.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/CMakeFiles 0
 .PHONY : ext/imgui/CMakeFiles/imgui.dir/rule
 
 # Convenience name for target.
@@ -411,19 +411,19 @@ src/guiLib/preinstall:
 
 # All Build rule for target.
 src/guiLib/CMakeFiles/guiLib.dir/all: ext/CMakeFiles/nanovg.dir/all
-src/guiLib/CMakeFiles/guiLib.dir/all: ext/glfw/src/CMakeFiles/glfw.dir/all
 src/guiLib/CMakeFiles/guiLib.dir/all: ext/glad/CMakeFiles/glad.dir/all
+src/guiLib/CMakeFiles/guiLib.dir/all: ext/glfw/src/CMakeFiles/glfw.dir/all
 src/guiLib/CMakeFiles/guiLib.dir/all: ext/imgui/CMakeFiles/imgui.dir/all
 	$(MAKE) -f src/guiLib/CMakeFiles/guiLib.dir/build.make src/guiLib/CMakeFiles/guiLib.dir/depend
 	$(MAKE) -f src/guiLib/CMakeFiles/guiLib.dir/build.make src/guiLib/CMakeFiles/guiLib.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/CMakeFiles --progress-num=21,22,23,24,25 "Built target guiLib"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/CMakeFiles --progress-num=21,22,23,24,25 "Built target guiLib"
 .PHONY : src/guiLib/CMakeFiles/guiLib.dir/all
 
 # Build rule for subdir invocation for target.
 src/guiLib/CMakeFiles/guiLib.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/CMakeFiles 30
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/CMakeFiles 30
 	$(MAKE) -f CMakeFiles/Makefile2 src/guiLib/CMakeFiles/guiLib.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/CMakeFiles 0
 .PHONY : src/guiLib/CMakeFiles/guiLib.dir/rule
 
 # Convenience name for target.
@@ -459,21 +459,21 @@ src/app/preinstall:
 
 # All Build rule for target.
 src/app/CMakeFiles/app.dir/all: ext/CMakeFiles/nanovg.dir/all
-src/app/CMakeFiles/app.dir/all: ext/glfw/src/CMakeFiles/glfw.dir/all
 src/app/CMakeFiles/app.dir/all: ext/glad/CMakeFiles/glad.dir/all
+src/app/CMakeFiles/app.dir/all: ext/glfw/src/CMakeFiles/glfw.dir/all
 src/app/CMakeFiles/app.dir/all: ext/imgui/CMakeFiles/imgui.dir/all
 src/app/CMakeFiles/app.dir/all: src/guiLib/CMakeFiles/guiLib.dir/all
 src/app/CMakeFiles/app.dir/all: src/simulation/CMakeFiles/simulation.dir/all
 	$(MAKE) -f src/app/CMakeFiles/app.dir/build.make src/app/CMakeFiles/app.dir/depend
 	$(MAKE) -f src/app/CMakeFiles/app.dir/build.make src/app/CMakeFiles/app.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/CMakeFiles --progress-num=1,2 "Built target app"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/CMakeFiles --progress-num=1,2 "Built target app"
 .PHONY : src/app/CMakeFiles/app.dir/all
 
 # Build rule for subdir invocation for target.
 src/app/CMakeFiles/app.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/CMakeFiles 35
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/CMakeFiles 35
 	$(MAKE) -f CMakeFiles/Makefile2 src/app/CMakeFiles/app.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/CMakeFiles 0
 .PHONY : src/app/CMakeFiles/app.dir/rule
 
 # Convenience name for target.
@@ -511,14 +511,14 @@ src/simulation/preinstall:
 src/simulation/CMakeFiles/simulation.dir/all:
 	$(MAKE) -f src/simulation/CMakeFiles/simulation.dir/build.make src/simulation/CMakeFiles/simulation.dir/depend
 	$(MAKE) -f src/simulation/CMakeFiles/simulation.dir/build.make src/simulation/CMakeFiles/simulation.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/CMakeFiles --progress-num=33,34,35 "Built target simulation"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/CMakeFiles --progress-num=33,34,35 "Built target simulation"
 .PHONY : src/simulation/CMakeFiles/simulation.dir/all
 
 # Build rule for subdir invocation for target.
 src/simulation/CMakeFiles/simulation.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/CMakeFiles 3
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/CMakeFiles 3
 	$(MAKE) -f CMakeFiles/Makefile2 src/simulation/CMakeFiles/simulation.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/CMakeFiles 0
 .PHONY : src/simulation/CMakeFiles/simulation.dir/rule
 
 # Convenience name for target.

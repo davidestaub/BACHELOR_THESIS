@@ -48,10 +48,10 @@ RM = /Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /Users/davidestaub/Desktop/GITHUB/ETH/a0
+CMAKE_SOURCE_DIR = /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug
+CMAKE_BINARY_DIR = /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -126,14 +126,14 @@ edit_cache/fast: edit_cache
 
 # The main all target
 all: cmake_check_build_system
-	cd /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug && $(CMAKE_COMMAND) -E cmake_progress_start /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/CMakeFiles /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/src/app/CMakeFiles/progress.marks
-	cd /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 src/app/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/CMakeFiles 0
+	cd /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug && $(CMAKE_COMMAND) -E cmake_progress_start /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/CMakeFiles /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/src/app/CMakeFiles/progress.marks
+	cd /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 src/app/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
 clean:
-	cd /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 src/app/clean
+	cd /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 src/app/clean
 .PHONY : clean
 
 # The main clean target
@@ -143,22 +143,22 @@ clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	cd /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 src/app/preinstall
+	cd /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 src/app/preinstall
 .PHONY : preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	cd /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 src/app/preinstall
+	cd /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 src/app/preinstall
 .PHONY : preinstall/fast
 
 # clear depends
 depend:
-	cd /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
+	cd /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
 # Convenience name for target.
 src/app/CMakeFiles/app.dir/rule:
-	cd /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 src/app/CMakeFiles/app.dir/rule
+	cd /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 src/app/CMakeFiles/app.dir/rule
 .PHONY : src/app/CMakeFiles/app.dir/rule
 
 # Convenience name for target.
@@ -168,7 +168,7 @@ app: src/app/CMakeFiles/app.dir/rule
 
 # fast build rule for target.
 app/fast:
-	cd /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug && $(MAKE) -f src/app/CMakeFiles/app.dir/build.make src/app/CMakeFiles/app.dir/build
+	cd /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug && $(MAKE) -f src/app/CMakeFiles/app.dir/build.make src/app/CMakeFiles/app.dir/build
 .PHONY : app/fast
 
 main.o: main.cpp.o
@@ -177,7 +177,7 @@ main.o: main.cpp.o
 
 # target to build an object file
 main.cpp.o:
-	cd /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug && $(MAKE) -f src/app/CMakeFiles/app.dir/build.make src/app/CMakeFiles/app.dir/main.cpp.o
+	cd /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug && $(MAKE) -f src/app/CMakeFiles/app.dir/build.make src/app/CMakeFiles/app.dir/main.cpp.o
 .PHONY : main.cpp.o
 
 main.i: main.cpp.i
@@ -186,7 +186,7 @@ main.i: main.cpp.i
 
 # target to preprocess a source file
 main.cpp.i:
-	cd /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug && $(MAKE) -f src/app/CMakeFiles/app.dir/build.make src/app/CMakeFiles/app.dir/main.cpp.i
+	cd /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug && $(MAKE) -f src/app/CMakeFiles/app.dir/build.make src/app/CMakeFiles/app.dir/main.cpp.i
 .PHONY : main.cpp.i
 
 main.s: main.cpp.s
@@ -195,7 +195,7 @@ main.s: main.cpp.s
 
 # target to generate assembly for a file
 main.cpp.s:
-	cd /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug && $(MAKE) -f src/app/CMakeFiles/app.dir/build.make src/app/CMakeFiles/app.dir/main.cpp.s
+	cd /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug && $(MAKE) -f src/app/CMakeFiles/app.dir/build.make src/app/CMakeFiles/app.dir/main.cpp.s
 .PHONY : main.cpp.s
 
 # Help Target
@@ -225,6 +225,6 @@ help:
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
-	cd /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
+	cd /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 .PHONY : cmake_check_build_system
 

@@ -6,5 +6,5 @@ CXX_FLAGS = -g   -std=gnu++1z
 
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/usr/local/include/eigen3 -I/Users/davidestaub/Desktop/GITHUB/ETH/a0/src/simulation/. 
+CXX_INCLUDES = -I/usr/local/include/eigen3 -I/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/src/simulation/. 
 

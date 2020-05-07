@@ -4,8 +4,8 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
-  "/Users/davidestaub/Desktop/GITHUB/ETH/a0/src/simulation/particles.cpp" "/Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/src/simulation/CMakeFiles/simulation.dir/particles.cpp.o"
-  "/Users/davidestaub/Desktop/GITHUB/ETH/a0/src/simulation/simulation.cpp" "/Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/src/simulation/CMakeFiles/simulation.dir/simulation.cpp.o"
+  "/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/src/simulation/particles.cpp" "/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/src/simulation/CMakeFiles/simulation.dir/particles.cpp.o"
+  "/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/src/simulation/simulation.cpp" "/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/src/simulation/CMakeFiles/simulation.dir/simulation.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "AppleClang")
 

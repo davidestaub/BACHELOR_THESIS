@@ -8,23 +8,23 @@
 		<Option virtualFolders="CMake Files\;CMake Files\ext\;CMake Files\ext\glfw\;CMake Files\ext\glfw\src\;CMake Files\ext\glfw\CMake\;CMake Files\ext\glad\;CMake Files\ext\glm\;CMake Files\ext\glm\glm\;CMake Files\ext\imgui\;CMake Files\ext\stb_image\;CMake Files\src\;CMake Files\src\app\;CMake Files\src\guiLib\;CMake Files\src\simulation\;CMake Files\cmake\;"/>
 		<Build>
 			<Target title="all">
-				<Option working_dir="/Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/ext/imgui"/>
+				<Option working_dir="/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/ext/imgui"/>
 				<Option type="4"/>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j4 -f &quot;/Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/ext/imgui/Makefile&quot;  VERBOSE=1 all"/>
-					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/ext/imgui/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j4 -f &quot;/Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/ext/imgui/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/ext/imgui/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/ext/imgui/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/ext/imgui/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/ext/imgui/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/ext/imgui/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="imgui">
-				<Option output="/Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/ext/imgui/libimgui.a" prefix_auto="0" extension_auto="0"/>
-				<Option working_dir="/Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/ext/imgui"/>
+				<Option output="/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/ext/imgui/libimgui.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/ext/imgui"/>
 				<Option object_output="./"/>
 				<Option type="2"/>
 				<Option compiler="gcc"/>
 				<Compiler>
-					<Add directory="/Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/imgui"/>
+					<Add directory="/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/imgui"/>
 					<Add directory="/Library/Developer/CommandLineTools/usr/include/c++/v1"/>
 					<Add directory="/usr/local/include"/>
 					<Add directory="/Library/Developer/CommandLineTools/usr/lib/clang/10.0.0/include"/>
@@ -34,20 +34,20 @@
 					<Add directory="/Library/Frameworks"/>
 				</Compiler>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j4 -f &quot;/Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/ext/imgui/Makefile&quot;  VERBOSE=1 imgui"/>
-					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/ext/imgui/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j4 -f &quot;/Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/ext/imgui/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/ext/imgui/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/ext/imgui/Makefile&quot;  VERBOSE=1 imgui"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/ext/imgui/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/ext/imgui/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/ext/imgui/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="imgui/fast">
-				<Option output="/Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/ext/imgui/libimgui.a" prefix_auto="0" extension_auto="0"/>
-				<Option working_dir="/Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/ext/imgui"/>
+				<Option output="/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/ext/imgui/libimgui.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/ext/imgui"/>
 				<Option object_output="./"/>
 				<Option type="2"/>
 				<Option compiler="gcc"/>
 				<Compiler>
-					<Add directory="/Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/imgui"/>
+					<Add directory="/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/imgui"/>
 					<Add directory="/Library/Developer/CommandLineTools/usr/include/c++/v1"/>
 					<Add directory="/usr/local/include"/>
 					<Add directory="/Library/Developer/CommandLineTools/usr/lib/clang/10.0.0/include"/>
@@ -57,98 +57,98 @@
 					<Add directory="/Library/Frameworks"/>
 				</Compiler>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j4 -f &quot;/Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/ext/imgui/Makefile&quot;  VERBOSE=1 imgui/fast"/>
-					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/ext/imgui/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j4 -f &quot;/Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/ext/imgui/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/ext/imgui/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/ext/imgui/Makefile&quot;  VERBOSE=1 imgui/fast"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/ext/imgui/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/ext/imgui/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/ext/imgui/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 		</Build>
-		<Unit filename="/Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/imgui/imconfig.h">
+		<Unit filename="/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/imgui/imconfig.h">
 			<Option target="imgui"/>
 		</Unit>
-		<Unit filename="/Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/imgui/imgui.cpp">
+		<Unit filename="/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/imgui/imgui.cpp">
 			<Option target="imgui"/>
 		</Unit>
-		<Unit filename="/Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/imgui/imgui.h">
+		<Unit filename="/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/imgui/imgui.h">
 			<Option target="imgui"/>
 		</Unit>
-		<Unit filename="/Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/imgui/imgui_demo.cpp">
+		<Unit filename="/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/imgui/imgui_demo.cpp">
 			<Option target="imgui"/>
 		</Unit>
-		<Unit filename="/Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/imgui/imgui_draw.cpp">
+		<Unit filename="/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/imgui/imgui_draw.cpp">
 			<Option target="imgui"/>
 		</Unit>
-		<Unit filename="/Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/imgui/imgui_internal.h">
+		<Unit filename="/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/imgui/imgui_internal.h">
 			<Option target="imgui"/>
 		</Unit>
-		<Unit filename="/Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/imgui/imgui_widgets.cpp">
+		<Unit filename="/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/imgui/imgui_widgets.cpp">
 			<Option target="imgui"/>
 		</Unit>
-		<Unit filename="/Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/imgui/imstb_rectpack.h">
+		<Unit filename="/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/imgui/imstb_rectpack.h">
 			<Option target="imgui"/>
 		</Unit>
-		<Unit filename="/Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/imgui/imstb_textedit.h">
+		<Unit filename="/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/imgui/imstb_textedit.h">
 			<Option target="imgui"/>
 		</Unit>
-		<Unit filename="/Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/imgui/imstb_truetype.h">
+		<Unit filename="/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/imgui/imstb_truetype.h">
 			<Option target="imgui"/>
 		</Unit>
-		<Unit filename="/Users/davidestaub/Desktop/GITHUB/ETH/a0/CMakeLists.txt">
+		<Unit filename="/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\"/>
 		</Unit>
-		<Unit filename="/Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/CMakeLists.txt">
+		<Unit filename="/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\ext\"/>
 		</Unit>
-		<Unit filename="/Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/glfw/CMakeLists.txt">
+		<Unit filename="/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/glfw/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\ext\glfw\"/>
 		</Unit>
-		<Unit filename="/Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/glfw/src/CMakeLists.txt">
+		<Unit filename="/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/glfw/src/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\ext\glfw\src\"/>
 		</Unit>
-		<Unit filename="/Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/glfw/src/glfw3.pc.in">
+		<Unit filename="/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/glfw/src/glfw3.pc.in">
 			<Option virtualFolder="CMake Files\ext\glfw\src\"/>
 		</Unit>
-		<Unit filename="/Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/glfw/src/glfw3Config.cmake.in">
+		<Unit filename="/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/glfw/src/glfw3Config.cmake.in">
 			<Option virtualFolder="CMake Files\ext\glfw\src\"/>
 		</Unit>
-		<Unit filename="/Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/glfw/src/glfw_config.h.in">
+		<Unit filename="/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/glfw/src/glfw_config.h.in">
 			<Option virtualFolder="CMake Files\ext\glfw\src\"/>
 		</Unit>
-		<Unit filename="/Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/glfw/CMake/cmake_uninstall.cmake.in">
+		<Unit filename="/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/glfw/CMake/cmake_uninstall.cmake.in">
 			<Option virtualFolder="CMake Files\ext\glfw\CMake\"/>
 		</Unit>
-		<Unit filename="/Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/glad/CMakeLists.txt">
+		<Unit filename="/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/glad/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\ext\glad\"/>
 		</Unit>
-		<Unit filename="/Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/glm/CMakeLists.txt">
+		<Unit filename="/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/glm/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\ext\glm\"/>
 		</Unit>
-		<Unit filename="/Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/glm/glm/CMakeLists.txt">
+		<Unit filename="/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/glm/glm/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\ext\glm\glm\"/>
 		</Unit>
-		<Unit filename="/Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/imgui/CMakeLists.txt">
+		<Unit filename="/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/imgui/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\ext\imgui\"/>
 		</Unit>
-		<Unit filename="/Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/stb_image/CMakeLists.txt">
+		<Unit filename="/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/stb_image/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\ext\stb_image\"/>
 		</Unit>
-		<Unit filename="/Users/davidestaub/Desktop/GITHUB/ETH/a0/src/CMakeLists.txt">
+		<Unit filename="/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/src/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\src\"/>
 		</Unit>
-		<Unit filename="/Users/davidestaub/Desktop/GITHUB/ETH/a0/src/app/CMakeLists.txt">
+		<Unit filename="/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/src/app/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\src\app\"/>
 		</Unit>
-		<Unit filename="/Users/davidestaub/Desktop/GITHUB/ETH/a0/src/guiLib/CMakeLists.txt">
+		<Unit filename="/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/src/guiLib/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\src\guiLib\"/>
 		</Unit>
-		<Unit filename="/Users/davidestaub/Desktop/GITHUB/ETH/a0/src/simulation/CMakeLists.txt">
+		<Unit filename="/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/src/simulation/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\src\simulation\"/>
 		</Unit>
-		<Unit filename="/Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake/FindEigen3.cmake">
+		<Unit filename="/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake/FindEigen3.cmake">
 			<Option virtualFolder="CMake Files\cmake\"/>
 		</Unit>
-		<Unit filename="/Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake/FindJson.cmake">
+		<Unit filename="/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake/FindJson.cmake">
 			<Option virtualFolder="CMake Files\cmake\"/>
 		</Unit>
 	</Project>

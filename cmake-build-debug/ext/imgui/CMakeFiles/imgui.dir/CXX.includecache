@@ -6,15 +6,15 @@
 
 #IncludeRegexTransform: 
 
-/Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/imgui/imconfig.h
+/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/imgui/imconfig.h
 
-/Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/imgui/imgui.cpp
+/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/imgui/imgui.cpp
 stb_image.h
 -
 imgui.h
-/Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/imgui/imgui.h
+/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/imgui/imgui.h
 imgui_internal.h
-/Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/imgui/imgui_internal.h
+/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/imgui/imgui_internal.h
 ctype.h
 -
 stdio.h
@@ -30,11 +30,11 @@ windows.h
 imm.h
 -
 imgui_user.inl
-/Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/imgui/imgui_user.inl
+/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/imgui/imgui_user.inl
 
-/Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/imgui/imgui.h
+/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/imgui/imgui.h
 imconfig.h
-/Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/imgui/imconfig.h
+/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/imgui/imconfig.h
 float.h
 -
 stdarg.h
@@ -48,11 +48,11 @@ assert.h
 stdint.h
 -
 imgui_user.h
-/Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/imgui/imgui_user.h
+/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/imgui/imgui_user.h
 
-/Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/imgui/imgui_demo.cpp
+/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/imgui/imgui_demo.cpp
 imgui.h
-/Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/imgui/imgui.h
+/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/imgui/imgui.h
 ctype.h
 -
 limits.h
@@ -68,11 +68,11 @@ stddef.h
 stdint.h
 -
 
-/Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/imgui/imgui_draw.cpp
+/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/imgui/imgui_draw.cpp
 imgui.h
-/Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/imgui/imgui.h
+/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/imgui/imgui.h
 imgui_internal.h
-/Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/imgui/imgui_internal.h
+/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/imgui/imgui_internal.h
 stdio.h
 -
 alloca.h
@@ -82,11 +82,11 @@ malloc.h
 stdlib.h
 -
 imstb_rectpack.h
-/Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/imgui/imstb_rectpack.h
+/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/imgui/imstb_rectpack.h
 imstb_truetype.h
-/Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/imgui/imstb_truetype.h
+/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/imgui/imstb_truetype.h
 
-/Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/imgui/imgui_internal.h
+/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/imgui/imgui_internal.h
 stdio.h
 -
 stdlib.h
@@ -96,13 +96,13 @@ math.h
 limits.h
 -
 imstb_textedit.h
-/Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/imgui/imstb_textedit.h
+/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/imgui/imstb_textedit.h
 
-/Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/imgui/imgui_widgets.cpp
+/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/imgui/imgui_widgets.cpp
 imgui.h
-/Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/imgui/imgui.h
+/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/imgui/imgui.h
 imgui_internal.h
-/Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/imgui/imgui_internal.h
+/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/imgui/imgui_internal.h
 ctype.h
 -
 stddef.h
@@ -110,25 +110,25 @@ stddef.h
 stdint.h
 -
 imstb_textedit.h
-/Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/imgui/imstb_textedit.h
+/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/imgui/imstb_textedit.h
 
-/Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/imgui/imstb_rectpack.h
+/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/imgui/imstb_rectpack.h
 stdlib.h
 -
 assert.h
 -
 
-/Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/imgui/imstb_textedit.h
+/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/imgui/imstb_textedit.h
 string.h
 -
 
-/Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/imgui/imstb_truetype.h
+/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/imgui/imstb_truetype.h
 stb_truetype.h
-/Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/imgui/stb_truetype.h
+/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/imgui/stb_truetype.h
 stdio.h
 -
 stb_truetype.h
-/Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/imgui/stb_truetype.h
+/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/imgui/stb_truetype.h
 math.h
 -
 math.h

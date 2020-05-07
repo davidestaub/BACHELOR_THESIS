@@ -1,4 +1,4 @@
-# Install script for directory: /Users/davidestaub/Desktop/GITHUB/ETH/a0/src/simulation
+# Install script for directory: /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/src/simulation
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

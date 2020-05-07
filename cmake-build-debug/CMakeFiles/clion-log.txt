@@ -1,4 +1,4 @@
-/Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" /Users/davidestaub/Desktop/GITHUB/ETH/a0
+/Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS
 -- The C compiler identification is AppleClang 10.0.0.10001044
 -- The CXX compiler identification is AppleClang 10.0.0.10001044
 -- Check for working C compiler: /Library/Developer/CommandLineTools/usr/bin/cc
@@ -21,7 +21,7 @@
 -- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
 -- Found Threads: TRUE  
 -- Using Cocoa for window creation
--- Found JSON: /Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/json  
+-- Found JSON: /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/json  
 -- Configuring done
 -- Generating done
--- Build files have been written to: /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug
+-- Build files have been written to: /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug

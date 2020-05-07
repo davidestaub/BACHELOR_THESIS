@@ -43,10 +43,10 @@ RM = /Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /Users/davidestaub/Desktop/GITHUB/ETH/a0
+CMAKE_SOURCE_DIR = /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug
+CMAKE_BINARY_DIR = /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug
 
 # Include any dependencies generated for this target.
 include ext/imgui/CMakeFiles/imgui.dir/depend.make
@@ -59,55 +59,55 @@ include ext/imgui/CMakeFiles/imgui.dir/flags.make
 
 ext/imgui/CMakeFiles/imgui.dir/imgui.cpp.o: ext/imgui/CMakeFiles/imgui.dir/flags.make
 ext/imgui/CMakeFiles/imgui.dir/imgui.cpp.o: ../ext/imgui/imgui.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object ext/imgui/CMakeFiles/imgui.dir/imgui.cpp.o"
-	cd /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/ext/imgui && /Library/Developer/CommandLineTools/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/imgui.dir/imgui.cpp.o -c /Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/imgui/imgui.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object ext/imgui/CMakeFiles/imgui.dir/imgui.cpp.o"
+	cd /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/ext/imgui && /Library/Developer/CommandLineTools/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/imgui.dir/imgui.cpp.o -c /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/imgui/imgui.cpp
 
 ext/imgui/CMakeFiles/imgui.dir/imgui.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/imgui.dir/imgui.cpp.i"
-	cd /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/ext/imgui && /Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/imgui/imgui.cpp > CMakeFiles/imgui.dir/imgui.cpp.i
+	cd /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/ext/imgui && /Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/imgui/imgui.cpp > CMakeFiles/imgui.dir/imgui.cpp.i
 
 ext/imgui/CMakeFiles/imgui.dir/imgui.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/imgui.dir/imgui.cpp.s"
-	cd /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/ext/imgui && /Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/imgui/imgui.cpp -o CMakeFiles/imgui.dir/imgui.cpp.s
+	cd /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/ext/imgui && /Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/imgui/imgui.cpp -o CMakeFiles/imgui.dir/imgui.cpp.s
 
 ext/imgui/CMakeFiles/imgui.dir/imgui_demo.cpp.o: ext/imgui/CMakeFiles/imgui.dir/flags.make
 ext/imgui/CMakeFiles/imgui.dir/imgui_demo.cpp.o: ../ext/imgui/imgui_demo.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object ext/imgui/CMakeFiles/imgui.dir/imgui_demo.cpp.o"
-	cd /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/ext/imgui && /Library/Developer/CommandLineTools/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/imgui.dir/imgui_demo.cpp.o -c /Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/imgui/imgui_demo.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object ext/imgui/CMakeFiles/imgui.dir/imgui_demo.cpp.o"
+	cd /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/ext/imgui && /Library/Developer/CommandLineTools/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/imgui.dir/imgui_demo.cpp.o -c /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/imgui/imgui_demo.cpp
 
 ext/imgui/CMakeFiles/imgui.dir/imgui_demo.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/imgui.dir/imgui_demo.cpp.i"
-	cd /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/ext/imgui && /Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/imgui/imgui_demo.cpp > CMakeFiles/imgui.dir/imgui_demo.cpp.i
+	cd /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/ext/imgui && /Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/imgui/imgui_demo.cpp > CMakeFiles/imgui.dir/imgui_demo.cpp.i
 
 ext/imgui/CMakeFiles/imgui.dir/imgui_demo.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/imgui.dir/imgui_demo.cpp.s"
-	cd /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/ext/imgui && /Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/imgui/imgui_demo.cpp -o CMakeFiles/imgui.dir/imgui_demo.cpp.s
+	cd /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/ext/imgui && /Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/imgui/imgui_demo.cpp -o CMakeFiles/imgui.dir/imgui_demo.cpp.s
 
 ext/imgui/CMakeFiles/imgui.dir/imgui_draw.cpp.o: ext/imgui/CMakeFiles/imgui.dir/flags.make
 ext/imgui/CMakeFiles/imgui.dir/imgui_draw.cpp.o: ../ext/imgui/imgui_draw.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object ext/imgui/CMakeFiles/imgui.dir/imgui_draw.cpp.o"
-	cd /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/ext/imgui && /Library/Developer/CommandLineTools/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/imgui.dir/imgui_draw.cpp.o -c /Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/imgui/imgui_draw.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object ext/imgui/CMakeFiles/imgui.dir/imgui_draw.cpp.o"
+	cd /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/ext/imgui && /Library/Developer/CommandLineTools/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/imgui.dir/imgui_draw.cpp.o -c /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/imgui/imgui_draw.cpp
 
 ext/imgui/CMakeFiles/imgui.dir/imgui_draw.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/imgui.dir/imgui_draw.cpp.i"
-	cd /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/ext/imgui && /Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/imgui/imgui_draw.cpp > CMakeFiles/imgui.dir/imgui_draw.cpp.i
+	cd /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/ext/imgui && /Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/imgui/imgui_draw.cpp > CMakeFiles/imgui.dir/imgui_draw.cpp.i
 
 ext/imgui/CMakeFiles/imgui.dir/imgui_draw.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/imgui.dir/imgui_draw.cpp.s"
-	cd /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/ext/imgui && /Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/imgui/imgui_draw.cpp -o CMakeFiles/imgui.dir/imgui_draw.cpp.s
+	cd /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/ext/imgui && /Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/imgui/imgui_draw.cpp -o CMakeFiles/imgui.dir/imgui_draw.cpp.s
 
 ext/imgui/CMakeFiles/imgui.dir/imgui_widgets.cpp.o: ext/imgui/CMakeFiles/imgui.dir/flags.make
 ext/imgui/CMakeFiles/imgui.dir/imgui_widgets.cpp.o: ../ext/imgui/imgui_widgets.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object ext/imgui/CMakeFiles/imgui.dir/imgui_widgets.cpp.o"
-	cd /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/ext/imgui && /Library/Developer/CommandLineTools/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/imgui.dir/imgui_widgets.cpp.o -c /Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/imgui/imgui_widgets.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object ext/imgui/CMakeFiles/imgui.dir/imgui_widgets.cpp.o"
+	cd /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/ext/imgui && /Library/Developer/CommandLineTools/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/imgui.dir/imgui_widgets.cpp.o -c /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/imgui/imgui_widgets.cpp
 
 ext/imgui/CMakeFiles/imgui.dir/imgui_widgets.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/imgui.dir/imgui_widgets.cpp.i"
-	cd /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/ext/imgui && /Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/imgui/imgui_widgets.cpp > CMakeFiles/imgui.dir/imgui_widgets.cpp.i
+	cd /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/ext/imgui && /Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/imgui/imgui_widgets.cpp > CMakeFiles/imgui.dir/imgui_widgets.cpp.i
 
 ext/imgui/CMakeFiles/imgui.dir/imgui_widgets.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/imgui.dir/imgui_widgets.cpp.s"
-	cd /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/ext/imgui && /Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/imgui/imgui_widgets.cpp -o CMakeFiles/imgui.dir/imgui_widgets.cpp.s
+	cd /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/ext/imgui && /Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/imgui/imgui_widgets.cpp -o CMakeFiles/imgui.dir/imgui_widgets.cpp.s
 
 # Object files for target imgui
 imgui_OBJECTS = \
@@ -125,9 +125,9 @@ ext/imgui/libimgui.a: ext/imgui/CMakeFiles/imgui.dir/imgui_draw.cpp.o
 ext/imgui/libimgui.a: ext/imgui/CMakeFiles/imgui.dir/imgui_widgets.cpp.o
 ext/imgui/libimgui.a: ext/imgui/CMakeFiles/imgui.dir/build.make
 ext/imgui/libimgui.a: ext/imgui/CMakeFiles/imgui.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Linking CXX static library libimgui.a"
-	cd /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/ext/imgui && $(CMAKE_COMMAND) -P CMakeFiles/imgui.dir/cmake_clean_target.cmake
-	cd /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/ext/imgui && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/imgui.dir/link.txt --verbose=$(VERBOSE)
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Linking CXX static library libimgui.a"
+	cd /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/ext/imgui && $(CMAKE_COMMAND) -P CMakeFiles/imgui.dir/cmake_clean_target.cmake
+	cd /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/ext/imgui && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/imgui.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
 ext/imgui/CMakeFiles/imgui.dir/build: ext/imgui/libimgui.a
@@ -135,10 +135,10 @@ ext/imgui/CMakeFiles/imgui.dir/build: ext/imgui/libimgui.a
 .PHONY : ext/imgui/CMakeFiles/imgui.dir/build
 
 ext/imgui/CMakeFiles/imgui.dir/clean:
-	cd /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/ext/imgui && $(CMAKE_COMMAND) -P CMakeFiles/imgui.dir/cmake_clean.cmake
+	cd /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/ext/imgui && $(CMAKE_COMMAND) -P CMakeFiles/imgui.dir/cmake_clean.cmake
 .PHONY : ext/imgui/CMakeFiles/imgui.dir/clean
 
 ext/imgui/CMakeFiles/imgui.dir/depend:
-	cd /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /Users/davidestaub/Desktop/GITHUB/ETH/a0 /Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/imgui /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/ext/imgui /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/ext/imgui/CMakeFiles/imgui.dir/DependInfo.cmake --color=$(COLOR)
+	cd /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/imgui /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/ext/imgui /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/ext/imgui/CMakeFiles/imgui.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : ext/imgui/CMakeFiles/imgui.dir/depend
 

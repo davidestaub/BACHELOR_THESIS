@@ -6,5 +6,5 @@ CXX_FLAGS = -g   -std=gnu++1z
 
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/imgui 
+CXX_INCLUDES = -I/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/imgui 
 

@@ -6,7 +6,7 @@ C_FLAGS = -g -fPIC   -Wall -std=gnu99
 
 C_DEFINES = -D_GLFW_USE_CONFIG_H
 
-C_INCLUDES = -I/Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/glfw/include -I/Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/glfw/src -I/Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/ext/glfw/src 
+C_INCLUDES = -I/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/glfw/include -I/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/glfw/src -I/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/ext/glfw/src 
 
 # Custom flags: ext/glfw/src/CMakeFiles/glfw.dir/context.c.o_FLAGS = -Wdeclaration-after-statement
 

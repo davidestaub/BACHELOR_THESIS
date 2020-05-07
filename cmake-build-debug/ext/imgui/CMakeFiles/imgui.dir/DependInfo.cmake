@@ -4,10 +4,10 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
-  "/Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/imgui/imgui.cpp" "/Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/ext/imgui/CMakeFiles/imgui.dir/imgui.cpp.o"
-  "/Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/imgui/imgui_demo.cpp" "/Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/ext/imgui/CMakeFiles/imgui.dir/imgui_demo.cpp.o"
-  "/Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/imgui/imgui_draw.cpp" "/Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/ext/imgui/CMakeFiles/imgui.dir/imgui_draw.cpp.o"
-  "/Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/imgui/imgui_widgets.cpp" "/Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/ext/imgui/CMakeFiles/imgui.dir/imgui_widgets.cpp.o"
+  "/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/imgui/imgui.cpp" "/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/ext/imgui/CMakeFiles/imgui.dir/imgui.cpp.o"
+  "/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/imgui/imgui_demo.cpp" "/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/ext/imgui/CMakeFiles/imgui.dir/imgui_demo.cpp.o"
+  "/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/imgui/imgui_draw.cpp" "/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/ext/imgui/CMakeFiles/imgui.dir/imgui_draw.cpp.o"
+  "/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/imgui/imgui_widgets.cpp" "/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/ext/imgui/CMakeFiles/imgui.dir/imgui_widgets.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "AppleClang")
 

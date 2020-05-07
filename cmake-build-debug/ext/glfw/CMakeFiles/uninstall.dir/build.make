@@ -43,10 +43,10 @@ RM = /Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /Users/davidestaub/Desktop/GITHUB/ETH/a0
+CMAKE_SOURCE_DIR = /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug
+CMAKE_BINARY_DIR = /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug
 
 # Utility rule file for uninstall.
 
@@ -54,7 +54,7 @@ CMAKE_BINARY_DIR = /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug
 include ext/glfw/CMakeFiles/uninstall.dir/progress.make
 
 ext/glfw/CMakeFiles/uninstall:
-	cd /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/ext/glfw && /Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake -P /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/ext/glfw/cmake_uninstall.cmake
+	cd /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/ext/glfw && /Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake -P /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/ext/glfw/cmake_uninstall.cmake
 
 uninstall: ext/glfw/CMakeFiles/uninstall
 uninstall: ext/glfw/CMakeFiles/uninstall.dir/build.make
@@ -67,10 +67,10 @@ ext/glfw/CMakeFiles/uninstall.dir/build: uninstall
 .PHONY : ext/glfw/CMakeFiles/uninstall.dir/build
 
 ext/glfw/CMakeFiles/uninstall.dir/clean:
-	cd /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/ext/glfw && $(CMAKE_COMMAND) -P CMakeFiles/uninstall.dir/cmake_clean.cmake
+	cd /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/ext/glfw && $(CMAKE_COMMAND) -P CMakeFiles/uninstall.dir/cmake_clean.cmake
 .PHONY : ext/glfw/CMakeFiles/uninstall.dir/clean
 
 ext/glfw/CMakeFiles/uninstall.dir/depend:
-	cd /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /Users/davidestaub/Desktop/GITHUB/ETH/a0 /Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/glfw /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/ext/glfw /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/ext/glfw/CMakeFiles/uninstall.dir/DependInfo.cmake --color=$(COLOR)
+	cd /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/glfw /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/ext/glfw /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/ext/glfw/CMakeFiles/uninstall.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : ext/glfw/CMakeFiles/uninstall.dir/depend
 

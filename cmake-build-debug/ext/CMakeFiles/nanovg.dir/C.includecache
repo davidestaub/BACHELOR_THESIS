@@ -6,15 +6,15 @@
 
 #IncludeRegexTransform: 
 
-/Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/nanovg/src/fontstash.h
+/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/nanovg/src/fontstash.h
 ft2build.h
 -
 math.h
 -
 stb_truetype.h
-/Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/nanovg/src/stb_truetype.h
+/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/nanovg/src/stb_truetype.h
 
-/Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/nanovg/src/nanovg.c
+/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/nanovg/src/nanovg.c
 stdlib.h
 -
 stdio.h
@@ -24,17 +24,17 @@ math.h
 memory.h
 -
 nanovg.h
-/Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/nanovg/src/nanovg.h
+/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/nanovg/src/nanovg.h
 fontstash.h
-/Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/nanovg/src/fontstash.h
+/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/nanovg/src/fontstash.h
 stb_image.h
-/Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/nanovg/src/stb_image.h
+/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/nanovg/src/stb_image.h
 
-/Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/nanovg/src/nanovg.h
+/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/nanovg/src/nanovg.h
 
-/Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/nanovg/src/stb_image.h
+/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/nanovg/src/stb_image.h
 stb_image.h
-/Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/nanovg/src/stb_image.h
+/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/nanovg/src/stb_image.h
 stdio.h
 -
 stdarg.h
@@ -60,13 +60,13 @@ intrin.h
 arm_neon.h
 -
 
-/Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/nanovg/src/stb_truetype.h
+/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/nanovg/src/stb_truetype.h
 stb_truetype.h
-/Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/nanovg/src/stb_truetype.h
+/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/nanovg/src/stb_truetype.h
 stdio.h
 -
 stb_truetype.h
-/Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/nanovg/src/stb_truetype.h
+/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/nanovg/src/stb_truetype.h
 math.h
 -
 math.h

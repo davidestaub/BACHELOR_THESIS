@@ -1,4 +1,4 @@
-# Install script for directory: /Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/glm/glm
+# Install script for directory: /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/glm/glm
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

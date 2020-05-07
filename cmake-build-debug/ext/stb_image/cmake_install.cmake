@@ -1,4 +1,4 @@
-# Install script for directory: /Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/stb_image
+# Install script for directory: /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/stb_image
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

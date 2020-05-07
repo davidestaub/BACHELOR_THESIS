@@ -1,4 +1,4 @@
-# Install script for directory: /Users/davidestaub/Desktop/GITHUB/ETH/a0/src
+# Install script for directory: /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/src
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -34,9 +34,9 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("/Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/src/guiLib/cmake_install.cmake")
-  include("/Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/src/app/cmake_install.cmake")
-  include("/Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/src/simulation/cmake_install.cmake")
+  include("/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/src/guiLib/cmake_install.cmake")
+  include("/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/src/app/cmake_install.cmake")
+  include("/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/src/simulation/cmake_install.cmake")
 
 endif()
 

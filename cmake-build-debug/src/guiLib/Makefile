@@ -48,10 +48,10 @@ RM = /Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /Users/davidestaub/Desktop/GITHUB/ETH/a0
+CMAKE_SOURCE_DIR = /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug
+CMAKE_BINARY_DIR = /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -126,14 +126,14 @@ edit_cache/fast: edit_cache
 
 # The main all target
 all: cmake_check_build_system
-	cd /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug && $(CMAKE_COMMAND) -E cmake_progress_start /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/CMakeFiles /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/src/guiLib/CMakeFiles/progress.marks
-	cd /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 src/guiLib/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/CMakeFiles 0
+	cd /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug && $(CMAKE_COMMAND) -E cmake_progress_start /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/CMakeFiles /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/src/guiLib/CMakeFiles/progress.marks
+	cd /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 src/guiLib/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
 clean:
-	cd /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 src/guiLib/clean
+	cd /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 src/guiLib/clean
 .PHONY : clean
 
 # The main clean target
@@ -143,22 +143,22 @@ clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	cd /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 src/guiLib/preinstall
+	cd /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 src/guiLib/preinstall
 .PHONY : preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	cd /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 src/guiLib/preinstall
+	cd /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 src/guiLib/preinstall
 .PHONY : preinstall/fast
 
 # clear depends
 depend:
-	cd /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
+	cd /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
 # Convenience name for target.
 src/guiLib/CMakeFiles/guiLib.dir/rule:
-	cd /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 src/guiLib/CMakeFiles/guiLib.dir/rule
+	cd /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 src/guiLib/CMakeFiles/guiLib.dir/rule
 .PHONY : src/guiLib/CMakeFiles/guiLib.dir/rule
 
 # Convenience name for target.
@@ -168,7 +168,7 @@ guiLib: src/guiLib/CMakeFiles/guiLib.dir/rule
 
 # fast build rule for target.
 guiLib/fast:
-	cd /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug && $(MAKE) -f src/guiLib/CMakeFiles/guiLib.dir/build.make src/guiLib/CMakeFiles/guiLib.dir/build
+	cd /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug && $(MAKE) -f src/guiLib/CMakeFiles/guiLib.dir/build.make src/guiLib/CMakeFiles/guiLib.dir/build
 .PHONY : guiLib/fast
 
 application.o: application.cpp.o
@@ -177,7 +177,7 @@ application.o: application.cpp.o
 
 # target to build an object file
 application.cpp.o:
-	cd /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug && $(MAKE) -f src/guiLib/CMakeFiles/guiLib.dir/build.make src/guiLib/CMakeFiles/guiLib.dir/application.cpp.o
+	cd /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug && $(MAKE) -f src/guiLib/CMakeFiles/guiLib.dir/build.make src/guiLib/CMakeFiles/guiLib.dir/application.cpp.o
 .PHONY : application.cpp.o
 
 application.i: application.cpp.i
@@ -186,7 +186,7 @@ application.i: application.cpp.i
 
 # target to preprocess a source file
 application.cpp.i:
-	cd /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug && $(MAKE) -f src/guiLib/CMakeFiles/guiLib.dir/build.make src/guiLib/CMakeFiles/guiLib.dir/application.cpp.i
+	cd /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug && $(MAKE) -f src/guiLib/CMakeFiles/guiLib.dir/build.make src/guiLib/CMakeFiles/guiLib.dir/application.cpp.i
 .PHONY : application.cpp.i
 
 application.s: application.cpp.s
@@ -195,7 +195,7 @@ application.s: application.cpp.s
 
 # target to generate assembly for a file
 application.cpp.s:
-	cd /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug && $(MAKE) -f src/guiLib/CMakeFiles/guiLib.dir/build.make src/guiLib/CMakeFiles/guiLib.dir/application.cpp.s
+	cd /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug && $(MAKE) -f src/guiLib/CMakeFiles/guiLib.dir/build.make src/guiLib/CMakeFiles/guiLib.dir/application.cpp.s
 .PHONY : application.cpp.s
 
 imgui_impl_glfw.o: imgui_impl_glfw.cpp.o
@@ -204,7 +204,7 @@ imgui_impl_glfw.o: imgui_impl_glfw.cpp.o
 
 # target to build an object file
 imgui_impl_glfw.cpp.o:
-	cd /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug && $(MAKE) -f src/guiLib/CMakeFiles/guiLib.dir/build.make src/guiLib/CMakeFiles/guiLib.dir/imgui_impl_glfw.cpp.o
+	cd /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug && $(MAKE) -f src/guiLib/CMakeFiles/guiLib.dir/build.make src/guiLib/CMakeFiles/guiLib.dir/imgui_impl_glfw.cpp.o
 .PHONY : imgui_impl_glfw.cpp.o
 
 imgui_impl_glfw.i: imgui_impl_glfw.cpp.i
@@ -213,7 +213,7 @@ imgui_impl_glfw.i: imgui_impl_glfw.cpp.i
 
 # target to preprocess a source file
 imgui_impl_glfw.cpp.i:
-	cd /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug && $(MAKE) -f src/guiLib/CMakeFiles/guiLib.dir/build.make src/guiLib/CMakeFiles/guiLib.dir/imgui_impl_glfw.cpp.i
+	cd /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug && $(MAKE) -f src/guiLib/CMakeFiles/guiLib.dir/build.make src/guiLib/CMakeFiles/guiLib.dir/imgui_impl_glfw.cpp.i
 .PHONY : imgui_impl_glfw.cpp.i
 
 imgui_impl_glfw.s: imgui_impl_glfw.cpp.s
@@ -222,7 +222,7 @@ imgui_impl_glfw.s: imgui_impl_glfw.cpp.s
 
 # target to generate assembly for a file
 imgui_impl_glfw.cpp.s:
-	cd /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug && $(MAKE) -f src/guiLib/CMakeFiles/guiLib.dir/build.make src/guiLib/CMakeFiles/guiLib.dir/imgui_impl_glfw.cpp.s
+	cd /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug && $(MAKE) -f src/guiLib/CMakeFiles/guiLib.dir/build.make src/guiLib/CMakeFiles/guiLib.dir/imgui_impl_glfw.cpp.s
 .PHONY : imgui_impl_glfw.cpp.s
 
 imgui_impl_opengl3.o: imgui_impl_opengl3.cpp.o
@@ -231,7 +231,7 @@ imgui_impl_opengl3.o: imgui_impl_opengl3.cpp.o
 
 # target to build an object file
 imgui_impl_opengl3.cpp.o:
-	cd /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug && $(MAKE) -f src/guiLib/CMakeFiles/guiLib.dir/build.make src/guiLib/CMakeFiles/guiLib.dir/imgui_impl_opengl3.cpp.o
+	cd /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug && $(MAKE) -f src/guiLib/CMakeFiles/guiLib.dir/build.make src/guiLib/CMakeFiles/guiLib.dir/imgui_impl_opengl3.cpp.o
 .PHONY : imgui_impl_opengl3.cpp.o
 
 imgui_impl_opengl3.i: imgui_impl_opengl3.cpp.i
@@ -240,7 +240,7 @@ imgui_impl_opengl3.i: imgui_impl_opengl3.cpp.i
 
 # target to preprocess a source file
 imgui_impl_opengl3.cpp.i:
-	cd /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug && $(MAKE) -f src/guiLib/CMakeFiles/guiLib.dir/build.make src/guiLib/CMakeFiles/guiLib.dir/imgui_impl_opengl3.cpp.i
+	cd /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug && $(MAKE) -f src/guiLib/CMakeFiles/guiLib.dir/build.make src/guiLib/CMakeFiles/guiLib.dir/imgui_impl_opengl3.cpp.i
 .PHONY : imgui_impl_opengl3.cpp.i
 
 imgui_impl_opengl3.s: imgui_impl_opengl3.cpp.s
@@ -249,7 +249,7 @@ imgui_impl_opengl3.s: imgui_impl_opengl3.cpp.s
 
 # target to generate assembly for a file
 imgui_impl_opengl3.cpp.s:
-	cd /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug && $(MAKE) -f src/guiLib/CMakeFiles/guiLib.dir/build.make src/guiLib/CMakeFiles/guiLib.dir/imgui_impl_opengl3.cpp.s
+	cd /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug && $(MAKE) -f src/guiLib/CMakeFiles/guiLib.dir/build.make src/guiLib/CMakeFiles/guiLib.dir/imgui_impl_opengl3.cpp.s
 .PHONY : imgui_impl_opengl3.cpp.s
 
 shader.o: shader.cpp.o
@@ -258,7 +258,7 @@ shader.o: shader.cpp.o
 
 # target to build an object file
 shader.cpp.o:
-	cd /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug && $(MAKE) -f src/guiLib/CMakeFiles/guiLib.dir/build.make src/guiLib/CMakeFiles/guiLib.dir/shader.cpp.o
+	cd /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug && $(MAKE) -f src/guiLib/CMakeFiles/guiLib.dir/build.make src/guiLib/CMakeFiles/guiLib.dir/shader.cpp.o
 .PHONY : shader.cpp.o
 
 shader.i: shader.cpp.i
@@ -267,7 +267,7 @@ shader.i: shader.cpp.i
 
 # target to preprocess a source file
 shader.cpp.i:
-	cd /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug && $(MAKE) -f src/guiLib/CMakeFiles/guiLib.dir/build.make src/guiLib/CMakeFiles/guiLib.dir/shader.cpp.i
+	cd /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug && $(MAKE) -f src/guiLib/CMakeFiles/guiLib.dir/build.make src/guiLib/CMakeFiles/guiLib.dir/shader.cpp.i
 .PHONY : shader.cpp.i
 
 shader.s: shader.cpp.s
@@ -276,7 +276,7 @@ shader.s: shader.cpp.s
 
 # target to generate assembly for a file
 shader.cpp.s:
-	cd /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug && $(MAKE) -f src/guiLib/CMakeFiles/guiLib.dir/build.make src/guiLib/CMakeFiles/guiLib.dir/shader.cpp.s
+	cd /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug && $(MAKE) -f src/guiLib/CMakeFiles/guiLib.dir/build.make src/guiLib/CMakeFiles/guiLib.dir/shader.cpp.s
 .PHONY : shader.cpp.s
 
 # Help Target
@@ -315,6 +315,6 @@ help:
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
-	cd /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
+	cd /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 .PHONY : cmake_check_build_system
 

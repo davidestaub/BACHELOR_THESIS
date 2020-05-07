@@ -11,24 +11,24 @@ src/guiLib/CMakeFiles/guiLib.dir/application.cpp.o
  ../ext/nanovg/src/nanovg_gl.h
  ../ext/nanovg/src/stb_image.h
  ../ext/stb_image/stb_image_write.h
- /Users/davidestaub/Desktop/GITHUB/ETH/a0/src/guiLib/application.cpp
- /Users/davidestaub/Desktop/GITHUB/ETH/a0/src/guiLib/application.h
- /Users/davidestaub/Desktop/GITHUB/ETH/a0/src/guiLib/imgui_impl_glfw.h
- /Users/davidestaub/Desktop/GITHUB/ETH/a0/src/guiLib/imgui_impl_opengl3.h
+ /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/src/guiLib/application.cpp
+ /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/src/guiLib/application.h
+ /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/src/guiLib/imgui_impl_glfw.h
+ /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/src/guiLib/imgui_impl_opengl3.h
 src/guiLib/CMakeFiles/guiLib.dir/imgui_impl_glfw.cpp.o
  ../ext/glfw/include/GLFW/glfw3.h
  ../ext/glfw/include/GLFW/glfw3native.h
  ../ext/imgui/imconfig.h
  ../ext/imgui/imgui.h
- /Users/davidestaub/Desktop/GITHUB/ETH/a0/src/guiLib/imgui_impl_glfw.cpp
- /Users/davidestaub/Desktop/GITHUB/ETH/a0/src/guiLib/imgui_impl_glfw.h
+ /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/src/guiLib/imgui_impl_glfw.cpp
+ /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/src/guiLib/imgui_impl_glfw.h
 src/guiLib/CMakeFiles/guiLib.dir/imgui_impl_opengl3.cpp.o
  ../ext/glad/include/KHR/khrplatform.h
  ../ext/glad/include/glad/glad.h
  ../ext/imgui/imconfig.h
  ../ext/imgui/imgui.h
- /Users/davidestaub/Desktop/GITHUB/ETH/a0/src/guiLib/imgui_impl_opengl3.cpp
- /Users/davidestaub/Desktop/GITHUB/ETH/a0/src/guiLib/imgui_impl_opengl3.h
+ /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/src/guiLib/imgui_impl_opengl3.cpp
+ /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/src/guiLib/imgui_impl_opengl3.h
 src/guiLib/CMakeFiles/guiLib.dir/shader.cpp.o
  ../ext/glad/include/KHR/khrplatform.h
  ../ext/glad/include/glad/glad.h
@@ -180,5 +180,5 @@ src/guiLib/CMakeFiles/guiLib.dir/shader.cpp.o
  ../ext/glm/glm/vec3.hpp
  ../ext/glm/glm/vec4.hpp
  ../ext/glm/glm/vector_relational.hpp
- /Users/davidestaub/Desktop/GITHUB/ETH/a0/src/guiLib/shader.cpp
- /Users/davidestaub/Desktop/GITHUB/ETH/a0/src/guiLib/shader.h
+ /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/src/guiLib/shader.cpp
+ /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/src/guiLib/shader.h

@@ -1,9 +1,9 @@
 
-if (NOT EXISTS "/Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/ext/glfw/install_manifest.txt")
-    message(FATAL_ERROR "Cannot find install manifest: \"/Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/ext/glfw/install_manifest.txt\"")
+if (NOT EXISTS "/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/ext/glfw/install_manifest.txt")
+    message(FATAL_ERROR "Cannot find install manifest: \"/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/ext/glfw/install_manifest.txt\"")
 endif()
 
-file(READ "/Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/ext/glfw/install_manifest.txt" files)
+file(READ "/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/ext/glfw/install_manifest.txt" files)
 string(REGEX REPLACE "\n" ";" files "${files}")
 
 foreach (file ${files})

@@ -80,6 +80,7 @@ Application::Application(const char *title, int w, int h, std::string iconPath, 
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO();
+    ImGui::SetNextWindowPos(ImVec2(0, 0)); //doesnt change anything
     ImFontConfig cfg;
     cfg.SizePixels = 40 * pixelRatio;
     ImFont *imFont = io.Fonts->AddFontFromFileTTF(font.c_str(), 16.0f * pixelRatio, &cfg);
@@ -181,6 +182,7 @@ void Application::setCallbacks() {
 }
 
 void Application::run() {
+    int count = 0;
     while (!glfwWindowShouldClose(window))
     {
         float currentFrame = glfwGetTime();
@@ -189,7 +191,9 @@ void Application::run() {
 
         process();
 
+
         draw();
+        count++;
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 #ifdef SINGLE_BUFFER
@@ -217,7 +221,7 @@ void Application::draw() {
 
     // nano vg
     {
-        nvgBeginFrame(vg, width/pixelRatio, height/pixelRatio, pixelRatio);
+        nvgBeginFrame(vg, 2*width, 2*height, pixelRatio);
         drawNanoVG();
         nvgEndFrame(vg);
     }
@@ -226,7 +230,7 @@ void Application::draw() {
     {
         using namespace ImGui;
         NewFrame();
-
+        ImGui::SetNextWindowContentSize(ImVec2(200,200));
         BeginMainMenuBar();
         if(BeginMenu("app")) {
             InputFloat("pixel ratio", &pixelRatio);
@@ -258,6 +262,8 @@ void Application::drawNanoVG()
 {
 
 }
+
+
 
 void Application::resizeWindow(int width, int height) {
     //todo: should the pixel ratio be accounted for here as well?!

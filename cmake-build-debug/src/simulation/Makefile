@@ -48,10 +48,10 @@ RM = /Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /Users/davidestaub/Desktop/GITHUB/ETH/a0
+CMAKE_SOURCE_DIR = /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug
+CMAKE_BINARY_DIR = /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -126,14 +126,14 @@ edit_cache/fast: edit_cache
 
 # The main all target
 all: cmake_check_build_system
-	cd /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug && $(CMAKE_COMMAND) -E cmake_progress_start /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/CMakeFiles /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/src/simulation/CMakeFiles/progress.marks
-	cd /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 src/simulation/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/CMakeFiles 0
+	cd /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug && $(CMAKE_COMMAND) -E cmake_progress_start /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/CMakeFiles /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/src/simulation/CMakeFiles/progress.marks
+	cd /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 src/simulation/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
 clean:
-	cd /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 src/simulation/clean
+	cd /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 src/simulation/clean
 .PHONY : clean
 
 # The main clean target
@@ -143,22 +143,22 @@ clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	cd /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 src/simulation/preinstall
+	cd /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 src/simulation/preinstall
 .PHONY : preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	cd /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 src/simulation/preinstall
+	cd /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 src/simulation/preinstall
 .PHONY : preinstall/fast
 
 # clear depends
 depend:
-	cd /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
+	cd /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
 # Convenience name for target.
 src/simulation/CMakeFiles/simulation.dir/rule:
-	cd /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 src/simulation/CMakeFiles/simulation.dir/rule
+	cd /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 src/simulation/CMakeFiles/simulation.dir/rule
 .PHONY : src/simulation/CMakeFiles/simulation.dir/rule
 
 # Convenience name for target.
@@ -168,7 +168,7 @@ simulation: src/simulation/CMakeFiles/simulation.dir/rule
 
 # fast build rule for target.
 simulation/fast:
-	cd /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug && $(MAKE) -f src/simulation/CMakeFiles/simulation.dir/build.make src/simulation/CMakeFiles/simulation.dir/build
+	cd /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug && $(MAKE) -f src/simulation/CMakeFiles/simulation.dir/build.make src/simulation/CMakeFiles/simulation.dir/build
 .PHONY : simulation/fast
 
 particles.o: particles.cpp.o
@@ -177,7 +177,7 @@ particles.o: particles.cpp.o
 
 # target to build an object file
 particles.cpp.o:
-	cd /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug && $(MAKE) -f src/simulation/CMakeFiles/simulation.dir/build.make src/simulation/CMakeFiles/simulation.dir/particles.cpp.o
+	cd /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug && $(MAKE) -f src/simulation/CMakeFiles/simulation.dir/build.make src/simulation/CMakeFiles/simulation.dir/particles.cpp.o
 .PHONY : particles.cpp.o
 
 particles.i: particles.cpp.i
@@ -186,7 +186,7 @@ particles.i: particles.cpp.i
 
 # target to preprocess a source file
 particles.cpp.i:
-	cd /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug && $(MAKE) -f src/simulation/CMakeFiles/simulation.dir/build.make src/simulation/CMakeFiles/simulation.dir/particles.cpp.i
+	cd /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug && $(MAKE) -f src/simulation/CMakeFiles/simulation.dir/build.make src/simulation/CMakeFiles/simulation.dir/particles.cpp.i
 .PHONY : particles.cpp.i
 
 particles.s: particles.cpp.s
@@ -195,7 +195,7 @@ particles.s: particles.cpp.s
 
 # target to generate assembly for a file
 particles.cpp.s:
-	cd /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug && $(MAKE) -f src/simulation/CMakeFiles/simulation.dir/build.make src/simulation/CMakeFiles/simulation.dir/particles.cpp.s
+	cd /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug && $(MAKE) -f src/simulation/CMakeFiles/simulation.dir/build.make src/simulation/CMakeFiles/simulation.dir/particles.cpp.s
 .PHONY : particles.cpp.s
 
 simulation.o: simulation.cpp.o
@@ -204,7 +204,7 @@ simulation.o: simulation.cpp.o
 
 # target to build an object file
 simulation.cpp.o:
-	cd /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug && $(MAKE) -f src/simulation/CMakeFiles/simulation.dir/build.make src/simulation/CMakeFiles/simulation.dir/simulation.cpp.o
+	cd /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug && $(MAKE) -f src/simulation/CMakeFiles/simulation.dir/build.make src/simulation/CMakeFiles/simulation.dir/simulation.cpp.o
 .PHONY : simulation.cpp.o
 
 simulation.i: simulation.cpp.i
@@ -213,7 +213,7 @@ simulation.i: simulation.cpp.i
 
 # target to preprocess a source file
 simulation.cpp.i:
-	cd /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug && $(MAKE) -f src/simulation/CMakeFiles/simulation.dir/build.make src/simulation/CMakeFiles/simulation.dir/simulation.cpp.i
+	cd /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug && $(MAKE) -f src/simulation/CMakeFiles/simulation.dir/build.make src/simulation/CMakeFiles/simulation.dir/simulation.cpp.i
 .PHONY : simulation.cpp.i
 
 simulation.s: simulation.cpp.s
@@ -222,7 +222,7 @@ simulation.s: simulation.cpp.s
 
 # target to generate assembly for a file
 simulation.cpp.s:
-	cd /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug && $(MAKE) -f src/simulation/CMakeFiles/simulation.dir/build.make src/simulation/CMakeFiles/simulation.dir/simulation.cpp.s
+	cd /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug && $(MAKE) -f src/simulation/CMakeFiles/simulation.dir/build.make src/simulation/CMakeFiles/simulation.dir/simulation.cpp.s
 .PHONY : simulation.cpp.s
 
 # Help Target
@@ -255,6 +255,6 @@ help:
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
-	cd /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
+	cd /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 .PHONY : cmake_check_build_system
 

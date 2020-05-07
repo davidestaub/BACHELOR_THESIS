@@ -4,16 +4,16 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
-  "/Users/davidestaub/Desktop/GITHUB/ETH/a0/src/app/main.cpp" "/Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/src/app/CMakeFiles/app.dir/main.cpp.o"
+  "/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/src/app/main.cpp" "/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/src/app/CMakeFiles/app.dir/main.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "AppleClang")
 
 # Preprocessor definitions for this target.
 set(CMAKE_TARGET_DEFINITIONS_CXX
-  "ASSETS_FOLDER=\"/Users/davidestaub/Desktop/GITHUB/ETH/a0/src/guiLib/assets\""
-  "IMGUI_FONT_FOLDER=\"/Users/davidestaub/Desktop/GITHUB/ETH/a0/src/guiLib/../../ext/imgui/misc/fonts\""
+  "ASSETS_FOLDER=\"/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/src/guiLib/assets\""
+  "IMGUI_FONT_FOLDER=\"/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/src/guiLib/../../ext/imgui/misc/fonts\""
   "IMGUI_IMPL_OPENGL_LOADER_GLAD"
-  "SHADER_FOLDER=\"/Users/davidestaub/Desktop/GITHUB/ETH/a0/src/guiLib/../gui/shaders\""
+  "SHADER_FOLDER=\"/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/src/guiLib/../gui/shaders\""
   )
 
 # The include file search paths:
@@ -33,12 +33,12 @@ set(CMAKE_CXX_TARGET_INCLUDE_PATH
 
 # Targets to which this target links.
 set(CMAKE_TARGET_LINKED_INFO_FILES
-  "/Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/src/guiLib/CMakeFiles/guiLib.dir/DependInfo.cmake"
-  "/Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/src/simulation/CMakeFiles/simulation.dir/DependInfo.cmake"
-  "/Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/ext/glad/CMakeFiles/glad.dir/DependInfo.cmake"
-  "/Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/ext/glfw/src/CMakeFiles/glfw.dir/DependInfo.cmake"
-  "/Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/ext/CMakeFiles/nanovg.dir/DependInfo.cmake"
-  "/Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/ext/imgui/CMakeFiles/imgui.dir/DependInfo.cmake"
+  "/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/src/guiLib/CMakeFiles/guiLib.dir/DependInfo.cmake"
+  "/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/src/simulation/CMakeFiles/simulation.dir/DependInfo.cmake"
+  "/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/ext/glad/CMakeFiles/glad.dir/DependInfo.cmake"
+  "/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/ext/glfw/src/CMakeFiles/glfw.dir/DependInfo.cmake"
+  "/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/ext/CMakeFiles/nanovg.dir/DependInfo.cmake"
+  "/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/ext/imgui/CMakeFiles/imgui.dir/DependInfo.cmake"
   )
 
 # Fortran module output directory.

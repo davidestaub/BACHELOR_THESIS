@@ -43,10 +43,10 @@ RM = /Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /Users/davidestaub/Desktop/GITHUB/ETH/a0
+CMAKE_SOURCE_DIR = /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug
+CMAKE_BINARY_DIR = /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug
 
 # Include any dependencies generated for this target.
 include src/guiLib/CMakeFiles/guiLib.dir/depend.make
@@ -59,55 +59,55 @@ include src/guiLib/CMakeFiles/guiLib.dir/flags.make
 
 src/guiLib/CMakeFiles/guiLib.dir/application.cpp.o: src/guiLib/CMakeFiles/guiLib.dir/flags.make
 src/guiLib/CMakeFiles/guiLib.dir/application.cpp.o: ../src/guiLib/application.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object src/guiLib/CMakeFiles/guiLib.dir/application.cpp.o"
-	cd /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/src/guiLib && /Library/Developer/CommandLineTools/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/guiLib.dir/application.cpp.o -c /Users/davidestaub/Desktop/GITHUB/ETH/a0/src/guiLib/application.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object src/guiLib/CMakeFiles/guiLib.dir/application.cpp.o"
+	cd /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/src/guiLib && /Library/Developer/CommandLineTools/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/guiLib.dir/application.cpp.o -c /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/src/guiLib/application.cpp
 
 src/guiLib/CMakeFiles/guiLib.dir/application.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/guiLib.dir/application.cpp.i"
-	cd /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/src/guiLib && /Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/davidestaub/Desktop/GITHUB/ETH/a0/src/guiLib/application.cpp > CMakeFiles/guiLib.dir/application.cpp.i
+	cd /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/src/guiLib && /Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/src/guiLib/application.cpp > CMakeFiles/guiLib.dir/application.cpp.i
 
 src/guiLib/CMakeFiles/guiLib.dir/application.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/guiLib.dir/application.cpp.s"
-	cd /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/src/guiLib && /Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/davidestaub/Desktop/GITHUB/ETH/a0/src/guiLib/application.cpp -o CMakeFiles/guiLib.dir/application.cpp.s
+	cd /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/src/guiLib && /Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/src/guiLib/application.cpp -o CMakeFiles/guiLib.dir/application.cpp.s
 
 src/guiLib/CMakeFiles/guiLib.dir/imgui_impl_glfw.cpp.o: src/guiLib/CMakeFiles/guiLib.dir/flags.make
 src/guiLib/CMakeFiles/guiLib.dir/imgui_impl_glfw.cpp.o: ../src/guiLib/imgui_impl_glfw.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object src/guiLib/CMakeFiles/guiLib.dir/imgui_impl_glfw.cpp.o"
-	cd /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/src/guiLib && /Library/Developer/CommandLineTools/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/guiLib.dir/imgui_impl_glfw.cpp.o -c /Users/davidestaub/Desktop/GITHUB/ETH/a0/src/guiLib/imgui_impl_glfw.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object src/guiLib/CMakeFiles/guiLib.dir/imgui_impl_glfw.cpp.o"
+	cd /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/src/guiLib && /Library/Developer/CommandLineTools/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/guiLib.dir/imgui_impl_glfw.cpp.o -c /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/src/guiLib/imgui_impl_glfw.cpp
 
 src/guiLib/CMakeFiles/guiLib.dir/imgui_impl_glfw.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/guiLib.dir/imgui_impl_glfw.cpp.i"
-	cd /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/src/guiLib && /Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/davidestaub/Desktop/GITHUB/ETH/a0/src/guiLib/imgui_impl_glfw.cpp > CMakeFiles/guiLib.dir/imgui_impl_glfw.cpp.i
+	cd /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/src/guiLib && /Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/src/guiLib/imgui_impl_glfw.cpp > CMakeFiles/guiLib.dir/imgui_impl_glfw.cpp.i
 
 src/guiLib/CMakeFiles/guiLib.dir/imgui_impl_glfw.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/guiLib.dir/imgui_impl_glfw.cpp.s"
-	cd /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/src/guiLib && /Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/davidestaub/Desktop/GITHUB/ETH/a0/src/guiLib/imgui_impl_glfw.cpp -o CMakeFiles/guiLib.dir/imgui_impl_glfw.cpp.s
+	cd /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/src/guiLib && /Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/src/guiLib/imgui_impl_glfw.cpp -o CMakeFiles/guiLib.dir/imgui_impl_glfw.cpp.s
 
 src/guiLib/CMakeFiles/guiLib.dir/imgui_impl_opengl3.cpp.o: src/guiLib/CMakeFiles/guiLib.dir/flags.make
 src/guiLib/CMakeFiles/guiLib.dir/imgui_impl_opengl3.cpp.o: ../src/guiLib/imgui_impl_opengl3.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object src/guiLib/CMakeFiles/guiLib.dir/imgui_impl_opengl3.cpp.o"
-	cd /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/src/guiLib && /Library/Developer/CommandLineTools/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/guiLib.dir/imgui_impl_opengl3.cpp.o -c /Users/davidestaub/Desktop/GITHUB/ETH/a0/src/guiLib/imgui_impl_opengl3.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object src/guiLib/CMakeFiles/guiLib.dir/imgui_impl_opengl3.cpp.o"
+	cd /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/src/guiLib && /Library/Developer/CommandLineTools/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/guiLib.dir/imgui_impl_opengl3.cpp.o -c /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/src/guiLib/imgui_impl_opengl3.cpp
 
 src/guiLib/CMakeFiles/guiLib.dir/imgui_impl_opengl3.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/guiLib.dir/imgui_impl_opengl3.cpp.i"
-	cd /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/src/guiLib && /Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/davidestaub/Desktop/GITHUB/ETH/a0/src/guiLib/imgui_impl_opengl3.cpp > CMakeFiles/guiLib.dir/imgui_impl_opengl3.cpp.i
+	cd /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/src/guiLib && /Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/src/guiLib/imgui_impl_opengl3.cpp > CMakeFiles/guiLib.dir/imgui_impl_opengl3.cpp.i
 
 src/guiLib/CMakeFiles/guiLib.dir/imgui_impl_opengl3.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/guiLib.dir/imgui_impl_opengl3.cpp.s"
-	cd /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/src/guiLib && /Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/davidestaub/Desktop/GITHUB/ETH/a0/src/guiLib/imgui_impl_opengl3.cpp -o CMakeFiles/guiLib.dir/imgui_impl_opengl3.cpp.s
+	cd /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/src/guiLib && /Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/src/guiLib/imgui_impl_opengl3.cpp -o CMakeFiles/guiLib.dir/imgui_impl_opengl3.cpp.s
 
 src/guiLib/CMakeFiles/guiLib.dir/shader.cpp.o: src/guiLib/CMakeFiles/guiLib.dir/flags.make
 src/guiLib/CMakeFiles/guiLib.dir/shader.cpp.o: ../src/guiLib/shader.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object src/guiLib/CMakeFiles/guiLib.dir/shader.cpp.o"
-	cd /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/src/guiLib && /Library/Developer/CommandLineTools/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/guiLib.dir/shader.cpp.o -c /Users/davidestaub/Desktop/GITHUB/ETH/a0/src/guiLib/shader.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object src/guiLib/CMakeFiles/guiLib.dir/shader.cpp.o"
+	cd /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/src/guiLib && /Library/Developer/CommandLineTools/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/guiLib.dir/shader.cpp.o -c /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/src/guiLib/shader.cpp
 
 src/guiLib/CMakeFiles/guiLib.dir/shader.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/guiLib.dir/shader.cpp.i"
-	cd /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/src/guiLib && /Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/davidestaub/Desktop/GITHUB/ETH/a0/src/guiLib/shader.cpp > CMakeFiles/guiLib.dir/shader.cpp.i
+	cd /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/src/guiLib && /Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/src/guiLib/shader.cpp > CMakeFiles/guiLib.dir/shader.cpp.i
 
 src/guiLib/CMakeFiles/guiLib.dir/shader.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/guiLib.dir/shader.cpp.s"
-	cd /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/src/guiLib && /Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/davidestaub/Desktop/GITHUB/ETH/a0/src/guiLib/shader.cpp -o CMakeFiles/guiLib.dir/shader.cpp.s
+	cd /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/src/guiLib && /Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/src/guiLib/shader.cpp -o CMakeFiles/guiLib.dir/shader.cpp.s
 
 # Object files for target guiLib
 guiLib_OBJECTS = \
@@ -125,9 +125,9 @@ src/guiLib/libguiLib.a: src/guiLib/CMakeFiles/guiLib.dir/imgui_impl_opengl3.cpp.
 src/guiLib/libguiLib.a: src/guiLib/CMakeFiles/guiLib.dir/shader.cpp.o
 src/guiLib/libguiLib.a: src/guiLib/CMakeFiles/guiLib.dir/build.make
 src/guiLib/libguiLib.a: src/guiLib/CMakeFiles/guiLib.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Linking CXX static library libguiLib.a"
-	cd /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/src/guiLib && $(CMAKE_COMMAND) -P CMakeFiles/guiLib.dir/cmake_clean_target.cmake
-	cd /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/src/guiLib && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/guiLib.dir/link.txt --verbose=$(VERBOSE)
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Linking CXX static library libguiLib.a"
+	cd /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/src/guiLib && $(CMAKE_COMMAND) -P CMakeFiles/guiLib.dir/cmake_clean_target.cmake
+	cd /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/src/guiLib && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/guiLib.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
 src/guiLib/CMakeFiles/guiLib.dir/build: src/guiLib/libguiLib.a
@@ -135,10 +135,10 @@ src/guiLib/CMakeFiles/guiLib.dir/build: src/guiLib/libguiLib.a
 .PHONY : src/guiLib/CMakeFiles/guiLib.dir/build
 
 src/guiLib/CMakeFiles/guiLib.dir/clean:
-	cd /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/src/guiLib && $(CMAKE_COMMAND) -P CMakeFiles/guiLib.dir/cmake_clean.cmake
+	cd /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/src/guiLib && $(CMAKE_COMMAND) -P CMakeFiles/guiLib.dir/cmake_clean.cmake
 .PHONY : src/guiLib/CMakeFiles/guiLib.dir/clean
 
 src/guiLib/CMakeFiles/guiLib.dir/depend:
-	cd /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /Users/davidestaub/Desktop/GITHUB/ETH/a0 /Users/davidestaub/Desktop/GITHUB/ETH/a0/src/guiLib /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/src/guiLib /Users/davidestaub/Desktop/GITHUB/ETH/a0/cmake-build-debug/src/guiLib/CMakeFiles/guiLib.dir/DependInfo.cmake --color=$(COLOR)
+	cd /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/src/guiLib /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/src/guiLib /Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/cmake-build-debug/src/guiLib/CMakeFiles/guiLib.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : src/guiLib/CMakeFiles/guiLib.dir/depend
 

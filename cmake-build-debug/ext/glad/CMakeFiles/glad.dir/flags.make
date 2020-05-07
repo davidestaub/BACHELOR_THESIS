@@ -6,5 +6,5 @@ C_FLAGS = -g
 
 C_DEFINES = 
 
-C_INCLUDES = -I/Users/davidestaub/Desktop/GITHUB/ETH/a0/ext/glad/include 
+C_INCLUDES = -I/Users/davidestaub/Desktop/BACHELOR_THESIS/BACHELOR_THESIS/ext/glad/include 
 
