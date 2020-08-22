@@ -8,8 +8,16 @@
 #include <chrono>
 #include <vector>
 
+#include <fstream>
+#include <string>
+
 #include <Eigen/Core>
 using Eigen::Vector2d;
+
+std::ofstream outputFile;
+std::ofstream fs;
+
+std::string filename = "simulation_data.csv";
 
 class TestApp : public Application
 {
@@ -22,6 +30,7 @@ class TestApp : public Application
 public:
     TestApp(int w, int h, const char * title) : Application(title, w, h) {
         lastFrame = std::chrono::high_resolution_clock::now();
+
 
        // particles.push_back(particle_1);
        // particles.push_back(particle_2);
@@ -38,9 +47,9 @@ public:
       // particles.push_back(loner);
        simulation.connect(A,B,(A.radius+B.radius),connected_particles);
        simulation.connect(B,C,(C.radius+B.radius),connected_particles);
-        simulation.connect(A,C,(A.radius+C.radius),connected_particles);
-
-        /*simulation.connect(A2,B2,(A2.radius+B2.radius),connected_particles);
+       simulation.connect(A,C,(A.radius+C.radius),connected_particles);
+/*
+        simulation.connect(A2,B2,(A2.radius+B2.radius),connected_particles);
         simulation.connect(B2,C2,(C2.radius+B2.radius),connected_particles);
         simulation.connect(A2,C2,(A2.radius+C2.radius+2*B.radius),connected_particles);
 
@@ -89,13 +98,15 @@ public:
 
 
 
-
+        simulation.assign_index(connected_particles);
 
     }
 
 
 
     void process() override {
+        my_data.open("data.csv");
+
 
         if(runSim) {
 
@@ -123,7 +134,21 @@ public:
 
 
            simulation.run_simulation_for_connected_Particles(connected_particles);
+            double current_Epot = simulation.get_Potential_Energy(connected_particles);
+            double current_Ekin = simulation.get_Kinetic_Energy(connected_particles);
+            double velx1 = simulation.get_current_velocities_1_in_x(connected_particles);
+            double vely1 = simulation.get_current_velocities_1_in_y(connected_particles);
+            simulation.total_energy[simulation.time_index] = current_Epot + current_Ekin;
+            simulation.kinetic_energy[simulation.time_index] =  current_Ekin;
+            simulation.potential_energy[simulation.time_index] = current_Epot;
+            simulation.velocities_over_time1_in_x[simulation.time_index] = velx1;
+            simulation.velocities_over_time1_in_y[simulation.time_index] = vely1;
+            simulation.time_index++;
+       /* if(simulation.newton_counter > 10){
+            runSim = false;
+        }*/
         }
+        my_data.close();
     }
 
     void drawImGui() override {
@@ -157,10 +182,14 @@ public:
 
         if(drawCircles)
         {
-            auto drawCircle = [this](const Circle &circle){
+            auto drawCircle = [this](const Circle &circle,int tmpfortest){
                 nvgBeginPath(vg);
                 nvgCircle(vg, circle.pos[0] + center_of_frame[0], circle.pos[1]+ center_of_frame[1], circle.radius);
-                nvgFillColor(vg, circle.colorFill);
+                if(tmpfortest ==1) {
+                    nvgFillColor(vg, nvgRGBA(150, 0, 0, 100));
+                }else{
+                    nvgFillColor(vg, nvgRGBA(0, 0, 150, 100));
+                }
                 nvgFill(vg);
                 nvgStrokeColor(vg, circle.colorStroke);
                 nvgStrokeWidth(vg, 10.0f);
@@ -171,18 +200,18 @@ public:
                 drawCircle(Circle(p.position,p.radius));*/
             for(auto &pair : connected_particles) { //change to particles for std sim
                // if(!pair.first.is_drawn) {
-                    drawCircle(Circle(std::get<0>(pair).position, std::get<0>(pair).radius));
+                    drawCircle(Circle(std::get<0>(pair).position, std::get<0>(pair).radius),1);
                  //   pair.first.is_drawn = true;
                // }
                // if(!pair.second.is_drawn) {
-                    drawCircle(Circle(std::get<1>(pair).position, std::get<1>(pair).radius));
+                    drawCircle(Circle(std::get<1>(pair).position, std::get<1>(pair).radius),2);
                 //    pair.second.is_drawn = true;
                // }
 
             }
-            for(auto &particle : particles){
+            /*for(auto &particle : particles){
                 drawCircle(Circle(particle.position, particle.radius));
-            }
+            }*/ //uncomment this if you want also single particles
 
           /*  for(auto &pair : connected_particles) { //change to particles for std sim
                     pair.first.is_drawn = false;
@@ -295,21 +324,21 @@ private:
         return s/zoom*pixelRatio * base;
     }
 
-private:
+public:
     Vector2d center_of_frame = {1000,1000};
     bool runSim = false;
     double cursorPosDown[2]{};
     double translation[2] = {0.75*pixelRatio, -0.25*pixelRatio};
-    double zoom = 24;
+    double zoom = 10;
     int base;
 
     Particle BIG_A = Particle(100,40, {520,-100});
     Particle SMALL_B = Particle(10,15,{500,-90});
 
 
-    Particle A = Particle(20,20,{200,200});
-    Particle B = Particle(20,20,{300,300});
-    Particle C = Particle(20,20,{400,400});
+    Particle A = Particle(500,20,{100,100});
+    Particle B = Particle(500,20,{100,140});
+    Particle C = Particle(500,20,{128.284,228.284});
 
     Particle A2 = Particle(20,20,{100,100});
     Particle B2 = Particle(20,20,{0,0});
@@ -357,6 +386,7 @@ private:
     std::vector<Particle> particles;
     std::vector<std::tuple <Particle&,Particle&,double> > connected_particles;
     Simulation simulation;
+    std::ofstream my_data;
 
 
 
@@ -405,6 +435,8 @@ int main(int, char**)
 
 
 
+
+
     //simulation.run_simulation_with_brownian_motion(particles);
     //simulation.run_simulation_with_brownian_motion_only(particles);
     std::cout<<"end of sim 1" <<std::endl<<std::endl;
@@ -415,5 +447,15 @@ int main(int, char**)
     TestApp app(1200, 800, "Assignment 0");
     app.run();
 
+    std::ofstream myfile;
+    myfile.open ("../../../data.csv");
+    myfile << "Total Energy"<<","<<"Kinetic Energy"<<","<<"Potential Energy"<<","<<"Velocity X"<<","<<"Velocity Y"<<","<<"time step"<<std::endl;
+    std::cout<<"test"<<std::endl;
+    for(int i = 0; i<app.simulation.total_energy.size(); i++){
+        std::cout<<app.simulation.total_energy[i]<<std::endl;
+        std::cout<<app.simulation.kinetic_energy[i]<<std::endl;
+        myfile << app.simulation.total_energy[i]<<","<<app.simulation.kinetic_energy[i]<<","<<app.simulation.potential_energy[i]<<","<<app.simulation.velocities_over_time1_in_x[i]<<","<<app.simulation.velocities_over_time1_in_x[i]<<","<<i<<std::endl;
+    }
+    myfile.close();
     return 0;
 }

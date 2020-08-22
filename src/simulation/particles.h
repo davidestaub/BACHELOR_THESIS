@@ -21,9 +21,15 @@ public:
     Vector2d tmp_noise;
     Vector2d tmp_update;
     double mass,radius;
+    double six_Pi_mu_r;
+    int index = -1;
+
     static double time_step;
     static double radius_for_spring;
+    static double eta;
     bool is_drawn = false;
+    bool visited  = false;
+    bool visited_ekin = false;
     //everything in micro
     Particle(double mass = 10 ,double radius = 10, Vector2d position = {200,200}): mass(mass), radius(radius), position(position) {
         position = initial_position;//{350.0,300.0};
@@ -31,11 +37,12 @@ public:
         tmp_drag = {0,0};
         tmp_noise = {0,0};
         tmp_update = {0,0};
+        six_Pi_mu_r = ( 6.0 * M_PI * eta * (radius*std::pow(10,-6))  * std::pow(10,6) );
         //changed initial radius to much bigger, previously 10^-6
 
     }
     Vector2d initial_position = {200,200};
-    Vector2d initial_velocity = {0.1,0.1};
+    Vector2d initial_velocity = {0.0,0.0};
 
 
     Vector2d force(Particle &particle) {
@@ -117,7 +124,7 @@ public:
         force_[0] = -particle.position[1];
         force_[1] = particle.position[0];
         Vector2d normforce = force_.normalized() * 100.0;
-        std::cout<<"FORCE = "<<normforce<<std::endl;
+       // std::cout<<"FORCE = "<<normforce<<std::endl;
         return normforce;
     }
 
@@ -138,7 +145,7 @@ public:
 
 
         //dforce_circle_dx_<<x_dx,x_dy,y_dx,y_dy;
-        std::cout<<" D FORCE Dx = "<<dforce_circle_dx_<<std::endl;
+        //std::cout<<" D FORCE Dx = "<<dforce_circle_dx_<<std::endl;
         return dforce_circle_dx_ * 100.0;
     }
     Matrix2d circle_dforce_dv2(Particle &particle){
@@ -220,5 +227,6 @@ public:
 
 };
 
-double Particle::time_step =0.1; //micro seconds
+double Particle::time_step =0.001; // seconds
 double Particle::radius_for_spring = 10;
+double Particle::eta = 1.0 * std::pow(10,-3);
