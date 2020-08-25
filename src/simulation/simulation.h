@@ -33,6 +33,8 @@ public:
     MatrixXd spring_force_matrix_dv;
     MatrixXd mass_matrix;
     VectorXd velocity_vector;
+    VectorXd position_vector;
+    VectorXd position_vector_minus_1;
     double micro_time_step = time_step * std::pow(10,6);
 
     // all units in micro scale, (10^-6)
@@ -53,7 +55,7 @@ public:
     //SPRING STUFF//
     double stiffnes_constant = 1000.0;
     //double rest_length = 2 * Particle::radius_for_spring;
-    double damping_constant = 200.0;
+    double damping_constant = 50.0;
     int newton_counter = 0;
 
     std::vector<double> velocities_over_time1_in_x;
@@ -61,117 +63,63 @@ public:
 
     int size = -1;
 
-    //capture data for ploting
-
-
-
-
-
-
-
 
 
     Simulation() {}
 
 
-    void check_Boundaries(Particle &particle){
 
-            if(particle.position[0] + particle.radius >= Boxcenter[0] + Boxsize[0]/2 - xbuffer){
-                particle.velocity[0] = -1 *particle.velocity[0];
-            }
 
-            if(particle.position[1]+ particle.radius >= Boxcenter[1] + Boxsize[1]/2 - ybuffer){
-                particle.velocity[1] = -1 *particle.velocity[1];
-            }
+    //This function is called in the main function, its main purpose is to call the UPDATE funciton, note: probably redundant keeping it for now
+    void run_simulation_for_connected_Particles(std::vector<std::tuple <Particle&,Particle&,double> > &connected_particles){
+        for(int i = 0; i<num_steps;i++) {
+            total_energy.push_back(0.0);
+            kinetic_energy.push_back(0.0);
+            potential_energy.push_back(0.0);
+            velocities_over_time1_in_x.push_back(0.0);
+            velocities_over_time1_in_y.push_back(0.0);
+            /*for (auto& particle_pair : connected_particles) {
+                UPDATE_damped_spring_together(particle_pair);
+            }*/
+           // UPDATE_SYSTEM(connected_particles);
+           UPDATE_SYSTEM_NEW(connected_particles);
 
-            if(particle.position[0]- particle.radius <= Boxcenter[0] - Boxsize[0]/2 + xbuffer){
-                particle.velocity[0] = -1 *particle.velocity[0];
-            }
 
-            if(particle.position[1]- particle.radius <= Boxcenter[1] - Boxsize[1]/2 + ybuffer){
-                particle.velocity[1] = -1 *particle.velocity[1];
-            }
-
-    }
-
-    void connect(Particle &A, Particle &B, double restlength, std::vector<std::tuple <Particle&,Particle&,double> > &connected_particles){
-        std::tuple<Particle&,Particle&,double> particle_pair(A,B,restlength);
-        connected_particles.push_back(particle_pair);
-    }
-
-    Vector2d eval_F(Vector2d delta_v_init_A, double h, double six_Pi_mu_r_A, double h2, double d_f_spring_x_dx_A, double d_f_spring_y_dx_A, double d_f_spring_x_dy_A, double d_f_spring_y_dy_A, double d_f_circle_y_dx, double d_f_circle_x_dy, Vector2d F_A, Vector2d v_k_minus_1_A ){
-        Vector2d F_Newton_A;
-        F_Newton_A[0] = delta_v_init_A[0] * (1.0 + h * six_Pi_mu_r_A - h2 * d_f_spring_x_dx_A) - delta_v_init_A[1] * h2 * (d_f_circle_x_dy + d_f_spring_x_dy_A) - ( h * (  F_A[0] + h * (v_k_minus_1_A[0] * d_f_spring_x_dx_A + v_k_minus_1_A[1] * (d_f_circle_x_dy + d_f_spring_x_dy_A)) )  );
-        F_Newton_A[1] = delta_v_init_A[1] * (1.0 + h * six_Pi_mu_r_A - h2 * d_f_spring_y_dy_A) - delta_v_init_A[0] * h2 * (d_f_circle_y_dx + d_f_spring_y_dx_A) - ( h * (  F_A[1] + h * (v_k_minus_1_A[1] * d_f_spring_y_dy_A + v_k_minus_1_A[0] * (d_f_circle_y_dx + d_f_spring_y_dx_A)) )  );
-        return F_Newton_A;
-    }
-
-    Vector2d NEW_get_damped_spring_force(std::tuple<Particle,Particle,double> particle_pair){
-        double rest_length = std::get<2>(particle_pair);
-        Matrix2d Identity = MatrixXd::Identity(2,2);
-        Particle A = std::get<0>(particle_pair);
-        Particle B = std::get<1>(particle_pair);
-        //changed plus form damping to minus
-        return -1.0 *(stiffnes_constant * ((A.position - B.position).norm() - rest_length) + (damping_constant * (A.velocity - B.velocity).transpose()) * ((A.position - B.position)/(A.position - B.position).norm()) ) * ((A.position - B.position)/(A.position - B.position).norm());
-    }
-
-    void reset_flags(std::vector<std::tuple <Particle&,Particle&,double> > &connected_particles){
-        for(auto& particle_pair : connected_particles) {
-            Particle& A = std::get<0>(particle_pair);
-            Particle& B = std::get<1>(particle_pair);
-            A.visited = false;
-            B.visited = false;
         }
     }
 
-    void assign_index(std::vector<std::tuple <Particle&,Particle&,double> > &connected_particles){
-        int count = 0;
-        for(auto& particle_pair : connected_particles) {
-            //lexicographic order
-            Particle& A = std::get<0>(particle_pair);
-            Particle& B = std::get<1>(particle_pair);
-            if(!A.visited){
-                A.visited = true;
-                A.index = count;
-                count+=2;
-            }
-            if(!B.visited){
-                B.visited = true;
-                B.index = count;
-                count+=2;
-            }
-        }
-        size = count;
-        spring_force_vector = VectorXd::Zero(size);
-        spring_force_matrix_dx = MatrixXd::Zero(size,size);
-        spring_force_matrix_dv = MatrixXd::Zero(size,size);
-        mass_matrix = MatrixXd::Zero(size,size);
-        velocity_vector = VectorXd::Zero(size);
-        reset_flags(connected_particles);
+    //the most important funciton here, it calls the fill() funciton to generate the relevant matrices and vectors, computes an initial guess for delta v and then calls the newtons method and updates the velocities with a call to update velociteies and positions.
+    void UPDATE_SYSTEM(std::vector<std::tuple <Particle&,Particle&,double> > &connected_particles){
+
+        fill_spring_force_and_derivatives(connected_particles);
+
+        MatrixXd Full_Identity = MatrixXd::Identity(size,size);
+        MatrixXd A_init = Full_Identity - (time_step * mass_matrix.inverse()) * spring_force_matrix_dv - std::pow(time_step,2) * mass_matrix.inverse() * spring_force_matrix_dx;
+        VectorXd b_init = time_step * mass_matrix.inverse() * (spring_force_vector + time_step * spring_force_matrix_dx * velocity_vector);
+        VectorXd delta_v_init = A_init.colPivHouseholderQr().solve(b_init);
+
+        VectorXd delta_v_old = delta_v_init;
+
+        Newtons_Method(100000,std::pow(10,(-12)), 0.25, 0.5,  delta_v_old, velocity_vector);
+        newton_counter++;
+
+        update_velocities_and_positions(connected_particles,delta_v_old);
     }
 
-    void update_velocities_and_positions(std::vector<std::tuple <Particle&,Particle&,double> > &connected_particles,VectorXd delta_v){
-        for(auto& particle_pair : connected_particles) {
-            Particle& A = std::get<0>(particle_pair);
-            Particle& B = std::get<1>(particle_pair);
-            if(!A.visited){
-                A.velocity[0] += delta_v(A.index);
-                A.velocity[1] += delta_v(A.index+1);
-                A.position += time_step * A.velocity;
-                A.visited = true;
-            }
-            if(!B.visited){
-                B.velocity[0] += delta_v(B.index);
-                B.velocity[1] += delta_v(B.index+1);
-                B.position += time_step * B.velocity;
-                B.visited = true;
-            }
-            std::cout<<A.visited<<std::endl<<B.visited<<std::endl;
-        }
+    void UPDATE_SYSTEM_NEW(std::vector<std::tuple <Particle&,Particle&,double> > &connected_particles){
 
-        reset_flags(connected_particles);
+        fill_spring_force_and_derivatives_NEW(connected_particles);
+
+        VectorXd x_t_plus_1_init = position_vector + time_step * (position_vector - position_vector_minus_1) * (1.0/time_step);
+        VectorXd x_t_plus_1_v_old = x_t_plus_1_init;
+
+        Newtons_Method_NEW(100000,std::pow(10,(-12)), 0.25, 0.5,  x_t_plus_1_v_old);
+        newton_counter++;
+
+        update_positions_NEW(connected_particles,x_t_plus_1_v_old);
     }
 
+    //A function that is needed when dealing with more than 2 particles, it goes through all particle pairs, checkes wether the current particle was visited before and computes the forces and derivatives and puts them in the right position
     void fill_spring_force_and_derivatives(std::vector<std::tuple <Particle&,Particle&,double> > &connected_particles){
 
         spring_force_vector.setZero();
@@ -211,7 +159,434 @@ public:
             velocity_vector(A.index+1) = A.velocity[1];
             velocity_vector(B.index) = B.velocity[0];
             velocity_vector(B.index+1) = B.velocity[1];
+
         }
+    }
+
+    void fill_spring_force_and_derivatives_NEW(std::vector<std::tuple <Particle&,Particle&,double> > &connected_particles){
+
+        spring_force_vector.setZero();
+        spring_force_matrix_dx.setZero();
+        spring_force_matrix_dv.setZero();
+        mass_matrix.setZero();
+        velocity_vector.setZero();
+
+
+        for(auto& particle_pair : connected_particles) {
+
+            Particle& A = std::get<0>(particle_pair);
+            Particle& B = std::get<1>(particle_pair);
+
+            Vector2d current_spring_force = NEW_get_damped_spring_force_without_damping(particle_pair);
+            Matrix2d current_spring_force_dx = NEW_get_damped_spring_force_dXA_without_damping(particle_pair);
+
+
+            spring_force_vector[A.index] += current_spring_force[0];
+            spring_force_vector[A.index + 1] += current_spring_force[1];
+            spring_force_vector[B.index] += -1.0 * current_spring_force[0];
+            spring_force_vector[B.index + 1] += -1.0 *current_spring_force[1];
+
+            spring_force_matrix_dx.block<2,2>(A.index,A.index) += current_spring_force_dx;
+            spring_force_matrix_dx.block<2,2>(B.index,B.index) += -1.0 * current_spring_force_dx;
+
+            //spring_force_matrix_dv.block<2,2>(A.index,A.index) += current_spring_force_dv;
+            //spring_force_matrix_dv.block<2,2>(B.index,B.index) += -1.0 * current_spring_force_dv;
+
+            mass_matrix(A.index,A.index) = A.mass;
+            mass_matrix(A.index+1,A.index+1) = A.mass;
+
+            mass_matrix(B.index,B.index) = B.mass;
+            mass_matrix(B.index+1,B.index+1) = B.mass;
+
+            position_vector(A.index) = A.position[0];
+            position_vector(A.index+1) = A.position[1];
+            position_vector(B.index) = B.position[0];
+            position_vector(B.index+1) = B.position[1];
+
+        }
+    }
+
+
+
+    void Newtons_Method(int maxiter,double tol, double alpha, double beta, VectorXd& delta_v_old, VectorXd v_k_minus_1_A ){
+
+        double h2 = std::pow(time_step,2);
+        double h = time_step;
+        int count =0;
+
+        VectorXd F_Newton;
+        MatrixXd Jacobian;
+        VectorXd F_Newton_new;
+
+        for(int i = 0; i<maxiter;i++){
+            double t = 1.0;
+            F_Newton = evaluate_F_ALL(spring_force_matrix_dv,spring_force_matrix_dx, delta_v_old,spring_force_vector);
+            Jacobian = evaluate_Jacobian_ALL( spring_force_matrix_dv, spring_force_matrix_dx);
+            double old_eval = F_Newton.norm();
+
+            VectorXd delta_v_new = delta_v_old-  t *Jacobian.inverse() * F_Newton;
+            F_Newton_new = evaluate_F_ALL(spring_force_matrix_dv,spring_force_matrix_dx,delta_v_new,spring_force_vector);
+            double new_eval = F_Newton_new.norm();
+            std::cout<<"new eval = "<<new_eval<<std::endl;
+
+            while(new_eval > old_eval){ //decrement t until step gives better result
+                t = beta * t;
+                delta_v_new = delta_v_old - t * Jacobian.inverse() * F_Newton;
+                F_Newton_new = evaluate_F_ALL(spring_force_matrix_dv,spring_force_matrix_dx,delta_v_new,spring_force_vector);
+                new_eval = F_Newton_new.norm();
+            }
+            std::cout<<"now eval is= "<<new_eval<<std::endl;
+
+            delta_v_new = delta_v_old -  t *Jacobian.inverse() * F_Newton; // Newton update
+            delta_v_old = delta_v_new;
+
+            F_Newton = evaluate_F_ALL(spring_force_matrix_dv,spring_force_matrix_dx, delta_v_old,spring_force_vector);
+
+            count++;
+
+            if((Jacobian.inverse() * F_Newton).norm() < tol ){
+                std::cout<<" Newtons method converged after "<<count<<" itterations"<<" and delta_v_end = "<<delta_v_old<<std::endl;
+                i = maxiter;
+                break;
+
+            }else{
+                std::cout<<std::endl<<" value is = "<<(Jacobian.inverse() * F_Newton).norm()<<std::endl;
+            }
+        }
+    }
+
+    void Newtons_Method_NEW(int maxiter,double tol, double alpha, double beta, VectorXd& x_t_plus_1_old){
+
+        double h2 = std::pow(time_step,2);
+        double h = time_step;
+        int count =0;
+
+        VectorXd F_Newton;
+        MatrixXd Jacobian;
+        VectorXd F_Newton_new;
+
+        for(int i = 0; i<maxiter;i++){
+            double t = 1.0;
+            std::cout<<i<<std::endl;
+            F_Newton = evaluate_F_ALL_NEW(spring_force_matrix_dx, x_t_plus_1_old, spring_force_vector, position_vector, position_vector_minus_1);
+            Jacobian = evaluate_Jacobian_ALL_NEW( spring_force_matrix_dx);
+            double old_eval = F_Newton.norm();
+
+            VectorXd x_t_plus_1_new = x_t_plus_1_old -  t *Jacobian.inverse() * F_Newton;
+            F_Newton_new = evaluate_F_ALL_NEW(spring_force_matrix_dx, x_t_plus_1_new, spring_force_vector, position_vector, position_vector_minus_1);
+            double new_eval = F_Newton_new.norm();
+            std::cout<<"new eval = "<<new_eval<<std::endl;
+
+            while(new_eval > old_eval){ //decrement t until step gives better result
+                t = beta * t;
+                x_t_plus_1_new = x_t_plus_1_old - t * Jacobian.inverse() * F_Newton;
+                F_Newton_new = evaluate_F_ALL_NEW(spring_force_matrix_dx, x_t_plus_1_new, spring_force_vector, position_vector, position_vector_minus_1);
+                new_eval = F_Newton_new.norm();
+            }
+            std::cout<<"now eval is= "<<new_eval<<std::endl;
+
+            x_t_plus_1_new = x_t_plus_1_old -  t *Jacobian.inverse() * F_Newton; // Newton update
+            x_t_plus_1_old = x_t_plus_1_new;
+
+            F_Newton = evaluate_F_ALL_NEW(spring_force_matrix_dx, x_t_plus_1_old, spring_force_vector, position_vector, position_vector_minus_1);
+
+            count++;
+
+            if((Jacobian.inverse() * F_Newton).norm() < tol ){
+                i = maxiter;
+                break;
+
+            }else{
+                std::cout<<std::endl<<" value is = "<<(Jacobian.inverse() * F_Newton).norm()<<std::endl;
+            }
+        }
+    }
+
+    VectorXd evaluate_F_ALL(MatrixXd d_f_dv, MatrixXd d_f_dx, VectorXd delta_v, VectorXd forces){
+        VectorXd v_k_minus_1 =  velocity_vector;
+        MatrixXd Identity = MatrixXd::Identity(size,size);
+        MatrixXd A_init = Identity - ((time_step *mass_matrix.inverse()) * d_f_dv) - ((std::pow(time_step,2) * mass_matrix.inverse()) * d_f_dx);
+        VectorXd b_init = (time_step * mass_matrix.inverse()) * ( forces  + time_step * d_f_dx * v_k_minus_1);
+        VectorXd F;
+        F = A_init * delta_v  - b_init;
+        return F;
+    }
+
+    VectorXd evaluate_F_ALL_NEW(MatrixXd d_f_dx, VectorXd x_t_plus_1, VectorXd forces, VectorXd x_t, VectorXd x_t_minus_1){
+
+       double h = time_step;
+       double h2 = std::pow(h,2);
+       VectorXd F = mass_matrix * (1.0/h2) * x_t_plus_1
+               - d_f_dx * x_t_plus_1
+               - 2.0 * mass_matrix * (1.0/h2) * x_t
+               + mass_matrix * (1.0/h2) * x_t_minus_1
+               - forces
+               + d_f_dx * x_t;
+
+        return F;
+    }
+
+    MatrixXd evaluate_Jacobian_ALL(MatrixXd d_f_dv, MatrixXd d_f_dx){
+        return Eigen::MatrixXd::Identity(size,size) - d_f_dv * (time_step* mass_matrix.inverse()) - d_f_dx * (std::pow(time_step,2) * mass_matrix.inverse());
+    }
+
+    MatrixXd evaluate_Jacobian_ALL_NEW( MatrixXd d_f_dx){
+        double h = time_step;
+        double h2 = std::pow(h,2);
+        return mass_matrix * (1.0/h2) - d_f_dx;
+    }
+
+
+
+    Vector2d NEW_get_damped_spring_force(std::tuple<Particle,Particle,double> particle_pair){
+        double rest_length = std::get<2>(particle_pair);
+        Matrix2d Identity = MatrixXd::Identity(2,2);
+        Particle A = std::get<0>(particle_pair);
+        Particle B = std::get<1>(particle_pair);
+        //changed plus form damping to minus
+        return -1.0 *(stiffnes_constant * ((A.position - B.position).norm() - rest_length) + (damping_constant * (A.velocity - B.velocity).transpose()) * ((A.position - B.position)/(A.position - B.position).norm()) ) * ((A.position - B.position)/(A.position - B.position).norm());
+    }
+
+    Vector2d NEW_get_damped_spring_force_without_damping(std::tuple<Particle,Particle,double> particle_pair){
+        double rest_length = std::get<2>(particle_pair);
+        Matrix2d Identity = MatrixXd::Identity(2,2);
+        Particle A = std::get<0>(particle_pair);
+        Particle B = std::get<1>(particle_pair);
+        //changed plus form damping to minus
+        return -1.0 *(stiffnes_constant * ((A.position - B.position).norm() - rest_length) ) * ((A.position - B.position)/(A.position - B.position).norm());
+    }
+
+    Matrix2d NEW_get_damped_spring_force_dXA(std::tuple<Particle,Particle,double> particle_pair){
+        double rest_length = std::get<2>(particle_pair);
+        Matrix2d Identity = MatrixXd::Identity(2,2);
+        Particle A = std::get<0>(particle_pair);
+        Particle B = std::get<1>(particle_pair);
+        Vector2d xa = A.position;
+        Vector2d xb = B.position;
+        Vector2d va = A.position;
+        Vector2d vb = B.position;
+
+        Vector2d t0 = xa -xb;
+        double t1 = t0.norm();
+        double t2 = std::pow(t1,2);
+        Vector2d t3 = va -vb;
+        Matrix2d T4 = t0 * t0.transpose();
+        double t5 = t3.transpose() * t0;
+        double t6 = stiffnes_constant * (t1 - rest_length) + (damping_constant*t5)/t1;
+
+        return -1.0 * ((stiffnes_constant/t2) * T4 + (damping_constant/t2) * t0 * t3.transpose() - ((damping_constant * t5)/std::pow(t1,4)) * T4 - (t6/std::pow(t1,3)) * T4 + (t6/t1) * Identity);
+
+
+    }
+
+    Matrix2d NEW_get_damped_spring_force_dXA_without_damping(std::tuple<Particle,Particle,double> particle_pair){
+        double rest_length = std::get<2>(particle_pair);
+        Matrix2d Identity = MatrixXd::Identity(2,2);
+        Particle A = std::get<0>(particle_pair);
+        Particle B = std::get<1>(particle_pair);
+        Vector2d xa = A.position;
+        Vector2d xb = B.position;
+        Vector2d va = A.position;
+        Vector2d vb = B.position;
+
+        Vector2d t0 = xa -xb;
+        double t1 = t0.norm();
+        double t2 = std::pow(t1,2);
+        Vector2d t3 = va -vb;
+        Matrix2d T4 = t0 * t0.transpose();
+        double t5 = t3.transpose() * t0;
+        double t6 = stiffnes_constant * (t1 - rest_length) + (0*t5)/t1;
+
+        return -1.0 * ((stiffnes_constant/t2) * T4 + (0/t2) * t0 * t3.transpose() - ((0 * t5)/std::pow(t1,4)) * T4 - (t6/std::pow(t1,3)) * T4 + (t6/t1) * Identity);
+
+
+    }
+
+    Matrix2d NEW_get_damped_spring_force_dVA(std::tuple<Particle,Particle,double> particle_pair){
+        double rest_length = std::get<2>(particle_pair);
+        Matrix2d Identity = MatrixXd::Identity(2,2);
+        Particle A = std::get<0>(particle_pair);
+        Particle B = std::get<1>(particle_pair);
+        Vector2d t0 = A.position - B.position;
+        return ((-1.0 *damping_constant)/t0.squaredNorm()) * t0 * t0.transpose();
+    }
+
+
+
+    void reset_flags(std::vector<std::tuple <Particle&,Particle&,double> > &connected_particles){
+        for(auto& particle_pair : connected_particles) {
+            Particle& A = std::get<0>(particle_pair);
+            Particle& B = std::get<1>(particle_pair);
+            A.visited = false;
+            B.visited = false;
+        }
+    }
+
+    void assign_index(std::vector<std::tuple <Particle&,Particle&,double> > &connected_particles){
+        int count = 0;
+        for(auto& particle_pair : connected_particles) {
+            //lexicographic order
+            Particle& A = std::get<0>(particle_pair);
+            Particle& B = std::get<1>(particle_pair);
+            if(!A.visited){
+                A.visited = true;
+                A.index = count;
+                count+=2;
+            }
+            if(!B.visited){
+                B.visited = true;
+                B.index = count;
+                count+=2;
+            }
+        }
+        size = count;
+        spring_force_vector = VectorXd::Zero(size);
+        spring_force_matrix_dx = MatrixXd::Zero(size,size);
+        spring_force_matrix_dv = MatrixXd::Zero(size,size);
+        mass_matrix = MatrixXd::Zero(size,size);
+        velocity_vector = VectorXd::Zero(size);
+        position_vector = VectorXd::Zero(size);
+        position_vector_minus_1 = VectorXd::Zero(size);
+        reset_flags(connected_particles);
+    }
+
+    void update_velocities_and_positions(std::vector<std::tuple <Particle&,Particle&,double> > &connected_particles,VectorXd delta_v){
+        for(auto& particle_pair : connected_particles) {
+            Particle& A = std::get<0>(particle_pair);
+            Particle& B = std::get<1>(particle_pair);
+            if(!A.visited){
+                A.velocity[0] += delta_v(A.index);
+                A.velocity[1] += delta_v(A.index+1);
+                A.position += time_step * A.velocity;
+                A.visited = true;
+            }
+            if(!B.visited){
+                B.velocity[0] += delta_v(B.index);
+                B.velocity[1] += delta_v(B.index+1);
+                B.position += time_step * B.velocity;
+                B.visited = true;
+            }
+            std::cout<<A.visited<<std::endl<<B.visited<<std::endl;
+        }
+
+        reset_flags(connected_particles);
+    }
+
+    void update_positions_NEW(std::vector<std::tuple <Particle&,Particle&,double> > &connected_particles,VectorXd x_t_plus_1_new){
+        position_vector_minus_1 = position_vector;
+        for(auto& particle_pair : connected_particles) {
+            Particle& A = std::get<0>(particle_pair);
+            Particle& B = std::get<1>(particle_pair);
+            if(!A.visited){
+                A.position[0] = x_t_plus_1_new(A.index);
+                A.position[1] = x_t_plus_1_new(A.index+1);
+                A.visited=true;
+            }
+            if(!B.visited){
+                B.position[0] = x_t_plus_1_new(B.index);
+                B.position[1] = x_t_plus_1_new(B.index+1);
+                B.visited=true;
+            }
+        }
+        position_vector = x_t_plus_1_new;
+
+        reset_flags(connected_particles);
+    }
+
+    VectorXd initialize_position_vector_minus_1(std::vector<std::tuple <Particle&,Particle&,double> > &connected_particles){
+        for(auto& particle_pair : connected_particles) {
+            Particle& A = std::get<0>(particle_pair);
+            Particle& B = std::get<1>(particle_pair);
+            if(!A.visited){
+                position_vector_minus_1(A.index) = A.position[0];
+                position_vector_minus_1(A.index+1) = A.position[1];
+                A.visited = true;
+            }
+            if(!B.visited){
+                position_vector_minus_1(B.index) = B.position[0];
+                position_vector_minus_1(B.index+1) = B.position[1];
+                B.visited = true;
+            }
+
+        }
+
+        reset_flags(connected_particles);
+        return position_vector_minus_1;
+    }
+
+
+    double get_Potential_Energy(std::vector<std::tuple <Particle&,Particle&,double> > &connected_particles){
+        double potential_energy = 0;
+        for(auto particle_pair : connected_particles) {
+            Vector2d displacement =  std::get<0>(particle_pair).position - std::get<1>(particle_pair).position;
+            double displcacement_norm = displacement.norm();
+            potential_energy += 0.5 * stiffnes_constant * std::pow((displcacement_norm-std::get<2>(particle_pair)),2);
+        }
+        return potential_energy;
+    }
+
+    double get_Kinetic_Energy(std::vector<std::tuple <Particle&,Particle&,double> > &connected_particles){
+        double kinetic_energy = 0;
+        for(auto& particle_pair : connected_particles){
+            Particle& A = std::get<0>(particle_pair);
+            Particle& B = std::get<1>(particle_pair);
+            if(!A.visited_ekin) {
+                kinetic_energy += 0.5 * A.mass * (A.velocity).transpose() * (A.velocity);
+                A.visited_ekin = true;
+            }
+            if(!B.visited_ekin) {
+                kinetic_energy += 0.5 * B.mass * (B.velocity).transpose() * (B.velocity);
+                B.visited_ekin = true;
+            }
+        }
+        for(auto& particle_pair : connected_particles){
+            Particle& A = std::get<0>(particle_pair);
+            Particle& B = std::get<1>(particle_pair);
+            A.visited_ekin = false;
+            B.visited_ekin = false;
+        }
+        return kinetic_energy;
+    }
+
+
+
+
+
+
+
+
+
+
+    void check_Boundaries(Particle &particle){
+
+            if(particle.position[0] + particle.radius >= Boxcenter[0] + Boxsize[0]/2 - xbuffer){
+                particle.velocity[0] = -1 *particle.velocity[0];
+            }
+
+            if(particle.position[1]+ particle.radius >= Boxcenter[1] + Boxsize[1]/2 - ybuffer){
+                particle.velocity[1] = -1 *particle.velocity[1];
+            }
+
+            if(particle.position[0]- particle.radius <= Boxcenter[0] - Boxsize[0]/2 + xbuffer){
+                particle.velocity[0] = -1 *particle.velocity[0];
+            }
+
+            if(particle.position[1]- particle.radius <= Boxcenter[1] - Boxsize[1]/2 + ybuffer){
+                particle.velocity[1] = -1 *particle.velocity[1];
+            }
+
+    }
+
+    void connect(Particle &A, Particle &B, double restlength, std::vector<std::tuple <Particle&,Particle&,double> > &connected_particles){
+        std::tuple<Particle&,Particle&,double> particle_pair(A,B,restlength);
+        connected_particles.push_back(particle_pair);
+    }
+
+    Vector2d eval_F(Vector2d delta_v_init_A, double h, double six_Pi_mu_r_A, double h2, double d_f_spring_x_dx_A, double d_f_spring_y_dx_A, double d_f_spring_x_dy_A, double d_f_spring_y_dy_A, double d_f_circle_y_dx, double d_f_circle_x_dy, Vector2d F_A, Vector2d v_k_minus_1_A ){
+        Vector2d F_Newton_A;
+        F_Newton_A[0] = delta_v_init_A[0] * (1.0 + h * six_Pi_mu_r_A - h2 * d_f_spring_x_dx_A) - delta_v_init_A[1] * h2 * (d_f_circle_x_dy + d_f_spring_x_dy_A) - ( h * (  F_A[0] + h * (v_k_minus_1_A[0] * d_f_spring_x_dx_A + v_k_minus_1_A[1] * (d_f_circle_x_dy + d_f_spring_x_dy_A)) )  );
+        F_Newton_A[1] = delta_v_init_A[1] * (1.0 + h * six_Pi_mu_r_A - h2 * d_f_spring_y_dy_A) - delta_v_init_A[0] * h2 * (d_f_circle_y_dx + d_f_spring_y_dx_A) - ( h * (  F_A[1] + h * (v_k_minus_1_A[1] * d_f_spring_y_dy_A + v_k_minus_1_A[0] * (d_f_circle_y_dx + d_f_spring_y_dx_A)) )  );
+        return F_Newton_A;
     }
 
     Vector2d get_damped_spring_force(std::tuple<Particle,Particle,double> particle_pair){
@@ -246,30 +621,6 @@ public:
 
     }
 
-    Matrix2d NEW_get_damped_spring_force_dXA(std::tuple<Particle,Particle,double> particle_pair){
-        double rest_length = std::get<2>(particle_pair);
-        Matrix2d Identity = MatrixXd::Identity(2,2);
-        Particle A = std::get<0>(particle_pair);
-        Particle B = std::get<1>(particle_pair);
-        Vector2d xa = A.position;
-        Vector2d xb = B.position;
-        Vector2d va = A.position;
-        Vector2d vb = B.position;
-
-        Vector2d t0 = xa -xb;
-        double t1 = t0.norm();
-        double t2 = std::pow(t1,2);
-        Vector2d t3 = va -vb;
-        Matrix2d T4 = t0 * t0.transpose();
-        double t5 = t3.transpose() * t0;
-        double t6 = stiffnes_constant * (t1 - rest_length) + (damping_constant*t5)/t1;
-
-        return -1.0 * ((stiffnes_constant/t2) * T4 + (damping_constant/t2) * t0 * t3.transpose() - ((damping_constant * t5)/std::pow(t1,4)) * T4 - (t6/std::pow(t1,3)) * T4 + (t6/t1) * Identity);
-
-
-    }
-
-
 
     Matrix2d get_damped_spring_force_dVA(std::tuple<Particle,Particle,double> particle_pair){
         double rest_length = std::get<2>(particle_pair);
@@ -280,22 +631,11 @@ public:
         return (damping_constant)/t0.squaredNorm() * t0 * t0.transpose();
     }
 
-    Matrix2d NEW_get_damped_spring_force_dVA(std::tuple<Particle,Particle,double> particle_pair){
-        double rest_length = std::get<2>(particle_pair);
-        Matrix2d Identity = MatrixXd::Identity(2,2);
-        Particle A = std::get<0>(particle_pair);
-        Particle B = std::get<1>(particle_pair);
-        Vector2d t0 = A.position - B.position;
-        return ((-1.0 *damping_constant)/t0.squaredNorm()) * t0 * t0.transpose();
-    }
 
     Matrix2d evaluate_Jacobian(Matrix2d d_f_dv_A, Particle& A, Matrix2d d_f_dx_A){
         return Eigen::MatrixXd::Identity(2,2) - d_f_dv_A * (time_step/A.mass) - d_f_dx_A * (std::pow(time_step,2)/A.mass);
     }
 
-    MatrixXd evaluate_Jacobian_ALL(MatrixXd d_f_dv, MatrixXd d_f_dx){
-        return Eigen::MatrixXd::Identity(size,size) - d_f_dv * (time_step* mass_matrix.inverse()) - d_f_dx * (std::pow(time_step,2) * mass_matrix.inverse());
-    }
 
     Matrix2d get_df_dx_B(std::tuple<Particle,Particle,double> particle_pair){
         Particle B =  std::get<1>(particle_pair);
@@ -321,15 +661,6 @@ public:
         return B.circle_force2(B) +get_drag(B) + (-1.0 *get_damped_spring_force(particle_pair));
     }
 
-    double get_Potential_Energy(std::vector<std::tuple <Particle&,Particle&,double> > &connected_particles){
-        double potential_energy = 0;
-        for(auto particle_pair : connected_particles) {
-            Vector2d displacement =  std::get<0>(particle_pair).position - std::get<1>(particle_pair).position;
-            double displcacement_norm = displacement.norm();
-            potential_energy += 0.5 * stiffnes_constant * std::pow((displcacement_norm-std::get<2>(particle_pair)),2);
-        }
-        return potential_energy;
-    }
 
     double get_current_velocities_1_in_x(std::vector<std::tuple <Particle&,Particle&,double> > &connected_particles){
        double result = 0;
@@ -347,114 +678,6 @@ public:
             result = A.velocity[1];
         }
         return result;
-    }
-
-
-
-    double get_Kinetic_Energy(std::vector<std::tuple <Particle&,Particle&,double> > &connected_particles){
-        double kinetic_energy = 0;
-        for(auto& particle_pair : connected_particles){
-            Particle& A = std::get<0>(particle_pair);
-            Particle& B = std::get<1>(particle_pair);
-            if(!A.visited_ekin) {
-                kinetic_energy += 0.5 * A.mass * (A.velocity).transpose() * (A.velocity);
-                A.visited_ekin = true;
-            }
-            if(!B.visited_ekin) {
-                kinetic_energy += 0.5 * B.mass * (B.velocity).transpose() * (B.velocity);
-                B.visited_ekin = true;
-            }
-        }
-        for(auto& particle_pair : connected_particles){
-            Particle& A = std::get<0>(particle_pair);
-            Particle& B = std::get<1>(particle_pair);
-            A.visited_ekin = false;
-            B.visited_ekin = false;
-        }
-        return kinetic_energy;
-    }
-
-
-    void Newtons_Method(int maxiter,double tol, double alpha, double beta, VectorXd delta_v_init, VectorXd& delta_v_old, VectorXd v_k_minus_1_A ){
-
-        double h2 = std::pow(time_step,2);
-        double h = time_step;
-        int count =0;
-
-        VectorXd F_Newton;
-        MatrixXd Jacobian;
-        VectorXd F_Newton_new;
-
-        for(int i = 0; i<maxiter;i++){
-            double t = 1.0;
-            F_Newton = evaluate_F_ALL(spring_force_matrix_dv,spring_force_matrix_dx, delta_v_old,spring_force_vector);
-            Jacobian = evaluate_Jacobian_ALL( spring_force_matrix_dv, spring_force_matrix_dx);
-            double old_eval = F_Newton.norm();
-
-            VectorXd delta_v_new = delta_v_old-  t *Jacobian.inverse() * F_Newton;
-            F_Newton_new = evaluate_F_ALL(spring_force_matrix_dv,spring_force_matrix_dx,delta_v_new,spring_force_vector);
-            double new_eval = F_Newton_new.norm();
-            std::cout<<"new eval = "<<new_eval<<std::endl;
-
-            while(new_eval > old_eval){ //decrement t until step gives better result
-                t = beta * t;
-                delta_v_new = delta_v_old - t * Jacobian.inverse() * F_Newton;
-                F_Newton_new = evaluate_F_ALL(spring_force_matrix_dv,spring_force_matrix_dx,delta_v_new,spring_force_vector);
-                new_eval = F_Newton_new.norm();
-            }
-
-            delta_v_new = delta_v_old -  t *Jacobian.inverse() * F_Newton; // Newton update
-            delta_v_old = delta_v_new;
-
-            F_Newton = evaluate_F_ALL(spring_force_matrix_dv,spring_force_matrix_dx, delta_v_old,spring_force_vector);
-
-            count++;
-
-            if((Jacobian.inverse() * F_Newton).norm() < tol ){
-                std::cout<<" Newtons method converged after "<<count<<" itterations with delta v init = "<<delta_v_init<<" and delta_v_end = "<<delta_v_old<<std::endl;
-                i = maxiter;
-                break;
-
-            }else{
-                std::cout<<std::endl<<" value is = "<<(Jacobian.inverse() * F_Newton).norm()<<std::endl;
-            }
-        }
-    }
-
-
-
-    //The latest version
-    void run_simulation_for_connected_Particles(std::vector<std::tuple <Particle&,Particle&,double> > &connected_particles){
-        for(int i = 0; i<num_steps;i++) {
-            total_energy.push_back(0.0);
-            kinetic_energy.push_back(0.0);
-            potential_energy.push_back(0.0);
-            velocities_over_time1_in_x.push_back(0.0);
-            velocities_over_time1_in_y.push_back(0.0);
-            /*for (auto& particle_pair : connected_particles) {
-                UPDATE_damped_spring_together(particle_pair);
-            }*/
-            UPDATE_SYSTEM(connected_particles);
-
-
-        }
-    }
-
-    void UPDATE_SYSTEM(std::vector<std::tuple <Particle&,Particle&,double> > &connected_particles){
-
-        fill_spring_force_and_derivatives(connected_particles);
-
-        MatrixXd Full_Identity = MatrixXd::Identity(size,size);
-        MatrixXd A_init = Full_Identity - (time_step * mass_matrix.inverse()) * spring_force_matrix_dv - std::pow(time_step,2) * mass_matrix.inverse() * spring_force_matrix_dx;
-        VectorXd b_init = time_step * mass_matrix.inverse() * (spring_force_vector + time_step * spring_force_matrix_dx * velocity_vector);
-        VectorXd delta_v_init = A_init.colPivHouseholderQr().solve(b_init);
-
-        VectorXd delta_v_old = delta_v_init;
-
-        Newtons_Method(100000,std::pow(10,(-12)), 0.25, 0.5, delta_v_init,  delta_v_old, velocity_vector);
-        newton_counter++;
-
-        update_velocities_and_positions(connected_particles,delta_v_old);
     }
 
     void UPDATE_damped_spring_together(std::tuple<Particle&,Particle&,double> &particle_pair){
@@ -2362,17 +2585,6 @@ public:
         return -1.0 * d_f_spring_dA;
     }
 
-    VectorXd evaluate_F_ALL(MatrixXd d_f_dv, MatrixXd d_f_dx, VectorXd delta_v, VectorXd forces){
-        VectorXd v_k_minus_1 =  velocity_vector;
-        MatrixXd Identity = MatrixXd::Identity(size,size);
-        MatrixXd A_init = Identity - ((time_step *mass_matrix.inverse()) * d_f_dv) - ((std::pow(time_step,2) * mass_matrix.inverse()) * d_f_dx);
-        VectorXd b_init = (time_step * mass_matrix.inverse()) * ( forces  + time_step * d_f_dx * v_k_minus_1);
-        VectorXd F;
-        F = A_init * delta_v  - b_init;
-        return F;
-    }
-
-
     Vector2d evaluate_F(Particle A, Matrix2d d_f_dv_A, Matrix2d d_f_dx_A, Vector2d delta_v, Vector2d forces, Vector2d delta_v_init){
         // Changed from v_k_minus_1 = delta_v_init - A.velocity; to v_k_minus_1 =  A.velocity;
         Vector2d v_k_minus_1 =  A.velocity;
@@ -2613,9 +2825,6 @@ public:
         B.position += time_step * B.velocity;
     }
 
-
-
-
     void compute_spring_force_and_update_Particles_simple(std::tuple<Particle&,Particle&,double> &particle_pair){
 
 
@@ -2725,10 +2934,6 @@ public:
 
 
     }
-
-
-
-
 
     //An OLD version that isnt simplified and produces instable/wrong results
     void connect_particles(Particle &A, Particle &B){
@@ -2840,9 +3045,7 @@ public:
         }
     }
 
-
-
-     void update_particle(Particle &particle) {
+    void update_particle(Particle &particle) {
         double tmpinit = particle.position[0];
         double tmpinit2 = particle.position[1];
         double velinit = particle.velocity[0];
@@ -2863,8 +3066,6 @@ public:
 
     }
 
-
-
     void add_viscous_drag(Particle &particle){
         double tmp = 6.0 * M_PI * eta * (particle.radius*std::pow(10,-6)) * (time_step* std::pow(10,-6));
         tmp = (tmp * std::pow(10,6));
@@ -2873,8 +3074,6 @@ public:
        // std::cout<<"change in velocity = "<<delta_v_drag<<std::endl;
         particle.position += particle.velocity * time_step;
     }
-
-
 
     void add_brownian_motion(Particle &particle){
 
@@ -2997,16 +3196,12 @@ public:
     }
 
     //COMPUTE AND NOT UPDATE FUNCTIONS:
-
     void compute_viscous_drag(Particle &particle){
         double tmp = 6.0 * M_PI * eta * (particle.radius*std::pow(10,-6)) * (time_step* std::pow(10,-6));
         tmp = (tmp * std::pow(10,6));
         particle.tmp_drag = particle.velocity * (tmp/(1.0 - tmp)); //tmp change in velocity due to drag
 
     }
-
-
-
     void compute_brownian_motion(Particle &particle){
 
         unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
@@ -3036,7 +3231,6 @@ public:
         particle.tmp_update = (particle.velocity - old_vel);
 
     }
-
     //END OF COMPUTE AND NOT UPDATE FUNCTIONS:
 
 };

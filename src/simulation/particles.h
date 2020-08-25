@@ -227,6 +227,6 @@ public:
 
 };
 
-double Particle::time_step =0.001; // seconds
+double Particle::time_step =0.1; // seconds
 double Particle::radius_for_spring = 10;
 double Particle::eta = 1.0 * std::pow(10,-3);

@@ -99,6 +99,7 @@ public:
 
 
         simulation.assign_index(connected_particles);
+        simulation.initialize_position_vector_minus_1(connected_particles);
 
     }
 
