@@ -45,9 +45,9 @@ public:
        //connect_vector.push_back(A);
        //connect_vector.push_back(B);
       // particles.push_back(loner);
-       simulation.connect(A,B,(A.radius+B.radius),connected_particles);
-       simulation.connect(B,C,(C.radius+B.radius),connected_particles);
-       simulation.connect(A,C,(A.radius+C.radius),connected_particles);
+       simulation.connect(A,B,2.0 *(A.radius+B.radius),connected_particles);
+       //simulation.connect(B,C,(C.radius+B.radius),connected_particles);
+       //simulation.connect(A,C,(A.radius+C.radius),connected_particles);
 /*
         simulation.connect(A2,B2,(A2.radius+B2.radius),connected_particles);
         simulation.connect(B2,C2,(C2.radius+B2.radius),connected_particles);
@@ -338,7 +338,7 @@ public:
 
 
     Particle A = Particle(500,20,{100,100});
-    Particle B = Particle(500,20,{100,140});
+    Particle B = Particle(500,20,{200,100});
     Particle C = Particle(500,20,{128.284,228.284});
 
     Particle A2 = Particle(20,20,{100,100});
@@ -450,13 +450,34 @@ int main(int, char**)
 
     std::ofstream myfile;
     myfile.open ("../../../data.csv");
-    myfile << "Total Energy"<<","<<"Kinetic Energy"<<","<<"Potential Energy"<<","<<"Velocity X"<<","<<"Velocity Y"<<","<<"time step"<<std::endl;
+    myfile << "Total Energy"<<","<<"Kinetic Energy"<<","<<"Potential Energy"<<","<<"Velocity X"<<","<<"Velocity Y"<<","<<"E"<<","<<"SPRING FORCE X"<<","<<"SPRING FORCE Y"<<","<<"DISTANCE"<<","<<"DERIVATIVE"<<","<<"X"<<","<<"Y"<<","<<"time step"<<std::endl;
     std::cout<<"test"<<std::endl;
-    for(int i = 0; i<app.simulation.total_energy.size(); i++){
-        std::cout<<app.simulation.total_energy[i]<<std::endl;
-        std::cout<<app.simulation.kinetic_energy[i]<<std::endl;
-        myfile << app.simulation.total_energy[i]<<","<<app.simulation.kinetic_energy[i]<<","<<app.simulation.potential_energy[i]<<","<<app.simulation.velocities_over_time1_in_x[i]<<","<<app.simulation.velocities_over_time1_in_x[i]<<","<<i<<std::endl;
+    for(int i = 0; i<app.simulation.spring_force_vec_over_time_x.size(); i++){
+        //std::cout<<app.simulation.spring_force_vec_over_time_x[i]<<std::endl;
+        //std::cout<<app.simulation.spring_force_vec_over_time_x[i]/app.simulation.stiffnes_constant<<std::endl;
+        myfile << app.simulation.total_energy[i]<<","<<app.simulation.kinetic_energy[i]<<","<<app.simulation.potential_energy[i]<<","<<app.simulation.velocities_over_time1_in_x[i]<<","<<app.simulation.velocities_over_time1_in_x[i]<<","<<app.simulation.e_vec[i]<<","<<app.simulation.spring_force_vec_over_time_x[i]/app.simulation.stiffnes_constant<<","<<app.simulation.spring_force_vec_over_time_y[i]/app.simulation.stiffnes_constant<<","<<app.simulation.A_B_DISTANCE[i]<<","<<app.simulation.spring_force_derivative_x_in_x[i]/app.simulation.stiffnes_constant<<","<<app.simulation.position_vec_over_time_in_x[i]<<","<<app.simulation.position_vec_over_time_in_y[i]<<","<<i<<std::endl;
     }
+    std::ofstream myfile2;
+    myfile2.open("../../../data2.csv");
+    myfile2<<"x"<<","<<"y"<<","<<"z1"<<","<<"z2"<<std::endl;
+    for(int i = 0; i<899;i++){
+        myfile2<<app.simulation.x_values[i]<<","<<app.simulation.y_values[i]<<","<<app.simulation.z_values1[i]<<","<<app.simulation.z_values2[i]<<std::endl;
+        std::cout<<app.simulation.x_values[i]<<std::endl;
+        std::cout<<app.simulation.y_values[i]<<std::endl;
+        std::cout<<app.simulation.z_values1[i]<<std::endl;
+    }
+
+    std::ofstream myfile3;
+    myfile3.open("../../../data3.csv");
+    for(int i = 0; i<641601;i++){
+        myfile3<<app.simulation.x_values[i]<<","<<app.simulation.y_values[i]<<","<<app.simulation.z_values[i]<<std::endl;
+        std::cout<<app.simulation.x_values[i]<<std::endl;
+        std::cout<<app.simulation.y_values[i]<<std::endl;
+        std::cout<<app.simulation.z_values1[i]<<std::endl;
+    }
+
     myfile.close();
+    myfile2.close();
+    myfile3.close();
     return 0;
 }
