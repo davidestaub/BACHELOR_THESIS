@@ -31,7 +31,7 @@ public:
     bool visited  = false;
     bool visited_ekin = false;
     //everything in micro
-    Particle(double mass = 10 ,double radius = 10, Vector2d position = {200,200}): mass(mass), radius(radius), position(position) {
+    Particle(double mass = 10.0 ,double radius = 10.0, Vector2d position = {200,200}): mass(mass), radius(radius), position(position) {
         position = initial_position;//{350.0,300.0};
         velocity = initial_velocity;
         tmp_drag = {0,0};
@@ -227,6 +227,6 @@ public:
 
 };
 
-double Particle::time_step =0.1; // seconds
+double Particle::time_step =100.0; // seconds
 double Particle::radius_for_spring = 10;
 double Particle::eta = 1.0 * std::pow(10,-3);

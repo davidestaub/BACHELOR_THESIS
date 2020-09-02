@@ -8,6 +8,7 @@
 #include <chrono>
 #include <vector>
 
+
 #include <fstream>
 #include <string>
 
@@ -46,8 +47,8 @@ public:
        //connect_vector.push_back(B);
       // particles.push_back(loner);
        simulation.connect(A,B,2.0 *(A.radius+B.radius),connected_particles);
-       //simulation.connect(B,C,(C.radius+B.radius),connected_particles);
-       //simulation.connect(A,C,(A.radius+C.radius),connected_particles);
+       simulation.connect(B,C,2.0 *(C.radius+B.radius),connected_particles);
+       simulation.connect(A,C, 2.0 *(A.radius+C.radius),connected_particles);
 /*
         simulation.connect(A2,B2,(A2.radius+B2.radius),connected_particles);
         simulation.connect(B2,C2,(C2.radius+B2.radius),connected_particles);
@@ -337,8 +338,8 @@ public:
     Particle SMALL_B = Particle(10,15,{500,-90});
 
 
-    Particle A = Particle(500,20,{100,100});
-    Particle B = Particle(500,20,{200,100});
+    Particle A = Particle(50.0,20.0,{100.0,100.0});
+    Particle B = Particle(50.0,20.0,{200.0,100.0});
     Particle C = Particle(500,20,{128.284,228.284});
 
     Particle A2 = Particle(20,20,{100,100});
@@ -469,15 +470,36 @@ int main(int, char**)
 
     std::ofstream myfile3;
     myfile3.open("../../../data3.csv");
-    for(int i = 0; i<641601;i++){
+    for(int i = 0; i<app.simulation.x_values.size();i++){
         myfile3<<app.simulation.x_values[i]<<","<<app.simulation.y_values[i]<<","<<app.simulation.z_values[i]<<std::endl;
         std::cout<<app.simulation.x_values[i]<<std::endl;
         std::cout<<app.simulation.y_values[i]<<std::endl;
         std::cout<<app.simulation.z_values1[i]<<std::endl;
     }
 
+    std::ofstream best;
+    best.open("../../../best.csv");
+    best<<"x"<<","<<"y"<<","<<"z"<<std::endl;
+    best<<app.simulation.best_found[0]<<","<<app.simulation.best_found[1]<<","<<app.simulation.best_found[2]<<std::endl;
     myfile.close();
     myfile2.close();
     myfile3.close();
+    best.close();
+
+    std::ofstream FD;
+    FD.open("../../../FD.csv");
+    FD<<"F_X"<<","<<"DEDX"<<","<<"Difference"<<","<<"FORCE_JACOBIAN"<<","<<"DFDX"<<","<<"DIFFERENCE2"<<","<<"i"<<std::endl;
+    for(int i = 0; i<app.simulation.forces_FD.size();i++){
+        FD<<app.simulation.forces_FD[i]<<","<<app.simulation.energy_FD[i]<<","<<std::abs(app.simulation.forces_FD[i] - app.simulation.energy_FD[i])<<","<<app.simulation.force_jacobian_FD[i]<<","<<app.simulation.dFx_dx_FD[i]<<","<<std::abs(app.simulation.force_jacobian_FD[i] - app.simulation.dFx_dx_FD[i])<<","<<i<<std::endl;
+    }
+
+    std::ofstream test_e;
+    test_e.open("../../../test_e.csv");
+    test_e<<"ex1"<<","<<"ex2"<<","<<"value"<<std::endl;
+    for(int i = 0; i<app.simulation.e_z.size(); i++){
+        test_e<<app.simulation.e_x[i]<<","<<app.simulation.e_y[i]<<","<<app.simulation.e_z[i]<<std::endl;
+        std::cout<<app.simulation.e_z[i];
+    }
+    test_e.close();
     return 0;
 }

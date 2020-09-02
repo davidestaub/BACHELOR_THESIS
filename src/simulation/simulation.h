@@ -13,6 +13,7 @@
 #include <functional>
 #include <set>
 #include <fstream>
+#include <iomanip>
 
 using Eigen::Vector2d;
 using Eigen::VectorXd;
@@ -35,6 +36,7 @@ public:
     VectorXd velocity_vector;
     VectorXd position_vector;
     VectorXd position_vector_minus_1;
+    VectorXd position_vector_minus_2;
     double micro_time_step = time_step * std::pow(10,6);
 
     // all units in micro scale, (10^-6)
@@ -53,7 +55,7 @@ public:
     double xbuffer, ybuffer = 5.0;
 
     //SPRING STUFF//
-    double stiffnes_constant = 100.0;
+    double stiffnes_constant = 40000000.0;
     //double rest_length = 2 * Particle::radius_for_spring;
     double damping_constant = 50.0;
     int newton_counter = 0;
@@ -73,6 +75,16 @@ public:
     std::vector<double> z_values1;
     std::vector<double> z_values2;
     std::vector<double> z_values;
+    std::vector<double> best_found;
+    std::vector<double> forces_FD;
+    std::vector<double> energy_FD;
+    std::vector<double> force_jacobian_FD;
+    std::vector<double> dFx_dx_FD;
+
+    std::vector<double> e_x;
+    std::vector<double> e_y;
+    std::vector<double> e_z;
+
     bool test_bool = true;
 
     int size = -1;
@@ -125,17 +137,28 @@ public:
 
         fill_spring_force_and_derivatives_NEW(connected_particles);
 
-        VectorXd x_t_plus_1_init = position_vector + (time_step * (position_vector - position_vector_minus_1) * (1.0/time_step));
+        VectorXd x_t_plus_1_init = position_vector + (position_vector - position_vector_minus_1);
         VectorXd x_t_plus_1_old = x_t_plus_1_init;
 
-        Newtons_Method_NEW(100000,std::pow(10,(-8)), 0.25, 0.5,  x_t_plus_1_old);
+        //int maxiter, double beta, double tol, VectorXd x,std::vector<std::tuple <Particle&,Particle&,double> > &connected_particles
+        THE_FINAL_NEWTON(1000,0.5,std::pow(10,(-9)), x_t_plus_1_old, connected_particles);
+
+        //Newtons_Method_NEW_with_force_update(100000,std::pow(10,(-8)), 0.25, 0.5,  x_t_plus_1_old,connected_particles);
         newton_counter++;
 
         VectorXd tmp = position_vector_minus_1;
 
        // std::cout<<" Position at t-1= \n"<<tmp<<"\n Positoin at t = \n"<<position_vector<<"\n Position at t+1 = \n"<<x_t_plus_1_old<<"\n \n \n";
+        energy_FD.push_back(get_dE_dx(connected_particles,position_vector,x_t_plus_1_old));
+        forces_FD.push_back(get_F_x_FD(connected_particles));
+        force_jacobian_FD.push_back(get_F_x_d_x(connected_particles));
+
+        VectorXd tmp_tmp = position_vector;
+        std::vector<std::tuple <Particle&,Particle&,double> > tmp_connected_particles = connected_particles;
         update_positions_NEW(connected_particles,x_t_plus_1_old);
-        double e = get_e(x_t_plus_1_old,position_vector,tmp,connected_particles);
+        dFx_dx_FD.push_back( get_dFx_dx_FD(tmp_connected_particles, connected_particles, tmp, tmp_tmp, x_t_plus_1_old));
+
+        double e = get_e(x_t_plus_1_old,connected_particles);
 
        // std::cout<<" e = "<<std::endl<<e<<std::endl;
         e_vec.push_back(e);
@@ -166,10 +189,14 @@ public:
             spring_force_vector[B.index + 1] += -1.0 *current_spring_force[1];
 
             spring_force_matrix_dx.block<2,2>(A.index,A.index) += current_spring_force_dx;
-            spring_force_matrix_dx.block<2,2>(B.index,B.index) += -1.0 * current_spring_force_dx;
+            spring_force_matrix_dx.block<2,2>(B.index,B.index) += current_spring_force_dx;
+            spring_force_matrix_dx.block<2,2>(A.index,B.index) += -1.0 * current_spring_force_dx;
+            spring_force_matrix_dx.block<2,2>(B.index,A.index) += -1.0 * current_spring_force_dx;
 
             spring_force_matrix_dv.block<2,2>(A.index,A.index) += current_spring_force_dv;
-            spring_force_matrix_dv.block<2,2>(B.index,B.index) += -1.0 * current_spring_force_dv;
+            spring_force_matrix_dv.block<2,2>(B.index,B.index) += current_spring_force_dv;
+            spring_force_matrix_dv.block<2,2>(A.index,B.index) += -1.0 *current_spring_force_dv;
+            spring_force_matrix_dv.block<2,2>(B.index,A.index) += - 1.0 *current_spring_force_dv;
 
             mass_matrix(A.index,A.index) = A.mass;
             mass_matrix(A.index+1,A.index+1) = A.mass;
@@ -185,6 +212,91 @@ public:
         }
     }
 
+    //experimental for my fear that newtonsmethod is wrong
+    MatrixXd get_current_spring_force_jacobian(std::vector<std::tuple <Particle&,Particle&,double> > &connected_particles, VectorXd current_positions){
+        int n = spring_force_matrix_dx.rows();
+        int  m = spring_force_matrix_dx.cols();
+
+        MatrixXd spring_force_jacobian(n,m);
+        spring_force_jacobian.setZero();
+
+        for(auto& particle_pair : connected_particles) {
+
+            Particle& A = std::get<0>(particle_pair);
+            Particle& B = std::get<1>(particle_pair);
+
+            Particle A_tmp = A;
+            Particle B_tmp = B;
+            A_tmp.position[0] = current_positions[A.index];
+            A_tmp.position[1] = current_positions[A.index+1];
+            B_tmp.position[0] = current_positions[B.index];
+            B_tmp.position[1] = current_positions[B.index+1];
+
+            std::tuple<Particle&,Particle&,double> particle_pair_tmp(A_tmp,B_tmp,std::get<2>(particle_pair));
+
+            Matrix2d current_spring_force_dx = NEW_get_damped_spring_force_dXA_without_damping(particle_pair_tmp);
+
+            spring_force_jacobian.block<2,2>(A.index,A.index) += current_spring_force_dx;
+            spring_force_jacobian.block<2,2>(B.index,B.index) += current_spring_force_dx;
+            spring_force_jacobian.block<2,2>(A.index,B.index) += -1.0 *current_spring_force_dx;
+            spring_force_jacobian.block<2,2>(B.index,A.index) += -1.0 *current_spring_force_dx;
+
+        }
+
+        return spring_force_jacobian;
+    }
+
+    VectorXd get_current_spring_force(std::vector<std::tuple <Particle&,Particle&,double> > &connected_particles, VectorXd current_positions){
+        int n = spring_force_vector.size();
+       // std::cout<<" current positions = "<<std::endl<<current_positions<<std::endl;
+
+
+        VectorXd current_spring_force(n);
+        current_spring_force.setZero();
+
+        for(auto& particle_pair : connected_particles) {
+
+            Particle& A = std::get<0>(particle_pair);
+            Particle& B = std::get<1>(particle_pair);
+
+            Particle A_tmp = A;
+            Particle B_tmp = B;
+            A_tmp.position[0] = current_positions[A.index];
+            A_tmp.position[1] = current_positions[A.index+1];
+            B_tmp.position[0] = current_positions[B.index];
+            B_tmp.position[1] = current_positions[B.index+1];
+
+           // std::cout<< "in here the positions are:"<<std::endl<<A_tmp.position[0]<<std::endl<<A_tmp.position[1]<<std::endl<<B_tmp.position[0]<<std::endl<<B_tmp.position[1]<<std::endl;
+
+            std::tuple<Particle&,Particle&,double> particle_pair_tmp(A_tmp,B_tmp,std::get<2>(particle_pair));
+
+           Vector2d current_spring_force_tmp = NEW_get_damped_spring_force_without_damping(particle_pair_tmp);
+           //std::cout<<"current spring force  tmp = "<<std::endl<<current_spring_force_tmp<<std::endl;
+
+            current_spring_force[A_tmp.index] += current_spring_force_tmp[0];
+            current_spring_force[A_tmp.index + 1] += current_spring_force_tmp[1];
+            current_spring_force[B_tmp.index] += -1.0 * current_spring_force_tmp[0];
+            current_spring_force[B_tmp.index + 1] += -1.0 *current_spring_force_tmp[1];
+
+
+
+        }
+       // std::cout<<"current spring force  = "<<std::endl<<current_spring_force<<std::endl;
+
+        return current_spring_force;
+    }
+
+    //not generic only for testing
+    double get_F_x_FD(std::vector<std::tuple <Particle&,Particle&,double> > &connected_particles){
+        return spring_force_vector[0];
+    }
+
+    double get_F_x_d_x(std::vector<std::tuple <Particle&,Particle&,double> > &connected_particles){
+        double result = spring_force_matrix_dx(0,0);
+        std::cout<<std::endl<<"Fdx  HERE IS"<<std::endl<<result<<std::endl;
+        return result;
+    }
+
     void fill_spring_force_and_derivatives_NEW(std::vector<std::tuple <Particle&,Particle&,double> > &connected_particles){
 
         spring_force_vector.setZero();
@@ -197,6 +309,7 @@ public:
         for(auto& particle_pair : connected_particles) {
 
             Particle& A = std::get<0>(particle_pair);
+           // std::cout<<std::endl<<std::endl<<"POSITION"<<std::endl<<A.position<<std::endl;
             Particle& B = std::get<1>(particle_pair);
 
             Vector2d current_spring_force = NEW_get_damped_spring_force_without_damping(particle_pair);
@@ -212,7 +325,10 @@ public:
             spring_force_vec_over_time_y.push_back(spring_force_vector[A.index+1]);
            // std::cout<<"Spring Force DX Before Filling \n"<<spring_force_matrix_dx<<"\n";
             spring_force_matrix_dx.block<2,2>(A.index,A.index) += current_spring_force_dx;
-            spring_force_matrix_dx.block<2,2>(B.index,B.index) += -1.0 * current_spring_force_dx;
+            spring_force_matrix_dx.block<2,2>(B.index,B.index) += current_spring_force_dx;
+            spring_force_matrix_dx.block<2,2>(A.index,B.index) += -1.0 * current_spring_force_dx;
+            spring_force_matrix_dx.block<2,2>(B.index,A.index) += -1.0 * current_spring_force_dx;
+
            // std::cout<<"Spring Force DX After Filling at positions "<<A.index<<" and "<<B.index<<"\n"<<spring_force_matrix_dx<<"\n";
             spring_force_derivative_x_in_x.push_back(spring_force_matrix_dx(A.index+1,A.index+1));
 
@@ -237,11 +353,13 @@ public:
             position_vec_over_time_in_y.push_back(A.position[1]);
 
         }
+
+
     }
 
 
 
-    void Newtons_Method(int maxiter,double tol, double alpha, double beta, VectorXd& delta_v_old, VectorXd v_k_minus_1_A ){
+    void Newtons_Method(int maxiter,double tol, double alpha, double beta, VectorXd& delta_v_old, VectorXd v_k_minus_1_A){
 
         double h2 = std::pow(time_step,2);
         double h = time_step;
@@ -257,7 +375,7 @@ public:
             Jacobian = evaluate_Jacobian_ALL( spring_force_matrix_dv, spring_force_matrix_dx);
             double old_eval = F_Newton.norm();
 
-            VectorXd delta_v_new = delta_v_old-  t *Jacobian.inverse() * F_Newton;
+            VectorXd delta_v_new = delta_v_old -  t * Jacobian.inverse() * F_Newton;
             F_Newton_new = evaluate_F_ALL(spring_force_matrix_dv,spring_force_matrix_dx,delta_v_new,spring_force_vector);
             double new_eval = F_Newton_new.norm();
             std::cout<<"new eval = "<<new_eval<<std::endl;
@@ -288,7 +406,7 @@ public:
         }
     }
 
-    void Newtons_Method_NEW(int maxiter,double tol, double alpha, double beta, VectorXd& x_t_plus_1_old){
+    void Newtons_Method_NEW(int maxiter,double tol, double alpha, double beta, VectorXd& x_k,std::vector<std::tuple <Particle&,Particle&,double> > &connected_particles ){
 
         double h2 = std::pow(time_step,2);
         double h = time_step;
@@ -298,70 +416,1048 @@ public:
         MatrixXd Jacobian;
         VectorXd F_Newton_new;
 
+
+
         for(int i = 0; i<maxiter;i++){
             double t = 1.0;
             std::cout<<i<<std::endl;
-            F_Newton = evaluate_F_ALL_NEW(spring_force_matrix_dx, x_t_plus_1_old, spring_force_vector, position_vector, position_vector_minus_1);
+            F_Newton = evaluate_F_ALL_NEW(spring_force_matrix_dx, x_k, spring_force_vector, position_vector, position_vector_minus_1);
             Jacobian = evaluate_Jacobian_ALL_NEW( spring_force_matrix_dx);
             double old_eval = F_Newton.norm();
             std::cout<<"old eval = "<<old_eval<<std::endl;
 
-            VectorXd x_t_plus_1_new = x_t_plus_1_old -  t *Jacobian.inverse() * F_Newton;
-            F_Newton_new = evaluate_F_ALL_NEW(spring_force_matrix_dx, x_t_plus_1_new, spring_force_vector, position_vector, position_vector_minus_1);
+
+            VectorXd x_k_plus_1 = x_k -  t *Jacobian.inverse() * F_Newton;
+
+            F_Newton_new = evaluate_F_ALL_NEW(spring_force_matrix_dx, x_k_plus_1, spring_force_vector, position_vector, position_vector_minus_1);
             double new_eval = F_Newton_new.norm();
+
             std::cout<<"new eval = "<<new_eval<<std::endl;
-            if(test_bool) {
-                //temporary for plotting
-                for (int i = -400; i <= 400; i++) {
-                    for (int j = -400; j <= 400; j++) {
-                        VectorXd test_vector(4);
-                        double d_i = i * 1.0;
-                        double d_j = j * 1.0;
-                        test_vector[0] = d_i;
-                        test_vector[1] = 100.0;
-                        test_vector[0] = d_j;
-                        test_vector[3] = 100.0;
-                        x_values.push_back(i);
-                        y_values.push_back(j);
-                        z_values1.push_back(evaluate_F_ALL_NEW(spring_force_matrix_dx, test_vector, spring_force_vector,
-                                                               position_vector, position_vector_minus_1)[0]);
-                        z_values2.push_back(evaluate_F_ALL_NEW(spring_force_matrix_dx, test_vector, spring_force_vector,
-                                                               position_vector, position_vector_minus_1)[1]);
-                        z_values.push_back(evaluate_F_ALL_NEW(spring_force_matrix_dx, test_vector, spring_force_vector,
-                                                              position_vector, position_vector_minus_1).norm());
-                    }
-                }
-                test_bool = false;
-                break;
-            }
-            //end of temporary for plotting
+
 
             while(new_eval > old_eval){ //decrement t until step gives better result
                 std::cout<<"entered while loop"<<std::endl;
                 std::cout<<"t = "<<t<<std::endl;
                 t = beta * t;
-                x_t_plus_1_new = x_t_plus_1_old - t * Jacobian.inverse() * F_Newton;
-                F_Newton_new = evaluate_F_ALL_NEW(spring_force_matrix_dx, x_t_plus_1_new, spring_force_vector, position_vector, position_vector_minus_1);
+                x_k_plus_1 = x_k - t * Jacobian.inverse() * F_Newton;
+                F_Newton_new = evaluate_F_ALL_NEW(spring_force_matrix_dx, x_k_plus_1, spring_force_vector, position_vector, position_vector_minus_1);
                 new_eval = F_Newton_new.norm();
+                std::cout<<"new eval inside = "<<new_eval<<std::endl;
             }
             std::cout<<"now eval is= "<<new_eval<<std::endl;
 
-            x_t_plus_1_new = x_t_plus_1_old -  t *Jacobian.inverse() * F_Newton; // Newton update
-            x_t_plus_1_old = x_t_plus_1_new;
+            x_k_plus_1 = x_k -  t *Jacobian.inverse() * F_Newton; // Newton update I think this sould not be here, one step too much
+            x_k = x_k_plus_1;
 
-            F_Newton = evaluate_F_ALL_NEW(spring_force_matrix_dx, x_t_plus_1_old, spring_force_vector, position_vector, position_vector_minus_1);
+            F_Newton = evaluate_F_ALL_NEW(spring_force_matrix_dx, x_k, spring_force_vector, position_vector, position_vector_minus_1);
 
             count++;
 
             if((F_Newton).norm() < tol ){
+                if(test_bool) {
+                    //temporary for plotting
+                    int range_begin_a = x_k_plus_1[0] - 50;
+                    int range_end_a = x_k_plus_1[0] + 50;
+                    int range_begin_b = x_k_plus_1[2] -50;
+                    int range_end_b = x_k_plus_1[2] +50;
+                    for (int i = range_begin_a; i <= range_end_a; i++) {
+                        for (int j = range_begin_b; j <= range_end_b; j++) {
+                            VectorXd test_vector(4);
+                            double d_i = i * 1.0;
+                            double d_j = j * 1.0;
+                            test_vector[0] = d_i;
+                            test_vector[1] = 100.0;
+                            test_vector[2] = d_j;
+                            test_vector[3] = 100.0;
+                            x_values.push_back(i);
+                            y_values.push_back(j);
+                            z_values1.push_back(evaluate_F_ALL_NEW(spring_force_matrix_dx, test_vector, spring_force_vector,
+                                                                   position_vector, position_vector_minus_1)[0]);
+                            z_values2.push_back(evaluate_F_ALL_NEW(spring_force_matrix_dx, test_vector, spring_force_vector,
+                                                                   position_vector, position_vector_minus_1)[1]);
+                            z_values.push_back(evaluate_F_ALL_NEW(spring_force_matrix_dx, test_vector, spring_force_vector,
+                                                                  position_vector, position_vector_minus_1).norm());
+                        }
+                    }
+                    best_found.push_back(x_k_plus_1[0]);
+                    best_found.push_back(x_k_plus_1[2]);
+                    best_found.push_back(evaluate_F_ALL_NEW(spring_force_matrix_dx, x_k_plus_1, spring_force_vector,
+                                                            position_vector, position_vector_minus_1).norm());
+                    test_bool = false;
+                    break;
+                }
+                //end of temporary for plotting
+                std::cout<<" it took "<<i+1<<" iterations and the value is "<<(F_Newton).norm()<<std::endl;
                 i = maxiter;
                 break;
+
+
+            }else{
+                //   std::cout<<std::endl<<" value is = "<<(Jacobian.inverse() * F_Newton).norm()<<std::endl;
+            }
+        }
+    }
+
+
+   /* void Newtons_Method_NEW_with_force_update(int maxiter,double tol, double alpha, double beta, VectorXd& x_k,std::vector<std::tuple <Particle&,Particle&,double> > &connected_particles ){
+
+        double h2 = std::pow(time_step,2);
+        double h = time_step;
+        int count =0;
+
+        VectorXd F_Newton;
+        MatrixXd Jacobian;
+        VectorXd F_Newton_new;
+
+        VectorXd forces = spring_force_vector;
+        MatrixXd force_Jacobian = spring_force_matrix_dx;
+
+        F_Newton = evaluate_F_ALL_NEW(force_Jacobian, x_k, forces, position_vector, position_vector_minus_1);
+        Jacobian = evaluate_Jacobian_ALL_NEW(force_Jacobian);
+        double old_eval = F_Newton.norm();
+        double new_eval = 0.0;
+
+        for(int i = 0; i<maxiter;i++){
+            double t = 1.0;
+            forces = get_current_spring_force(connected_particles, x_k);
+            force_Jacobian = get_current_spring_force_jacobian(connected_particles, x_k);
+
+            F_Newton = evaluate_F_ALL_NEW(force_Jacobian, x_k, forces, position_vector, position_vector_minus_1);
+            Jacobian = evaluate_Jacobian_ALL_NEW(force_Jacobian);
+
+            VectorXd x_k_plus_1 = x_k -  t *Jacobian.inverse() * F_Newton;
+            F_Newton_new = evaluate_F_ALL_NEW(force_Jacobian, x_k_plus_1, forces, position_vector, position_vector_minus_1);
+            new_eval = F_Newton_new.norm();
+
+            while(new_eval > old_eval){
+                t = beta * t;
+                x_k_plus_1 = x_k - t * Jacobian.inverse() * F_Newton;
+                F_Newton_new = evaluate_F_ALL_NEW(force_Jacobian, x_k_plus_1, forces, position_vector, position_vector_minus_1);
+                new_eval = F_Newton_new.norm();
+            }
+
+            x_k = x_k_plus_1;
+            F_Newton = evaluate_F_ALL_NEW(force_Jacobian, x_k, forces, position_vector, position_vector_minus_1);
+            old_eval = F_Newton.norm();
+
+            if((F_Newton).norm() < tol ){
+                if(test_bool) {
+                    //temporary for plotting
+                    int range_begin_a = x_k_plus_1[0] - 50;
+                    int range_end_a = x_k_plus_1[0] + 50;
+                    int range_begin_b = x_k_plus_1[2] -50;
+                    int range_end_b = x_k_plus_1[2] +50;
+                    for (int i = range_begin_a; i <= range_end_a; i++) {
+                        for (int j = range_begin_b; j <= range_end_b; j++) {
+                            VectorXd test_vector(4);
+                            double d_i = i * 1.0;
+                            double d_j = j * 1.0;
+                            test_vector[0] = d_i;
+                            test_vector[1] = 100.0;
+                            test_vector[2] = d_j;
+                            test_vector[3] = 100.0;
+                            x_values.push_back(i);
+                            y_values.push_back(j);
+                            z_values1.push_back(evaluate_F_ALL_NEW(spring_force_matrix_dx, test_vector, spring_force_vector,
+                                                                   position_vector, position_vector_minus_1)[0]);
+                            z_values2.push_back(evaluate_F_ALL_NEW(spring_force_matrix_dx, test_vector, spring_force_vector,
+                                                                   position_vector, position_vector_minus_1)[1]);
+                            z_values.push_back(evaluate_F_ALL_NEW(spring_force_matrix_dx, test_vector, spring_force_vector,
+                                                                  position_vector, position_vector_minus_1).norm());
+                        }
+                    }
+                    best_found.push_back(x_k_plus_1[0]);
+                    best_found.push_back(x_k_plus_1[2]);
+                    best_found.push_back(evaluate_F_ALL_NEW(spring_force_matrix_dx, x_k_plus_1, spring_force_vector,
+                                                            position_vector, position_vector_minus_1).norm());
+                    test_bool = false;
+                    break;
+                }
+                //end of temporary for plotting
+                std::cout<<" it took "<<i+1<<" iterations and the value is "<<(F_Newton).norm()<<std::endl;
+                i = maxiter;
+                break;
+
 
             }else{
              //   std::cout<<std::endl<<" value is = "<<(Jacobian.inverse() * F_Newton).norm()<<std::endl;
             }
         }
     }
+*/
+   void Newtons_Method_NEW_with_force_update(int maxiter,double tol, double alpha, double beta, VectorXd& x_k,std::vector<std::tuple <Particle&,Particle&,double> > &connected_particles ){
+
+        double h2 = std::pow(time_step,2);
+        double h = time_step;
+        int count =0;
+
+        VectorXd F_Newton;
+        MatrixXd Jacobian;
+        VectorXd F_Newton_new;
+
+        VectorXd forces = spring_force_vector;
+        MatrixXd force_Jacobian = spring_force_matrix_dx;
+
+        F_Newton = evaluate_F_ALL_NEW(force_Jacobian, x_k, forces, position_vector, position_vector_minus_1);
+        Jacobian = evaluate_Jacobian_ALL_NEW(force_Jacobian);
+        double old_eval = F_Newton.norm();
+        double new_eval = 0.0;
+
+        for(int i = 0; i<maxiter;i++){
+            double t = 1.0;
+
+
+            forces = get_current_spring_force(connected_particles, x_k);
+            force_Jacobian = get_current_spring_force_jacobian(connected_particles, x_k);
+
+            F_Newton = evaluate_F_ALL_NEW(force_Jacobian, x_k, forces, position_vector, position_vector_minus_1);
+            Jacobian = evaluate_Jacobian_ALL_NEW(force_Jacobian);
+
+
+
+
+            VectorXd x_k_plus_1 = x_k -  t *Jacobian.inverse() * F_Newton;
+            F_Newton_new = evaluate_F_ALL_NEW(force_Jacobian, x_k_plus_1, forces, position_vector, position_vector_minus_1);
+            new_eval = F_Newton_new.norm();
+
+            while(new_eval > old_eval){
+                t = beta * t;
+                x_k_plus_1 = x_k - t * Jacobian.inverse() * F_Newton;
+                F_Newton_new = evaluate_F_ALL_NEW(force_Jacobian, x_k_plus_1, forces, position_vector, position_vector_minus_1);
+                new_eval = F_Newton_new.norm();
+            }
+
+            x_k_plus_1 = x_k - t * Jacobian.inverse() * F_Newton; // i think one too much
+
+
+            x_k = x_k_plus_1;
+            F_Newton = evaluate_F_ALL_NEW(force_Jacobian, x_k, forces, position_vector, position_vector_minus_1);
+            old_eval = F_Newton.norm();
+
+            if((F_Newton).norm() < tol ){
+                if(test_bool) {
+                    //temporary for plotting
+                    int range_begin_a = x_k_plus_1[0] - 50;
+                    int range_end_a = x_k_plus_1[0] + 50;
+                    int range_begin_b = x_k_plus_1[2] -50;
+                    int range_end_b = x_k_plus_1[2] +50;
+                    for (int i = range_begin_a; i <= range_end_a; i++) {
+                        for (int j = range_begin_b; j <= range_end_b; j++) {
+                            VectorXd test_vector(4);
+                            double d_i = i * 1.0;
+                            double d_j = j * 1.0;
+                            test_vector[0] = d_i;
+                            test_vector[1] = 100.0;
+                            test_vector[2] = d_j;
+                            test_vector[3] = 100.0;
+                            x_values.push_back(i);
+                            y_values.push_back(j);
+                            z_values1.push_back(evaluate_F_ALL_NEW(spring_force_matrix_dx, test_vector, spring_force_vector,
+                                                                   position_vector, position_vector_minus_1)[0]);
+                            z_values2.push_back(evaluate_F_ALL_NEW(spring_force_matrix_dx, test_vector, spring_force_vector,
+                                                                   position_vector, position_vector_minus_1)[1]);
+                            z_values.push_back(evaluate_F_ALL_NEW(spring_force_matrix_dx, test_vector, spring_force_vector,
+                                                                  position_vector, position_vector_minus_1).norm());
+                        }
+                    }
+                    best_found.push_back(x_k_plus_1[0]);
+                    best_found.push_back(x_k_plus_1[2]);
+                    best_found.push_back(evaluate_F_ALL_NEW(spring_force_matrix_dx, x_k_plus_1, spring_force_vector,
+                                                            position_vector, position_vector_minus_1).norm());
+                    test_bool = false;
+                    break;
+                }
+                //end of temporary for plotting
+                std::cout<<" it took "<<i+1<<" iterations and the value is "<<(F_Newton).norm()<<std::endl;
+                i = maxiter;
+                break;
+
+
+            }else{
+                //   std::cout<<std::endl<<" value is = "<<(Jacobian.inverse() * F_Newton).norm()<<std::endl;
+            }
+        }
+    }
+
+
+    void Newtons_Method_NEW_with_everything_update(int maxiter,double tol, double alpha, double beta, VectorXd& x_k,std::vector<std::tuple <Particle&,Particle&,double> > &connected_particles ){
+
+        double h2 = std::pow(time_step,2);
+        double h = time_step;
+        int count =0;
+
+        VectorXd F_k;
+        MatrixXd Jacobian;
+        VectorXd F_k_plus_1;
+
+        VectorXd forces = spring_force_vector;
+        MatrixXd force_Jacobian = spring_force_matrix_dx;
+
+        VectorXd x_k_t = position_vector;
+        VectorXd x_k_t_minus_1 = position_vector_minus_1;
+
+        F_k = evaluate_F_ALL_NEW(force_Jacobian, x_k, forces, x_k_t, x_k_t_minus_1);
+        Jacobian = evaluate_Jacobian_ALL_NEW(force_Jacobian);
+        double old_eval = F_k.norm();
+        double new_eval = 0.0;
+
+        for(int i = 0; i<maxiter;i++){
+            double t = 1.0;
+
+
+            VectorXd x_k_plus_1 = x_k -  t *Jacobian.inverse() * F_k;
+            //x_k_t_minus_1 = x_k_t;
+            //x_k_t = x_k;
+
+            //update forces using taylor expansion (i.e forces evaluated at x_k)
+            forces = get_current_spring_force(connected_particles, x_k);
+            force_Jacobian = get_current_spring_force_jacobian(connected_particles, x_k);
+
+            //check how good the newly computed positions are, no need to compute tha jacobian here as there is no update.
+            F_k_plus_1= evaluate_F_ALL_NEW(force_Jacobian, x_k_plus_1, forces, x_k_t, x_k_t_minus_1);
+            new_eval = F_k_plus_1.norm();
+            std::cout<<"itteration = "<<i<<std::endl;
+            std::cout<<"old eval = "<<old_eval<<std::endl;
+            std::cout<<"new eval = "<<new_eval<<std::endl;
+
+            while(new_eval > old_eval){
+                std::cout<<"entered while"<<std::endl;
+                t = beta * t;
+                x_k_plus_1 = x_k - t * Jacobian.inverse() * F_k;
+                F_k_plus_1 = evaluate_F_ALL_NEW(force_Jacobian, x_k_plus_1, forces, x_k_t, x_k_t_minus_1);
+                new_eval = F_k_plus_1.norm();
+            }
+
+            //recompute the norm because t might be not 1 anymore
+            F_k = evaluate_F_ALL_NEW(force_Jacobian, x_k_plus_1, forces, x_k_t, x_k_t_minus_1);
+            Jacobian = evaluate_Jacobian_ALL_NEW(force_Jacobian);
+            old_eval = F_k.norm();
+
+            x_k = x_k_plus_1;
+
+
+            if((F_k).norm() < tol ){
+                if(test_bool) {
+                    //temporary for plotting
+                    int range_begin_a = x_k_plus_1[0] - 50;
+                    int range_end_a = x_k_plus_1[0] + 50;
+                    int range_begin_b = x_k_plus_1[2] -50;
+                    int range_end_b = x_k_plus_1[2] +50;
+                    for (int i = range_begin_a; i <= range_end_a; i++) {
+                        for (int j = range_begin_b; j <= range_end_b; j++) {
+                            VectorXd test_vector(4);
+                            double d_i = i * 1.0;
+                            double d_j = j * 1.0;
+                            test_vector[0] = d_i;
+                            test_vector[1] = 100.0;
+                            test_vector[2] = d_j;
+                            test_vector[3] = 100.0;
+                            x_values.push_back(i);
+                            y_values.push_back(j);
+                            z_values1.push_back(evaluate_F_ALL_NEW(spring_force_matrix_dx, test_vector, spring_force_vector,
+                                                                   position_vector, position_vector_minus_1)[0]);
+                            z_values2.push_back(evaluate_F_ALL_NEW(spring_force_matrix_dx, test_vector, spring_force_vector,
+                                                                   position_vector, position_vector_minus_1)[1]);
+                            z_values.push_back(evaluate_F_ALL_NEW(spring_force_matrix_dx, test_vector, spring_force_vector,
+                                                                  position_vector, position_vector_minus_1).norm());
+                        }
+                    }
+                    best_found.push_back(x_k_plus_1[0]);
+                    best_found.push_back(x_k_plus_1[2]);
+                    best_found.push_back(evaluate_F_ALL_NEW(spring_force_matrix_dx, x_k_plus_1, spring_force_vector,
+                                                            position_vector, position_vector_minus_1).norm());
+                    test_bool = false;
+                    break;
+                }
+                //end of temporary for plotting
+                std::cout<<" it took "<<i+1<<" iterations and the value is "<<(F_k).norm()<<std::endl;
+                i = maxiter;
+                break;
+
+
+            }else{
+                //   std::cout<<std::endl<<" value is = "<<(Jacobian.inverse() * F_Newton).norm()<<std::endl;
+            }
+        }
+    }
+
+    void Newtons_Method_NEW_again(int maxiter,double tol, double alpha, double beta, VectorXd& x_k,std::vector<std::tuple <Particle&,Particle&,double> > &connected_particles ){
+
+        double h2 = std::pow(time_step,2);
+        double h = time_step;
+        int count =0;
+
+        VectorXd F_k;
+        MatrixXd Jacobian;
+        VectorXd F_k_plus_1;
+
+        VectorXd forces = spring_force_vector;
+        MatrixXd force_Jacobian = spring_force_matrix_dx;
+
+        VectorXd x_k_t = position_vector;
+        VectorXd x_k_t_minus_1 = position_vector_minus_1;
+
+        x_k = (mass_matrix - h2 * force_Jacobian).inverse() * (h2 * forces - mass_matrix *(x_k_t - 2.0 * x_k_t_minus_1) - h2 * force_Jacobian * x_k_t);
+
+        F_k = evaluate_F_ALL_NEW(force_Jacobian, x_k, forces, x_k_t, x_k_t_minus_1);
+        Jacobian = evaluate_Jacobian_ALL_NEW(force_Jacobian);
+        double old_eval = F_k.norm();
+        double new_eval = 0.0;
+
+        VectorXd Force_t_plus_1_innit = spring_force_vector + spring_force_matrix_dx * (x_k - position_vector);
+        VectorXd Force_t_plus_1 = Force_t_plus_1_innit;
+
+        for(int i = 0; i<maxiter;i++){
+            double t = 1.0;
+
+
+            VectorXd x_k_plus_1 = x_k -  t *Jacobian.inverse() * F_k;
+
+            Force_t_plus_1 = get_current_spring_force(connected_particles, x_k_plus_1);
+            force_Jacobian = get_current_spring_force_jacobian(connected_particles, x_k_plus_1);
+
+            //check how good the newly computed positions are, no need to compute tha jacobian here as there is no update.
+            F_k_plus_1= evaluate_F_ALL_NEW(force_Jacobian, x_k_plus_1, Force_t_plus_1, x_k_t, x_k_t_minus_1);
+            new_eval = F_k_plus_1.norm();
+            std::cout<<"itteration = "<<i<<std::endl;
+            std::cout<<"old eval = "<<old_eval<<std::endl;
+            std::cout<<"new eval = "<<new_eval<<std::endl;
+
+            while(new_eval > old_eval){
+                std::cout<<"entered while"<<std::endl;
+                t = beta * t;
+                std::cout<<"t = "<<t<<std::endl;
+                x_k_plus_1 = x_k - t * Jacobian.inverse() * F_k;
+                Force_t_plus_1 = get_current_spring_force(connected_particles, x_k_plus_1);
+                force_Jacobian = get_current_spring_force_jacobian(connected_particles, x_k_plus_1);
+                F_k_plus_1 = evaluate_F_ALL_NEW(force_Jacobian, x_k_plus_1, Force_t_plus_1, x_k_t, x_k_t_minus_1);
+                new_eval = F_k_plus_1.norm();
+                std::cout<<"new eval inside while = "<<new_eval<<std::endl;
+            }
+
+            //recompute the norm because t might be not 1 anymore
+            F_k = evaluate_F_ALL_NEW(force_Jacobian, x_k_plus_1, Force_t_plus_1, x_k_t, x_k_t_minus_1);
+            Jacobian = evaluate_Jacobian_ALL_NEW(force_Jacobian);
+            old_eval = F_k.norm();
+            std::cout<<" old eval after while = "<<old_eval<<std::endl;
+
+            x_k = x_k_plus_1;
+
+
+            if((F_k).norm() < tol ){
+                if(test_bool) {
+                    //temporary for plotting
+                    int range_begin_a = x_k_plus_1[0] - 50;
+                    int range_end_a = x_k_plus_1[0] + 50;
+                    int range_begin_b = x_k_plus_1[2] -50;
+                    int range_end_b = x_k_plus_1[2] +50;
+                    for (int i = range_begin_a; i <= range_end_a; i++) {
+                        for (int j = range_begin_b; j <= range_end_b; j++) {
+                            VectorXd test_vector(4);
+                            double d_i = i * 1.0;
+                            double d_j = j * 1.0;
+                            test_vector[0] = d_i;
+                            test_vector[1] = 100.0;
+                            test_vector[2] = d_j;
+                            test_vector[3] = 100.0;
+                            x_values.push_back(i);
+                            y_values.push_back(j);
+                            z_values1.push_back(evaluate_F_ALL_NEW(spring_force_matrix_dx, test_vector, spring_force_vector,
+                                                                   position_vector, position_vector_minus_1)[0]);
+                            z_values2.push_back(evaluate_F_ALL_NEW(spring_force_matrix_dx, test_vector, spring_force_vector,
+                                                                   position_vector, position_vector_minus_1)[1]);
+                            z_values.push_back(evaluate_F_ALL_NEW(spring_force_matrix_dx, test_vector, spring_force_vector,
+                                                                  position_vector, position_vector_minus_1).norm());
+                        }
+                    }
+                    best_found.push_back(x_k_plus_1[0]);
+                    best_found.push_back(x_k_plus_1[2]);
+                    best_found.push_back(evaluate_F_ALL_NEW(spring_force_matrix_dx, x_k_plus_1, spring_force_vector,
+                                                            position_vector, position_vector_minus_1).norm());
+                    test_bool = false;
+                    break;
+                }
+                //end of temporary for plotting
+                std::cout<<" it took "<<i+1<<" iterations and the value is "<<(F_k).norm()<<std::endl;
+                i = maxiter;
+                break;
+
+
+            }else{
+                //   std::cout<<std::endl<<" value is = "<<(Jacobian.inverse() * F_Newton).norm()<<std::endl;
+            }
+        }
+    }
+
+
+
+    /*void Newtons_Method_NEW(int maxiter,double tol, double alpha, double beta, VectorXd& x_k,std::vector<std::tuple <Particle&,Particle&,double> > &connected_particles ){
+
+        double h2 = std::pow(time_step,2);
+        double h = time_step;
+        int count =0;
+
+        VectorXd F_Newton;
+        MatrixXd Jacobian;
+        VectorXd F_Newton_new;
+
+
+
+        for(int i = 0; i<maxiter;i++){
+            double t = 1.0;
+            std::cout<<i<<std::endl;
+            F_Newton = evaluate_F_ALL_NEW(spring_force_matrix_dx, x_k, spring_force_vector, position_vector, position_vector_minus_1);
+            Jacobian = evaluate_Jacobian_ALL_NEW( spring_force_matrix_dx);
+            double old_eval = F_Newton.norm();
+            std::cout<<"old eval = "<<old_eval<<std::endl;
+
+
+            VectorXd x_k_plus_1 = x_k -  t *Jacobian.inverse() * F_Newton;
+
+            F_Newton_new = evaluate_F_ALL_NEW(spring_force_matrix_dx, x_k_plus_1, spring_force_vector, position_vector, position_vector_minus_1);
+            double new_eval = F_Newton_new.norm();
+
+            std::cout<<"new eval = "<<new_eval<<std::endl;
+
+
+            while(new_eval > old_eval){ //decrement t until step gives better result
+                std::cout<<"entered while loop"<<std::endl;
+                std::cout<<"t = "<<t<<std::endl;
+                t = beta * t;
+                x_k_plus_1 = x_k - t * Jacobian.inverse() * F_Newton;
+                F_Newton_new = evaluate_F_ALL_NEW(spring_force_matrix_dx, x_k_plus_1, spring_force_vector, position_vector, position_vector_minus_1);
+                new_eval = F_Newton_new.norm();
+                std::cout<<"new eval inside = "<<new_eval<<std::endl;
+            }
+            std::cout<<"now eval is= "<<new_eval<<std::endl;
+
+            x_k_plus_1 = x_k -  t *Jacobian.inverse() * F_Newton; // Newton update I think this sould not be here, one step too much
+            x_k = x_k_plus_1;
+
+            F_Newton = evaluate_F_ALL_NEW(spring_force_matrix_dx, x_k, spring_force_vector, position_vector, position_vector_minus_1);
+
+            count++;
+
+            if((F_Newton).norm() < tol ){
+                if(test_bool) {
+                    //temporary for plotting
+                    int range_begin_a = x_k_plus_1[0] - 50;
+                    int range_end_a = x_k_plus_1[0] + 50;
+                    int range_begin_b = x_k_plus_1[2] -50;
+                    int range_end_b = x_k_plus_1[2] +50;
+                    for (int i = range_begin_a; i <= range_end_a; i++) {
+                        for (int j = range_begin_b; j <= range_end_b; j++) {
+                            VectorXd test_vector(4);
+                            double d_i = i * 1.0;
+                            double d_j = j * 1.0;
+                            test_vector[0] = d_i;
+                            test_vector[1] = 100.0;
+                            test_vector[2] = d_j;
+                            test_vector[3] = 100.0;
+                            x_values.push_back(i);
+                            y_values.push_back(j);
+                            z_values1.push_back(evaluate_F_ALL_NEW(spring_force_matrix_dx, test_vector, spring_force_vector,
+                                                                   position_vector, position_vector_minus_1)[0]);
+                            z_values2.push_back(evaluate_F_ALL_NEW(spring_force_matrix_dx, test_vector, spring_force_vector,
+                                                                   position_vector, position_vector_minus_1)[1]);
+                            z_values.push_back(evaluate_F_ALL_NEW(spring_force_matrix_dx, test_vector, spring_force_vector,
+                                                                  position_vector, position_vector_minus_1).norm());
+                        }
+                    }
+                    best_found.push_back(x_k_plus_1[0]);
+                    best_found.push_back(x_k_plus_1[2]);
+                    best_found.push_back(evaluate_F_ALL_NEW(spring_force_matrix_dx, x_k_plus_1, spring_force_vector,
+                                                            position_vector, position_vector_minus_1).norm());
+                    test_bool = false;
+                    break;
+                }
+                //end of temporary for plotting
+                std::cout<<" it took "<<i+1<<" iterations and the value is "<<(F_Newton).norm()<<std::endl;
+                i = maxiter;
+                break;
+
+
+            }else{
+                //   std::cout<<std::endl<<" value is = "<<(Jacobian.inverse() * F_Newton).norm()<<std::endl;
+            }
+        }
+    }
+
+    void Newtons_Method_NEW_with_force_update(int maxiter,double tol, double alpha, double beta, VectorXd& x_k,std::vector<std::tuple <Particle&,Particle&,double> > &connected_particles ){
+
+        double h2 = std::pow(time_step,2);
+        double h = time_step;
+        int count =0;
+
+        VectorXd F_Newton;
+        MatrixXd Jacobian;
+        VectorXd F_Newton_new;
+
+        VectorXd forces = spring_force_vector;
+        MatrixXd force_Jacobian = spring_force_matrix_dx;
+
+        F_Newton = evaluate_F_ALL_NEW(force_Jacobian, x_k, forces, position_vector, position_vector_minus_1);
+        Jacobian = evaluate_Jacobian_ALL_NEW(force_Jacobian);
+        double old_eval = F_Newton.norm();
+        double new_eval = 0.0;
+
+        for(int i = 0; i<maxiter;i++){
+            double t = 1.0;
+
+
+            forces = get_current_spring_force(connected_particles, x_k);
+            force_Jacobian = get_current_spring_force_jacobian(connected_particles, x_k);
+
+            F_Newton = evaluate_F_ALL_NEW(force_Jacobian, x_k, forces, position_vector, position_vector_minus_1);
+            Jacobian = evaluate_Jacobian_ALL_NEW(force_Jacobian);
+
+
+
+
+            VectorXd x_k_plus_1 = x_k -  t *Jacobian.inverse() * F_Newton;
+            F_Newton_new = evaluate_F_ALL_NEW(force_Jacobian, x_k_plus_1, forces, position_vector, position_vector_minus_1);
+            new_eval = F_Newton_new.norm();
+
+            while(new_eval > old_eval){
+                t = beta * t;
+                x_k_plus_1 = x_k - t * Jacobian.inverse() * F_Newton;
+                F_Newton_new = evaluate_F_ALL_NEW(force_Jacobian, x_k_plus_1, forces, position_vector, position_vector_minus_1);
+                new_eval = F_Newton_new.norm();
+            }
+
+            x_k_plus_1 = x_k - t * Jacobian.inverse() * F_Newton; // i think one too much
+
+
+            x_k = x_k_plus_1;
+            F_Newton = evaluate_F_ALL_NEW(force_Jacobian, x_k, forces, position_vector, position_vector_minus_1);
+            old_eval = F_Newton.norm();
+
+            if((F_Newton).norm() < tol ){
+                if(test_bool) {
+                    //temporary for plotting
+                    int range_begin_a = x_k_plus_1[0] - 50;
+                    int range_end_a = x_k_plus_1[0] + 50;
+                    int range_begin_b = x_k_plus_1[2] -50;
+                    int range_end_b = x_k_plus_1[2] +50;
+                    for (int i = range_begin_a; i <= range_end_a; i++) {
+                        for (int j = range_begin_b; j <= range_end_b; j++) {
+                            VectorXd test_vector(4);
+                            double d_i = i * 1.0;
+                            double d_j = j * 1.0;
+                            test_vector[0] = d_i;
+                            test_vector[1] = 100.0;
+                            test_vector[2] = d_j;
+                            test_vector[3] = 100.0;
+                            x_values.push_back(i);
+                            y_values.push_back(j);
+                            z_values1.push_back(evaluate_F_ALL_NEW(spring_force_matrix_dx, test_vector, spring_force_vector,
+                                                                   position_vector, position_vector_minus_1)[0]);
+                            z_values2.push_back(evaluate_F_ALL_NEW(spring_force_matrix_dx, test_vector, spring_force_vector,
+                                                                   position_vector, position_vector_minus_1)[1]);
+                            z_values.push_back(evaluate_F_ALL_NEW(spring_force_matrix_dx, test_vector, spring_force_vector,
+                                                                  position_vector, position_vector_minus_1).norm());
+                        }
+                    }
+                    best_found.push_back(x_k_plus_1[0]);
+                    best_found.push_back(x_k_plus_1[2]);
+                    best_found.push_back(evaluate_F_ALL_NEW(spring_force_matrix_dx, x_k_plus_1, spring_force_vector,
+                                                            position_vector, position_vector_minus_1).norm());
+                    test_bool = false;
+                    break;
+                }
+                //end of temporary for plotting
+                std::cout<<" it took "<<i+1<<" iterations and the value is "<<(F_Newton).norm()<<std::endl;
+                i = maxiter;
+                break;
+
+
+            }else{
+                //   std::cout<<std::endl<<" value is = "<<(Jacobian.inverse() * F_Newton).norm()<<std::endl;
+            }
+        }
+    }
+
+    void Newtons_Method_NEW_with_everything_update(int maxiter,double tol, double alpha, double beta, VectorXd& x_k,std::vector<std::tuple <Particle&,Particle&,double> > &connected_particles ){
+
+        double h2 = std::pow(time_step,2);
+        double h = time_step;
+        int count =0;
+
+        VectorXd F_k;
+        MatrixXd Jacobian;
+        VectorXd F_k_plus_1;
+
+        VectorXd forces = spring_force_vector;
+        MatrixXd force_Jacobian = spring_force_matrix_dx;
+
+        VectorXd x_k_t = position_vector;
+        VectorXd x_k_t_minus_1 = position_vector_minus_1;
+
+        F_k = evaluate_F_ALL_NEW(force_Jacobian, x_k, forces, x_k_t, x_k_t_minus_1);
+        Jacobian = evaluate_Jacobian_ALL_NEW(force_Jacobian);
+        double old_eval = F_k.norm();
+        double new_eval = 0.0;
+
+        for(int i = 0; i<maxiter;i++){
+            double t = 1.0;
+
+
+            VectorXd x_k_plus_1 = x_k -  t *Jacobian.inverse() * F_k;
+            //x_k_t_minus_1 = x_k_t;
+            // x_k_t = x_k;
+
+            //update forces using taylor expansion (i.e forces evaluated at x_k)
+            forces = get_current_spring_force(connected_particles, x_k);
+            force_Jacobian = get_current_spring_force_jacobian(connected_particles, x_k);
+
+            //check how good the newly computed positions are, no need to compute tha jacobian here as there is no update.
+            F_k_plus_1= evaluate_F_ALL_NEW(force_Jacobian, x_k_plus_1, forces, x_k_t, x_k_t_minus_1);
+            new_eval = F_k_plus_1.norm();
+            std::cout<<"itteration = "<<i<<std::endl;
+            std::cout<<"old eval = "<<old_eval<<std::endl;
+            std::cout<<"new eval = "<<new_eval<<std::endl;
+
+            while(new_eval > old_eval){
+                std::cout<<"entered while"<<std::endl;
+                t = beta * t;
+                std::cout<<"t = "<<t<<std::endl;
+                x_k_plus_1 = x_k - t * Jacobian.inverse() * F_k;
+                F_k_plus_1 = evaluate_F_ALL_NEW(force_Jacobian, x_k_plus_1, forces, x_k_t, x_k_t_minus_1);
+                new_eval = F_k_plus_1.norm();
+                std::cout<<"new eval inside while = "<<new_eval<<std::endl;
+            }
+
+            x_k_plus_1 = x_k -  t *Jacobian.inverse() * F_k;
+            //recompute the norm because t might be not 1 anymore
+            F_k = evaluate_F_ALL_NEW(force_Jacobian, x_k_plus_1, forces, x_k_t, x_k_t_minus_1);
+            Jacobian = evaluate_Jacobian_ALL_NEW(force_Jacobian);
+            old_eval = F_k.norm();
+            std::cout<<" old eval after while = "<<old_eval<<std::endl;
+
+            x_k = x_k_plus_1;
+
+
+            if((F_k).norm() < tol ){
+                if(test_bool) {
+                    //temporary for plotting
+                    int range_begin_a = x_k_plus_1[0] - 50;
+                    int range_end_a = x_k_plus_1[0] + 50;
+                    int range_begin_b = x_k_plus_1[2] -50;
+                    int range_end_b = x_k_plus_1[2] +50;
+                    for (int i = range_begin_a; i <= range_end_a; i++) {
+                        for (int j = range_begin_b; j <= range_end_b; j++) {
+                            VectorXd test_vector(4);
+                            double d_i = i * 1.0;
+                            double d_j = j * 1.0;
+                            test_vector[0] = d_i;
+                            test_vector[1] = 100.0;
+                            test_vector[2] = d_j;
+                            test_vector[3] = 100.0;
+                            x_values.push_back(i);
+                            y_values.push_back(j);
+                            z_values1.push_back(evaluate_F_ALL_NEW(spring_force_matrix_dx, test_vector, spring_force_vector,
+                                                                   position_vector, position_vector_minus_1)[0]);
+                            z_values2.push_back(evaluate_F_ALL_NEW(spring_force_matrix_dx, test_vector, spring_force_vector,
+                                                                   position_vector, position_vector_minus_1)[1]);
+                            z_values.push_back(evaluate_F_ALL_NEW(spring_force_matrix_dx, test_vector, spring_force_vector,
+                                                                  position_vector, position_vector_minus_1).norm());
+                        }
+                    }
+                    best_found.push_back(x_k_plus_1[0]);
+                    best_found.push_back(x_k_plus_1[2]);
+                    best_found.push_back(evaluate_F_ALL_NEW(spring_force_matrix_dx, x_k_plus_1, spring_force_vector,
+                                                            position_vector, position_vector_minus_1).norm());
+                    test_bool = false;
+                    break;
+                }
+                //end of temporary for plotting
+                std::cout<<" it took "<<i+1<<" iterations and the value is "<<(F_k).norm()<<std::endl;
+                i = maxiter;
+                break;
+
+
+            }else{
+                //   std::cout<<std::endl<<" value is = "<<(Jacobian.inverse() * F_Newton).norm()<<std::endl;
+            }
+        }
+    }
+
+    void Newtons_Method_NEW_again(int maxiter,double tol, double alpha, double beta, VectorXd& x_k,std::vector<std::tuple <Particle&,Particle&,double> > &connected_particles ){
+
+        double h2 = std::pow(time_step,2);
+        double h = time_step;
+        int count =0;
+
+        VectorXd F_k;
+        MatrixXd Jacobian;
+        VectorXd F_k_plus_1;
+
+        VectorXd forces = spring_force_vector;
+        MatrixXd force_Jacobian = spring_force_matrix_dx;
+
+        VectorXd x_k_t = position_vector;
+        VectorXd x_k_t_minus_1 = position_vector_minus_1;
+
+        F_k = evaluate_F_ALL_NEW(force_Jacobian, x_k, forces, x_k_t, x_k_t_minus_1);
+        Jacobian = evaluate_Jacobian_ALL_NEW(force_Jacobian);
+        double old_eval = F_k.norm();
+        double new_eval = 0.0;
+
+        VectorXd Force_t_plus_1_innit = spring_force_vector + spring_force_matrix_dx * (x_k - position_vector);
+        VectorXd Force_t_plus_1 = Force_t_plus_1_innit;
+
+        for(int i = 0; i<maxiter;i++){
+            double t = 1.0;
+
+
+            VectorXd x_k_plus_1 = x_k -  t *Jacobian.inverse() * F_k;
+
+            Force_t_plus_1 = get_current_spring_force(connected_particles, x_k_plus_1);
+            force_Jacobian = get_current_spring_force_jacobian(connected_particles, x_k_plus_1);
+
+            //check how good the newly computed positions are, no need to compute tha jacobian here as there is no update.
+            F_k_plus_1= evaluate_F_ALL_NEW(force_Jacobian, x_k_plus_1, Force_t_plus_1, x_k_t, x_k_t_minus_1);
+            new_eval = F_k_plus_1.norm();
+            std::cout<<"itteration = "<<i<<std::endl;
+            std::cout<<"old eval = "<<old_eval<<std::endl;
+            std::cout<<"new eval = "<<new_eval<<std::endl;
+
+            while(new_eval > old_eval){
+                std::cout<<"entered while"<<std::endl;
+                t = beta * t;
+                std::cout<<"t = "<<t<<std::endl;
+                x_k_plus_1 = x_k - t * Jacobian.inverse() * F_k;
+                Force_t_plus_1 = get_current_spring_force(connected_particles, x_k_plus_1);
+                force_Jacobian = get_current_spring_force_jacobian(connected_particles, x_k_plus_1);
+                F_k_plus_1 = evaluate_F_ALL_NEW(force_Jacobian, x_k_plus_1, Force_t_plus_1, x_k_t, x_k_t_minus_1);
+                new_eval = F_k_plus_1.norm();
+                std::cout<<"new eval inside while = "<<new_eval<<std::endl;
+            }
+
+            //recompute the norm because t might be not 1 anymore
+            F_k = evaluate_F_ALL_NEW(force_Jacobian, x_k_plus_1, Force_t_plus_1, x_k_t, x_k_t_minus_1);
+            Jacobian = evaluate_Jacobian_ALL_NEW(force_Jacobian);
+            old_eval = F_k.norm();
+            std::cout<<" old eval after while = "<<old_eval<<std::endl;
+
+            x_k = x_k_plus_1;
+
+
+            if((F_k).norm() < tol ){
+                if(test_bool) {
+                    //temporary for plotting
+                    int range_begin_a = x_k_plus_1[0] - 50;
+                    int range_end_a = x_k_plus_1[0] + 50;
+                    int range_begin_b = x_k_plus_1[2] -50;
+                    int range_end_b = x_k_plus_1[2] +50;
+                    for (int i = range_begin_a; i <= range_end_a; i++) {
+                        for (int j = range_begin_b; j <= range_end_b; j++) {
+                            VectorXd test_vector(4);
+                            double d_i = i * 1.0;
+                            double d_j = j * 1.0;
+                            test_vector[0] = d_i;
+                            test_vector[1] = 100.0;
+                            test_vector[2] = d_j;
+                            test_vector[3] = 100.0;
+                            x_values.push_back(i);
+                            y_values.push_back(j);
+                            z_values1.push_back(evaluate_F_ALL_NEW(spring_force_matrix_dx, test_vector, spring_force_vector,
+                                                                   position_vector, position_vector_minus_1)[0]);
+                            z_values2.push_back(evaluate_F_ALL_NEW(spring_force_matrix_dx, test_vector, spring_force_vector,
+                                                                   position_vector, position_vector_minus_1)[1]);
+                            z_values.push_back(evaluate_F_ALL_NEW(spring_force_matrix_dx, test_vector, spring_force_vector,
+                                                                  position_vector, position_vector_minus_1).norm());
+                        }
+                    }
+                    best_found.push_back(x_k_plus_1[0]);
+                    best_found.push_back(x_k_plus_1[2]);
+                    best_found.push_back(evaluate_F_ALL_NEW(spring_force_matrix_dx, x_k_plus_1, spring_force_vector,
+                                                            position_vector, position_vector_minus_1).norm());
+                    test_bool = false;
+                    break;
+                }
+                //end of temporary for plotting
+                std::cout<<" it took "<<i+1<<" iterations and the value is "<<(F_k).norm()<<std::endl;
+                i = maxiter;
+                break;
+
+
+            }else{
+                //   std::cout<<std::endl<<" value is = "<<(Jacobian.inverse() * F_Newton).norm()<<std::endl;
+            }
+        }
+    }
+*/
+
+    double get_current_potential_energy(VectorXd x,std::vector<std::tuple <Particle&,Particle&,double> > &connected_particles){
+        double potential_energy = 0.0;
+        for(auto particle_pair : connected_particles) {
+            Particle& A = std::get<0>(particle_pair);
+            Particle& B = std::get<1>(particle_pair);
+
+            Particle A_tmp = A;
+            Particle B_tmp = B;
+            A_tmp.position[0] = x[A.index];
+            A_tmp.position[1] = x[A.index+1];
+            B_tmp.position[0] = x[B.index];
+            B_tmp.position[1] = x[B.index+1];
+
+            std::tuple<Particle&,Particle&,double> particle_pair_tmp(A_tmp,B_tmp,std::get<2>(particle_pair));
+
+            Vector2d displacement =  std::get<0>(particle_pair_tmp).position - std::get<1>(particle_pair_tmp).position;
+            double displcacement_norm = displacement.norm();
+            //new
+            double current_spring_lenght = displcacement_norm - (A.radius + B.radius);
+            potential_energy += 0.5 * stiffnes_constant * std::pow((current_spring_lenght-std::get<2>(particle_pair_tmp)),2);
+        }
+        return potential_energy;
+    }
+
+    double get_e(VectorXd x,std::vector<std::tuple <Particle&,Particle&,double> > &connected_particles){
+        VectorXd a = (x - 2.0 * position_vector + position_vector_minus_1);
+        double x_t_M_x = 0.5 * a.transpose() * mass_matrix * a;
+        //std::cout<<"first term = "<< x_t_M_x<<std::endl;
+        double E_x = std::pow(time_step,2) * get_current_potential_energy(x,connected_particles);
+       // std::cout<<"second term = "<<E_x<<std::endl;
+        //std::cout<<" end"<<std::endl;
+        return   x_t_M_x +  E_x; //check again
+    }
+
+    VectorXd get_g(VectorXd x, std::vector<std::tuple <Particle&,Particle&,double> > &connected_particles){
+        VectorXd F_x = get_current_spring_force(connected_particles,x);
+        std::cout<<" F = "<<std::endl<<F_x<<std::endl;
+       // std::cout<<"mass matrix = "<<std::endl<<mass_matrix<<std::endl;
+        return mass_matrix * (x - 2.0 * position_vector + position_vector_minus_1) - std::pow(time_step, 2) * F_x;
+    }
+
+    MatrixXd get_g_dx(VectorXd x, std::vector<std::tuple <Particle&,Particle&,double> > &connected_particles){
+        MatrixXd dF_dx = get_current_spring_force_jacobian(connected_particles,x);
+        std::cout<<" cuurent spring force jacobian = "<<std::endl<<dF_dx<<std::endl;
+        MatrixXd result = mass_matrix - (std::pow(time_step,2) * dF_dx);
+        std::cout<<"get g dx returns \n"<<result<<std::endl;
+        return result;
+    }
+
+
+
+    void THE_FINAL_NEWTON(int maxiter, double beta, double tol, VectorXd& x,std::vector<std::tuple <Particle&,Particle&,double> > &connected_particles){
+        double t;
+        double r;
+        VectorXd x_i = x;
+
+        for(int i=0;i<maxiter;i++){
+            t=1.0;
+            r=0.0;
+            std::cout<<"iteration = "<<i<<std::endl;
+
+            VectorXd g = get_g(x_i,connected_particles);
+            std::cout<<" g = "<<g<<std::endl;
+            MatrixXd g_dx = get_g_dx(x_i,connected_particles);
+            std::cout<<"g_dx = "<<g_dx<<std::endl;
+
+
+            if(g.transpose() * (-g_dx * g) <= 0){
+                std::cout<<"good search direction"<<std::endl;
+                std::cout<<" gT delta x = "<<g.transpose() * (-g_dx * g)<<std::endl;
+            }else{
+                std::cout<<"wrong search direaction"<<std::endl;
+                std::cout<<" gT delta x = "<<g.transpose() * (-g_dx * g)<<std::endl;
+                r += 0.01;
+                std::cout<<" r = "<<r<<std::endl;
+                g_dx = g_dx + Eigen::MatrixXd::Identity(g_dx.rows(),g_dx.cols()) *r;
+                std::cout<<" gT delta x = "<<g.transpose() * (-g_dx * g)<<std::endl;
+
+                while(g.transpose() * (-g_dx * g) > 0){
+                    std::cout<<"inside while loop"<<std::endl;
+                    r *=10;
+                    std::cout<<" r now is "<<r<<std::endl;
+                    g_dx = g_dx + Eigen::MatrixXd::Identity(g_dx.rows(),g_dx.cols()) *r;
+                    std::cout<<" gT delta x = "<<g.transpose() * (-g_dx * g)<<std::endl;
+                }
+            }
+
+            VectorXd search_direction = -1.0 * g_dx.inverse() * g;
+
+          /* for(int i = 0; i<search_direction.size();i++){
+                search_direction[0] = search_direction[0]/std::abs(search_direction[0]);
+                search_direction[2] = search_direction[2]/std::abs(search_direction[2]);
+            }*/
+
+           // VectorXd x_i_plus_1_tmp = x_i - t * g_dx.inverse() * g;
+            VectorXd x_i_plus_1_tmp = x_i + t * search_direction;
+            std::cout<<"the new value ="<<std::endl<<x_i_plus_1_tmp<<std::endl;
+            std::cout<<" H inverse = "<<std::endl<<g_dx.inverse()<<std::endl;
+            std::cout<<"search direction = "<<std::endl<<g_dx.inverse() * g<<std::endl;
+
+            std::cout<<" x i +1="<<std::endl<<x_i_plus_1_tmp<<std::endl<<" e at x i+1 = "<<std::endl<<get_e(x_i_plus_1_tmp,connected_particles);
+            std::cout<<" x i ="<<std::endl<<x_i<<std::endl<<" e at x i = "<<std::endl<<get_e(x_i,connected_particles);
+
+            while(get_e(x_i_plus_1_tmp,connected_particles) > get_e(x_i,connected_particles)){
+                std::cout<<" inside second while loop, e(x_i+1) = "<<get_e(x_i_plus_1_tmp,connected_particles)<<" and e(xi) = "<<get_e(x_i,connected_particles)<<std::endl;
+                t *= beta;
+                std::cout<<"t = "<<t<<std::endl;
+                x_i_plus_1_tmp = x_i + t * search_direction;
+            }
+            VectorXd x_i_plus_1 = x_i_plus_1_tmp;
+            std::cout<<" e after while "<<std::endl<<get_e(x_i_plus_1,connected_particles)<<std::endl;
+
+            std::cout<<" x i "<<std::endl<<x_i<<std::endl;
+            std::cout<<" x i +1 "<<std::endl<<x_i_plus_1<<std::endl;
+           /* if(test_bool && i == 2 ){
+                for(int i_k = 99; i_k <105; i_k++){
+                    for(int j_k = 199; j_k <205; j_k++){
+                        e_x.push_back(i_k);
+                        e_y.push_back(j_k);
+                        VectorXd x_tmp(4);
+                        double ii_k = 1.0 * i_k;
+                        double jj_k = 1.0 * j_k;
+                        x_tmp[0] = ii_k;
+                        x_tmp[1] = 100.0;
+                        x_tmp[2] = jj_k;
+                        x_tmp[3] = 100.0;
+                        double e_tmp = get_e(x_tmp,connected_particles);
+                        e_z.push_back(e_tmp);
+                        std::cout<<"x 1 =" <<ii_k<<std::endl<<" x2 = "<<jj_k<<std::endl;
+                        std::cout<<e_tmp<<std::endl;
+                        std::cout<<" position_vector = "<<position_vector<<std::endl;
+                        std::cout<<std::endl;
+
+                    }
+                }
+                std::ofstream test_e;
+                test_e.open("../../../test_e.csv");
+                test_e<<"ex1"<<","<<"ex2"<<","<<"value"<<std::endl;
+                for(int i = 0; i<e_z.size(); i++){
+                    test_e<<e_x[i]<<","<<e_y[i]<<","<<e_z[i]<<std::endl;
+
+
+                }
+                test_e.close();
+                test_bool = false;
+                i = maxiter;
+            }*/
+
+
+            x_i = x_i_plus_1;
+
+            if(/*get_e(x_i,connected_particles)*/get_g(x_i,connected_particles).norm()<tol){
+                std::cout<<"Newton's Method took "<<i<<" iterations to converge and the value of e at the end is " <<get_e(x_i,connected_particles)<<std::endl;
+                x = x_i;
+                break;
+
+            }else{
+                std::cout<<" residual = "<<get_g(x_i,connected_particles).norm()<<std::endl;
+            }
+
+
+        }
+        x = x_i;
+        std::cout<<" \n \n \n";
+        std::cout<<" NEwtons method terminated after "<<maxiter<<" maximum iteratoin of steps was reached"<<std::endl<<"the new positions are ="<<std::endl<<x_i<<" and the residual is "<<get_g(x_i,connected_particles).norm()<<std::endl;
+        std::cout<<" \n \n \n";
+    }
+
+
 
     VectorXd evaluate_F_ALL(MatrixXd d_f_dv, MatrixXd d_f_dx, VectorXd delta_v, VectorXd forces){
         VectorXd v_k_minus_1 =  velocity_vector;
@@ -373,7 +1469,7 @@ public:
         return F;
     }
 
-    VectorXd evaluate_F_ALL_NEW(MatrixXd d_f_dx, VectorXd x_t_plus_1, VectorXd forces, VectorXd x_t, VectorXd x_t_minus_1){
+    VectorXd evaluate_F_ALL_NEW(MatrixXd d_f_dx, VectorXd current_solution, VectorXd forces, VectorXd x_k_t, VectorXd x_k_t_minus_1){
 
        double h = time_step;
        double h2 = std::pow(h,2);
@@ -383,7 +1479,7 @@ public:
                + mass_matrix * (1.0/h2) * x_t_minus_1
                - forces
                + d_f_dx * x_t;*/
-       VectorXd F = (mass_matrix - h2 * d_f_dx) * x_t_plus_1 - 2.0 * mass_matrix * x_t + mass_matrix * x_t_minus_1 + h2 * (d_f_dx * x_t - forces);
+       VectorXd F = ((1.0/h2) *mass_matrix - h2 * d_f_dx) * current_solution  + (1.0/h2) * mass_matrix * (x_k_t_minus_1 - 2.0 * x_k_t) + h2 * (d_f_dx * x_k_t - forces);
 
         return F;
     }
@@ -396,7 +1492,7 @@ public:
         double h = time_step;
         double h2 = std::pow(h,2);
         //return mass_matrix * (1.0/h2) - d_f_dx;
-        return mass_matrix - h2 * d_f_dx;
+        return (1.0/h2) * mass_matrix - h2 * d_f_dx;
     }
 
 
@@ -411,13 +1507,31 @@ public:
     }
 
     Vector2d NEW_get_damped_spring_force_without_damping(std::tuple<Particle,Particle,double> particle_pair){
+       // std::cout<<" ======= inside =========="<<std::endl;
         double rest_length = std::get<2>(particle_pair);
+      //  std::cout<<"rest length = "<<rest_length<<std::endl;
         Matrix2d Identity = MatrixXd::Identity(2,2);
         Particle A = std::get<0>(particle_pair);
         Particle B = std::get<1>(particle_pair);
+       // std::cout<<" positions are = "<<std::endl<<A.position[0]<<std::endl<<A.position[1]<<std::endl<<B.position[0]<<std::endl<<B.position[1]<<std::endl;
         //changed plus form damping to minus
         A_B_DISTANCE.push_back((A.position - B.position).norm());
-        return -1.0 *(stiffnes_constant * ((A.position - B.position).norm() - rest_length) ) * ((A.position - B.position)/(A.position - B.position).norm());
+        Vector2d direction = (A.position - B.position)/(A.position - B.position).norm();
+      //  std::cout<<"direction = "<<direction<<std::endl;
+        long double norm_ = (A.position - B.position).norm();
+        long double radi_ = A.radius + B.radius;
+        long double rest_length_ = rest_length;
+        long double test = (norm_ - radi_) - rest_length_;
+        //std::cout << std::fixed;
+        //std::cout << std::setprecision(15);
+      //  std::cout<<" norm = "<<norm_<<"radi = "<<radi_<<" rest_length = "<<rest_length_<<"sum = "<<test<<std::endl;
+      //  std::cout<<" magnitude = "<<((A.position - B.position).norm()- (A.radius + B.radius)) - rest_length<<" = "<<(A.position - B.position).norm()<<" - "<<(A.radius + B.radius) <<" - "<<rest_length<<std::endl;
+        Vector2d result_ = -1.0 *(stiffnes_constant * ( ((A.position - B.position).norm()- (A.radius + B.radius)) - rest_length) ) * (direction);
+       // std::cout<<std::endl<<"FORCE = "<<std::endl<<result<<std::endl;
+      //  std::cout<<" results = "<<std::endl<<result_<<std::endl;
+      //  std::cout<<" ======= exit =========="<<std::endl;
+       return result_;
+
     }
 
     Matrix2d NEW_get_damped_spring_force_dXA(std::tuple<Particle,Particle,double> particle_pair){
@@ -427,8 +1541,8 @@ public:
         Particle B = std::get<1>(particle_pair);
         Vector2d xa = A.position;
         Vector2d xb = B.position;
-        Vector2d va = A.position;
-        Vector2d vb = B.position;
+        Vector2d va = A.velocity;
+        Vector2d vb = B.velocity;
 
         Vector2d t0 = xa -xb;
         double t1 = t0.norm();
@@ -450,21 +1564,26 @@ public:
         Particle B = std::get<1>(particle_pair);
         Vector2d xa = A.position;
         Vector2d xb = B.position;
-        Vector2d va = A.position;
-        Vector2d vb = B.position;
+        Vector2d va = A.velocity;
+        Vector2d vb = B.velocity;
 
-        Vector2d t0 = xa -xb;
+        Vector2d t0 = xa - xb;
       //  std::cout<<" t0 = \n"<<t0<<"\n;";
         double t1 = t0.norm();
-       // std::cout<<" t1 = \n"<<t1<<"\n;";
+       // std::cout<<" t1 = \n"<<t1<<"\n";
         Matrix2d T2 = t0 * t0.transpose();
+        //std::cout<<std::endl<<"T2="<<std::endl<<T2<<std::endl;
 
        // std::cout<<" T2 = \n"<<T2<<"\n";
-       double t3 = stiffnes_constant * (t1 - rest_length);
+       //double t3 = stiffnes_constant * (t1 - rest_length);
+       double t3 = stiffnes_constant * (t1 - (A.radius + B.radius) - rest_length);
        // std::cout<<" t3 = \n"<<t3<<"\n";
        // std::cout<<"SPRING FORCE DX = \n"<<-1.0<<" * "<< stiffnes_constant<<" / "<<std::pow(t1,2)<<" * "<<T2<<" - "<<t3<<" / "<<std::pow(t1,3)<<" * "<<T2<<" + "<<t3<<" / "<<t1<<" * "<<Identity<<"\n";
        // std::cout<<"Spring force Dx = \n"<<-1.0<<" * "<<(stiffnes_constant/std::pow(t1,2)) * T2<<" - "<<(t3/std::pow(t1,3)) * T2<<" + "<<(t3/t1) * Identity<<"\n";
-       // return -1.0 * ((stiffnes_constant/std::pow(t1,2)) * T2 - (t3/std::pow(t1,3)) * T2 + (t3/t1) * Identity);
+      //  std::cout<<std::endl<<"term 1 = "<<(stiffnes_constant/std::pow(t1,2)) * T2<<std::endl<<"Term 2"<<(t3/std::pow(t1,3)) * T2<<std::endl<<" 1 - 2"<<std::endl<<(stiffnes_constant/std::pow(t1,2)) * T2 - (t3/std::pow(t1,3)) * T2<<std::endl<<"Term 3"<<std::endl<<(t3/t1) * Identity<<std::endl;
+        Matrix2d result = -1.0 * ((stiffnes_constant/std::pow(t1,2)) * T2 - (t3/std::pow(t1,3)) * T2 + (t3/t1) * Identity);
+
+
         //OG
 
         //Vector2d dir = (xa - xb)/(xa -xb).norm();
@@ -473,8 +1592,21 @@ public:
         //TRYING TO AVOID SINGULARITY
 
         //NEWONE
-        return -stiffnes_constant * ((1.0 - rest_length/(xa-xb).norm()) * (Identity - (t0/t1) * (t0/t1).transpose()) + (t0/t1) * (t0/t1).transpose() );
+       /* Matrix2d result = -stiffnes_constant * (
+                (1.0 - rest_length/(xa-xb).norm()) * (Identity - (t0/t1) * (t0/t1).transpose())
+                + (t0/t1) * (t0/t1).transpose()
+                );
+                */
+       // std::cout<<std::endl<<std::endl<<result(0,0)<<std::endl<<std::endl;
+       // std::cout<<result<<std::endl;
+        //double x = result(0,0);
+        //double y = result(1,1);
+        //result(0,0) = y;
+        //result(1,1)=x;
+        return result;
     }
+
+
 
     Matrix2d NEW_get_damped_spring_force_dVA(std::tuple<Particle,Particle,double> particle_pair){
         double rest_length = std::get<2>(particle_pair);
@@ -547,6 +1679,7 @@ public:
     }
 
     void update_positions_NEW(std::vector<std::tuple <Particle&,Particle&,double> > &connected_particles,VectorXd x_t_plus_1_new){
+        position_vector_minus_2 = position_vector_minus_1;
         position_vector_minus_1 = position_vector;
         for(auto& particle_pair : connected_particles) {
             Particle& A = std::get<0>(particle_pair);
@@ -585,7 +1718,71 @@ public:
         }
 
         reset_flags(connected_particles);
+        position_vector_minus_2 = position_vector_minus_1;
         return position_vector_minus_1;
+    }
+
+    //only works for a system of two particles
+    double get_dE_dx (std::vector<std::tuple <Particle&,Particle&,double> > &connected_particles, VectorXd x_old, VectorXd x_new){
+        std::vector<std::tuple <Particle&,Particle&,double> > connected_particles_new;
+        for(auto particle_pair : connected_particles) {
+            Particle& A = std::get<0>(particle_pair);
+            Particle& B = std::get<1>(particle_pair);
+            double rest_length = std::get<2>(particle_pair);
+            Particle A_new = A;
+            A_new.position[0] = x_new(A.index);
+            Particle B_new = B;
+            B_new.position[0] = x_new(B.index);
+            connected_particles_new.push_back(std::tuple<Particle&,Particle&,double>(A_new,B_new,rest_length));
+        }
+        double E_at_x = get_Potential_Energy(connected_particles);
+        double E_at_x_plus_delta_x = get_Potential_Energy(connected_particles_new);
+        double delta_x = (std::abs(x_new[0] - x_new[2]) - std::get<2>(connected_particles_new[0])) - (std::abs(x_old[0] - x_old[2]) - std::get<2>(connected_particles[0]));
+
+        return (E_at_x_plus_delta_x - E_at_x)/delta_x;
+    }
+
+    double get_dFx_dx_FD(std::vector<std::tuple <Particle&,Particle&,double> > &connected_particles, std::vector<std::tuple <Particle&,Particle&,double> > &connected_particles_new, VectorXd x_old, VectorXd x_new, VectorXd x_new_new){
+        double second =  get_dE_dx(connected_particles,x_old,x_new);
+        double first = get_dE_dx(connected_particles_new,x_new,x_new_new);
+        double delta_x = (std::abs(x_new[0] - x_new[2]) - std::get<2>(connected_particles_new[0])) - (std::abs(x_old[0] - x_old[2]) - std::get<2>(connected_particles[0]));
+
+        return (first - second)/delta_x;
+    }
+
+    /*double get_dFx_dx_FD(std::vector<std::tuple <Particle&,Particle&,double> > &connected_particles, VectorXd x_old, VectorXd x_new){
+        double Fx_at_x =  NEW_get_damped_spring_force_without_damping(connected_particles[0])[0];
+        Particle A_new = std::get<0>(connected_particles[0]);
+        Particle B_new = std::get<1>(connected_particles[0]);
+        A_new.position[0] = x_new(std::get<0>(connected_particles[0]).index);
+        B_new.position[0] = x_new(std::get<1>(connected_particles[0]).index);
+
+        std::vector<std::tuple <Particle&,Particle&,double> > connected_particles_new;
+        connected_particles_new.push_back(std::tuple<Particle&,Particle&,double>(A_new,B_new,std::get<2>(connected_particles[0])));
+
+        double Fx_at_x_plus_delta_x = NEW_get_damped_spring_force_without_damping(connected_particles_new[0])[0];
+
+
+
+    }*/
+
+    double get_dE_dy (std::vector<std::tuple <Particle&,Particle&,double> > &connected_particles, VectorXd x_old, VectorXd x_new){
+        std::vector<std::tuple <Particle&,Particle&,double> > connected_particles_new;
+        for(auto particle_pair : connected_particles) {
+            Particle& A = std::get<0>(particle_pair);
+            Particle& B = std::get<1>(particle_pair);
+            double rest_length = std::get<2>(particle_pair);
+            Particle A_new = A;
+            A_new.position[1] = x_new(A.index);
+            Particle B_new = B;
+            B_new.position[1] = x_new(B.index);
+            connected_particles_new.push_back(std::tuple<Particle&,Particle&,double>(A_new,B_new,rest_length));
+        }
+        double E_at_x = get_Potential_Energy(connected_particles);
+        double E_at_x_plus_delta_x = get_Potential_Energy(connected_particles_new);
+        double delta_x = (std::abs(x_new[1] - x_new[3]) - std::get<2>(connected_particles_new[0])) - (std::abs(x_old[1] - x_old[3]) - std::get<2>(connected_particles[0]));
+
+        return (E_at_x_plus_delta_x - E_at_x)/delta_x;
     }
 
 
@@ -598,6 +1795,9 @@ public:
         }
         return potential_energy;
     }
+
+
+
 
     double get_Kinetic_Energy(std::vector<std::tuple <Particle&,Particle&,double> > &connected_particles){
         double kinetic_energy = 0;
@@ -622,10 +1822,7 @@ public:
         return kinetic_energy;
     }
 
-    double get_e(VectorXd x_t, VectorXd x_t_minus_1, VectorXd x_t_minus_2,std::vector<std::tuple <Particle&,Particle&,double> > &connected_particles){
-        VectorXd a = (x_t - 2.0 * x_t_minus_1 + x_t_minus_2) * (1.0/std::pow(time_step,2));
-        return 0.5 * a.transpose() * mass_matrix * a +  std::pow(time_step,2) * get_Potential_Energy(connected_particles);
-    }
+
 
 
 
@@ -684,8 +1881,8 @@ public:
         Particle B = std::get<1>(particle_pair);
         Vector2d xa = A.position;
         Vector2d xb = B.position;
-        Vector2d va = A.position;
-        Vector2d vb = B.position;
+        Vector2d va = A.velocity;
+        Vector2d vb = B.velocity;
 
         Vector2d t0 = xa -xb;
         double t1 = t0.norm();
