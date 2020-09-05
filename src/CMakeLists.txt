@@ -7,3 +7,4 @@ include_directories(${EIGEN3_INCLUDE_DIR})
 add_subdirectory(guiLib)
 add_subdirectory(app)
 add_subdirectory(simulation)
+

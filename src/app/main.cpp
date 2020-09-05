@@ -9,6 +9,7 @@
 #include <vector>
 
 
+
 #include <fstream>
 #include <string>
 
@@ -46,9 +47,9 @@ public:
        //connect_vector.push_back(A);
        //connect_vector.push_back(B);
       // particles.push_back(loner);
-       simulation.connect(A,B,2.0 *(A.radius+B.radius),connected_particles);
-       simulation.connect(B,C,2.0 *(C.radius+B.radius),connected_particles);
-       simulation.connect(A,C, 2.0 *(A.radius+C.radius),connected_particles);
+       simulation.connect(A,B,(A.radius+B.radius),connected_particles);
+       simulation.connect(B,C,(C.radius+B.radius),connected_particles);
+       simulation.connect(A,C, (A.radius+C.radius),connected_particles);
 /*
         simulation.connect(A2,B2,(A2.radius+B2.radius),connected_particles);
         simulation.connect(B2,C2,(C2.radius+B2.radius),connected_particles);
@@ -136,15 +137,7 @@ public:
 
 
            simulation.run_simulation_for_connected_Particles(connected_particles);
-            double current_Epot = simulation.get_Potential_Energy(connected_particles);
-            double current_Ekin = simulation.get_Kinetic_Energy(connected_particles);
-            double velx1 = simulation.get_current_velocities_1_in_x(connected_particles);
-            double vely1 = simulation.get_current_velocities_1_in_y(connected_particles);
-            simulation.total_energy[simulation.time_index] = current_Epot + current_Ekin;
-            simulation.kinetic_energy[simulation.time_index] =  current_Ekin;
-            simulation.potential_energy[simulation.time_index] = current_Epot;
-            simulation.velocities_over_time1_in_x[simulation.time_index] = velx1;
-            simulation.velocities_over_time1_in_y[simulation.time_index] = vely1;
+
             simulation.time_index++;
        /* if(simulation.newton_counter > 10){
             runSim = false;
@@ -164,12 +157,36 @@ public:
         End();*/
 
         BeginMainMenuBar();
-        if(BeginMenu("debug")){
+        if(BeginMenu("Control")){
             Checkbox("draw cursor", &drawCursor);
             Checkbox("draw circles", &drawCircles);
             ImGui::EndMenu();
         }
         EndMainMenuBar();
+
+        if(CollapsingHeader("Springs")){
+            Indent();
+            if(SliderScalar("Stiffnes Constant",ImGuiDataType_Double, &simulation.stiffnes_constant, &min_stiffnes_constant, &max_stiffnes_constant))
+                std::cout<<simulation.stiffnes_constant;
+        }
+
+        if(CollapsingHeader("Drag")){
+            if(SliderScalar("Viscosity Multiplier", ImGuiDataType_Double, &simulation.viscosity_multiplier, &min_viscosity_multiplier, &max_viscosity_multiplier))
+                std::cout<<simulation.viscosity_multiplier;
+        }
+
+        if(CollapsingHeader("Brownian Motion")){
+            if(SliderScalar("Brownian Multiplier", ImGuiDataType_Double, &simulation.brownian_motion_multiplier, &min_brownian_motion_multiplier, &max_brownian_motion_multiplier))
+                std::cout<<simulation.brownian_motion_multiplier;
+        }
+        if(CollapsingHeader("Simulation")){
+            if(SliderScalar("Time Step", ImGuiDataType_Double, &simulation.time_step, &min_time_step, &max_time_step)){
+                std::cout<<simulation.time_step;
+            }
+            if(SliderScalar("Max itteration",ImGuiDataType_S32,&simulation.max_iterations,&min_max_iterations,&max_max_iterations)){
+                std::cout<<simulation.max_iterations;
+            }
+        }
     }
 
     void drawNanoVG() override {
@@ -269,7 +286,8 @@ protected:
             runSim = !runSim;
 
         if (key == GLFW_KEY_R){
-            simulation.reset_simulation(connect_vector);
+            runSim =!runSim;
+            simulation.reset_simulation(connected_particles);
         }
     }
 
@@ -340,7 +358,7 @@ public:
 
     Particle A = Particle(50.0,20.0,{100.0,100.0});
     Particle B = Particle(50.0,20.0,{200.0,100.0});
-    Particle C = Particle(500,20,{128.284,228.284});
+    Particle C = Particle(50.0,20.0,{150.0,0.0});
 
     Particle A2 = Particle(20,20,{100,100});
     Particle B2 = Particle(20,20,{0,0});
@@ -398,6 +416,17 @@ public:
     bool drawCursor = false;
     bool drawCircles = true;
 
+    double min_stiffnes_constant = 0.0;
+    double max_stiffnes_constant = 100000.0;
+    double min_viscosity_multiplier = 0.0;
+    double max_viscosity_multiplier = 1000.0;
+    double min_brownian_motion_multiplier = 0.0;
+    double max_brownian_motion_multiplier = 10.0;
+    double min_time_step = 0.0;
+    double max_time_step = 10.0;
+    int min_max_iterations = 100;
+    int max_max_iterations = 1000000;
+
     struct Circle
     {
         Circle(Vector2d p, double r=10){ //took away struct
@@ -451,30 +480,42 @@ int main(int, char**)
 
     std::ofstream myfile;
     myfile.open ("../../../data.csv");
-    myfile << "Total Energy"<<","<<"Kinetic Energy"<<","<<"Potential Energy"<<","<<"Velocity X"<<","<<"Velocity Y"<<","<<"E"<<","<<"SPRING FORCE X"<<","<<"SPRING FORCE Y"<<","<<"DISTANCE"<<","<<"DERIVATIVE"<<","<<"X"<<","<<"Y"<<","<<"time step"<<std::endl;
+    myfile << "Total Energy"<<","<<"Kinetic Energy"<<","<<"Potential Energy"<<","<<"E"<<","<<"SPRING FORCE X"<<","<<"SPRING FORCE Y"<<","<<"DISTANCE"<<","<<"DERIVATIVE"<<","<<"X"<<","<<"Y"<<","<<"time step"<<std::endl;
     std::cout<<"test"<<std::endl;
-    for(int i = 0; i<app.simulation.spring_force_vec_over_time_x.size(); i++){
+    for(int i = 0; i<app.simulation.total_energy.size(); i++){
         //std::cout<<app.simulation.spring_force_vec_over_time_x[i]<<std::endl;
         //std::cout<<app.simulation.spring_force_vec_over_time_x[i]/app.simulation.stiffnes_constant<<std::endl;
-        myfile << app.simulation.total_energy[i]<<","<<app.simulation.kinetic_energy[i]<<","<<app.simulation.potential_energy[i]<<","<<app.simulation.velocities_over_time1_in_x[i]<<","<<app.simulation.velocities_over_time1_in_x[i]<<","<<app.simulation.e_vec[i]<<","<<app.simulation.spring_force_vec_over_time_x[i]/app.simulation.stiffnes_constant<<","<<app.simulation.spring_force_vec_over_time_y[i]/app.simulation.stiffnes_constant<<","<<app.simulation.A_B_DISTANCE[i]<<","<<app.simulation.spring_force_derivative_x_in_x[i]/app.simulation.stiffnes_constant<<","<<app.simulation.position_vec_over_time_in_x[i]<<","<<app.simulation.position_vec_over_time_in_y[i]<<","<<i<<std::endl;
+        myfile << app.simulation.total_energy[i]<<","<<app.simulation.kinetic_energy[i]<<","<<app.simulation.potential_energy[i]<<","<<app.simulation.e_vec[i]<<","<<app.simulation.spring_force_vec_over_time_x[i]/app.simulation.stiffnes_constant<<","<<app.simulation.spring_force_vec_over_time_y[i]/app.simulation.stiffnes_constant<<","<<app.simulation.A_B_DISTANCE[i]<<","<<app.simulation.spring_force_derivative_x_in_x[i]/app.simulation.stiffnes_constant<<","<<app.simulation.position_vec_over_time_in_x[i]<<","<<app.simulation.position_vec_over_time_in_y[i]<<","<<i<<std::endl;
     }
+
+    std::ofstream velocities;
+    velocities.open ("../../../velocities.csv");
+    std::cout<<"test2"<<std::endl;
+
+    velocities << "VELX"<<","<<"VELY"<<","<<"friction"<<","<<"time_step"<<std::endl;
+    for(int i = 0; i<app.simulation.velocities_over_time1_in_x.size();i++){
+        velocities<<app.simulation.velocities_over_time1_in_x[i]<<","<<app.simulation.velocities_over_time1_in_y[i]<<","<<app.simulation.friction_force_over_time_x[i]<<","<<i<<std::endl;
+        std::cout<<app.simulation.velocities_over_time1_in_x[i]<<std::endl;
+    }
+    velocities.close();
+
     std::ofstream myfile2;
     myfile2.open("../../../data2.csv");
     myfile2<<"x"<<","<<"y"<<","<<"z1"<<","<<"z2"<<std::endl;
     for(int i = 0; i<899;i++){
         myfile2<<app.simulation.x_values[i]<<","<<app.simulation.y_values[i]<<","<<app.simulation.z_values1[i]<<","<<app.simulation.z_values2[i]<<std::endl;
-        std::cout<<app.simulation.x_values[i]<<std::endl;
-        std::cout<<app.simulation.y_values[i]<<std::endl;
-        std::cout<<app.simulation.z_values1[i]<<std::endl;
+        //std::cout<<app.simulation.x_values[i]<<std::endl;
+       // std::cout<<app.simulation.y_values[i]<<std::endl;
+        //std::cout<<app.simulation.z_values1[i]<<std::endl;
     }
 
     std::ofstream myfile3;
     myfile3.open("../../../data3.csv");
     for(int i = 0; i<app.simulation.x_values.size();i++){
         myfile3<<app.simulation.x_values[i]<<","<<app.simulation.y_values[i]<<","<<app.simulation.z_values[i]<<std::endl;
-        std::cout<<app.simulation.x_values[i]<<std::endl;
-        std::cout<<app.simulation.y_values[i]<<std::endl;
-        std::cout<<app.simulation.z_values1[i]<<std::endl;
+        //std::cout<<app.simulation.x_values[i]<<std::endl;
+        //std::cout<<app.simulation.y_values[i]<<std::endl;
+        //std::cout<<app.simulation.z_values1[i]<<std::endl;
     }
 
     std::ofstream best;
@@ -498,8 +539,11 @@ int main(int, char**)
     test_e<<"ex1"<<","<<"ex2"<<","<<"value"<<std::endl;
     for(int i = 0; i<app.simulation.e_z.size(); i++){
         test_e<<app.simulation.e_x[i]<<","<<app.simulation.e_y[i]<<","<<app.simulation.e_z[i]<<std::endl;
-        std::cout<<app.simulation.e_z[i];
+        //std::cout<<app.simulation.e_z[i];
     }
+
+
+
     test_e.close();
     return 0;
 }

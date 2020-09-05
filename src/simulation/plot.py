@@ -19,8 +19,24 @@ import glob
 data = pd.read_csv("../../data.csv")
 data2 = pd.read_csv("../../data2.csv")
 
+velocities = pd.read_csv("../../velocities.csv")
+print(velocities)
+
 marker = itertools.cycle(('+','.','o','*'))
 line = itertools.cycle((':','-.','--'))
+
+fig_V, ax_V = plt.subplots()
+plt.tight_layout()
+
+ax_V.plot(velocities['time_step'], velocities['VELX'], marker=next(marker),linestyle=next(line),label='Velocity in x')
+ax_V.plot(velocities['time_step'], velocities['VELY'], marker=next(marker),linestyle=next(line),label='Velocity in y')
+ax_V.plot(velocities['time_step'], velocities['friction'], marker=next(marker),linestyle=next(line),label='friction in x')
+ax_V.set_xlabel("time step",fontdict=None,labelpad=0)
+ax_V.set_ylabel("Velocity",fontdict=None,labelpad=-5, rotation=0,)
+ax_V.legend(loc='best',fontsize=8)
+ax_V.grid(True,linestyle='-')
+ax_V.set_title("Velocity ", fontdict= None, loc = 'center',pad=5)
+fig_V.savefig('Velocity.pdf',format='pdf')
 
 
 fig_V, ax_V = plt.subplots()
@@ -46,15 +62,7 @@ ax_V.set_title("Energies ", fontdict= None, loc = 'center',pad=5)
 fig_V.savefig('energy.pdf',format='pdf')
 
 
-fig_V, ax_V = plt.subplots()
-ax_V.plot(data['time step'], data['Velocity X'], marker=next(marker),linestyle=next(line),label='Velocity X')
-ax_V.plot(data['time step'], data['Velocity Y'], marker=next(marker),linestyle=next(line),label='Velocity Y')
-ax_V.set_xlabel("time step ",fontdict=None,labelpad=0)
-ax_V.set_ylabel("Velocity ",fontdict=None,labelpad=-5, rotation=0,)
-ax_V.legend(loc='best',fontsize=8)
-ax_V.grid(True,linestyle='-')
-ax_V.set_title("Velocities ", fontdict= None, loc = 'center',pad=5)
-fig_V.savefig('velocities.pdf',format='pdf')
+
 
 fig_V, ax_V = plt.subplots()
 ax_V.plot(data['time step'], data['E'], marker=next(marker),linestyle=next(line),label='E')
@@ -112,82 +120,82 @@ Z.append(Z2)
 #ax.set_title("Newton ", fontdict= None, loc = 'center',pad=5)
 #fig.savefig('Newton.pdf',format='pdf')
 
-data3 = pd.read_csv("../../data3.csv")
-print(data3)
+#data3 = pd.read_csv("../../data3.csv")
+#print(data3)
 
 
 
-x_best,y_best,z_best = np.loadtxt(open("../../best.csv"), delimiter=",", skiprows=1,unpack=True)
-print(x_best)
-print(y_best)
-print(z_best)
-best_data = pd.read_csv("../../best.csv")
-print(best_data)
+#x_best,y_best,z_best = np.loadtxt(open("../../best.csv"), delimiter=",", skiprows=1,unpack=True)
+#print(x_best)
+#print(y_best)
+#print(z_best)
+#best_data = pd.read_csv("../../best.csv")
+#print(best_data)
 
-x,y,z = np.loadtxt(open("../../data3.csv"), delimiter=",", skiprows=1,unpack=True)
-fig = plt.figure()
-ax = Axes3D(fig)
-surf = ax.plot_trisurf(x, y, z, cmap=cm.jet, linewidth=0.1)
-ax.scatter(x_best,y_best,z_best)
-fig.colorbar(surf, shrink=0.5, aspect=5)
-plt.savefig('teste.pdf')
-
-
-
-dataFD = pd.read_csv("../../FD.csv")
-j = dataFD[(dataFD.i == 0 )].index
-print(dataFD)
-dataFD.drop(j)
-
-fig_V, ax_V = plt.subplots()
-ax_V.plot(dataFD['i'], dataFD['F_X'], marker=next(marker),linestyle=next(line),label='F X')
-ax_V.plot(dataFD['i'], dataFD['DEDX'], marker=next(marker),linestyle=next(line),label='E dx with FD')
-ax_V.plot(dataFD['i'], dataFD['Difference'], marker=next(marker),linestyle=next(line),label='Difference')
-ax_V.set_xlabel("time step ",fontdict=None,labelpad=0)
-ax_V.legend(loc='best',fontsize=8)
-ax_V.grid(True,linestyle='-')
-ax_V.set_title("FD ", fontdict= None, loc = 'center',pad=5)
-fig_V.savefig('FD.pdf',format='pdf')
-
-
-
-
-fig_V, ax_V = plt.subplots()
-ax_V.plot(dataFD['i'], dataFD['FORCE_JACOBIAN'], marker=next(marker),linestyle=next(line),label='Force JAcobian')
-ax_V.plot(dataFD['i'], dataFD['DFDX'], marker=next(marker),linestyle=next(line),label='F dx with FD')
-ax_V.plot(dataFD['i'], dataFD['DIFFERENCE2'], marker=next(marker),linestyle=next(line),label='Difference')
-ax_V.set_xlabel("time step ",fontdict=None,labelpad=0)
-ax_V.legend(loc='best',fontsize=8)
-ax_V.grid(True,linestyle='-')
-ax_V.set_title("FD2 ", fontdict= None, loc = 'center',pad=5)
-fig_V.savefig('FD2.pdf',format='pdf')
-
-fig_V, ax_V = plt.subplots()
-ax_V.plot(dataFD['i'], dataFD['FORCE_JACOBIAN'], marker=next(marker),linestyle=next(line),label='Force JAcobian')
-ax_V.set_xlabel("time step ",fontdict=None,labelpad=0)
-ax_V.legend(loc='best',fontsize=8)
-ax_V.grid(True,linestyle='-')
-ax_V.set_title("FD3 ", fontdict= None, loc = 'center',pad=5)
-fig_V.savefig('FD3.pdf',format='pdf')
-
-fig_V, ax_V = plt.subplots()
-ax_V.plot(dataFD['i'], dataFD['DFDX'], marker=next(marker),linestyle=next(line),label='F dx with FD')
-ax_V.set_xlabel("time step ",fontdict=None,labelpad=0)
-ax_V.legend(loc='best',fontsize=8)
-ax_V.grid(True,linestyle='-')
-ax_V.set_title("FD4 ", fontdict= None, loc = 'center',pad=5)
-fig_V.savefig('FD4.pdf',format='pdf')
-
-test_e = pd.read_csv("../../test_e.csv")
-
-print(test_e)
-x,y,z = np.loadtxt(open("../../test_e.csv"), delimiter=",", skiprows=1,unpack=True)
-fig = plt.figure()
-ax = Axes3D(fig)
-surf = ax.plot_trisurf(x, y, z, cmap=cm.jet, linewidth=0.1)
+#x,y,z = np.loadtxt(open("../../data3.csv"), delimiter=",", skiprows=1,unpack=True)
+#fig = plt.figure()
+#ax = Axes3D(fig)
+#surf = ax.plot_trisurf(x, y, z, cmap=cm.jet, linewidth=0.1)
 #ax.scatter(x_best,y_best,z_best)
-fig.colorbar(surf, shrink=0.5, aspect=5)
-plt.savefig('test_e.pdf')
+#fig.colorbar(surf, shrink=0.5, aspect=5)
+#plt.savefig('teste.pdf')
+
+
+
+#dataFD = pd.read_csv("../../FD.csv")
+#j = dataFD[(dataFD.i == 0 )].index
+#print(dataFD)
+#dataFD.drop(j)
+
+#fig_V, ax_V = plt.subplots()
+#ax_V.plot(dataFD['i'], dataFD['F_X'], marker=next(marker),linestyle=next(line),label='F X')
+#ax_V.plot(dataFD['i'], dataFD['DEDX'], marker=next(marker),linestyle=next(line),label='E dx with FD')
+#ax_V.plot(dataFD['i'], dataFD['Difference'], marker=next(marker),linestyle=next(line),label='Difference')
+#ax_V.set_xlabel("time step ",fontdict=None,labelpad=0)
+#ax_V.legend(loc='best',fontsize=8)
+#ax_V.grid(True,linestyle='-')
+#ax_V.set_title("FD ", fontdict= None, loc = 'center',pad=5)
+#fig_V.savefig('FD.pdf',format='pdf')
+
+
+
+
+#fig_V, ax_V = plt.subplots()
+#ax_V.plot(dataFD['i'], dataFD['FORCE_JACOBIAN'], marker=next(marker),linestyle=next(line),label='Force JAcobian')
+#ax_V.plot(dataFD['i'], dataFD['DFDX'], marker=next(marker),linestyle=next(line),label='F dx with FD')
+#ax_V.plot(dataFD['i'], dataFD['DIFFERENCE2'], marker=next(marker),linestyle=next(line),label='Difference')
+#ax_V.set_xlabel("time step ",fontdict=None,labelpad=0)
+#ax_V.legend(loc='best',fontsize=8)
+#ax_V.grid(True,linestyle='-')
+#ax_V.set_title("FD2 ", fontdict= None, loc = 'center',pad=5)
+#fig_V.savefig('FD2.pdf',format='pdf')
+
+#fig_V, ax_V = plt.subplots()
+#ax_V.plot(dataFD['i'], dataFD['FORCE_JACOBIAN'], marker=next(marker),linestyle=next(line),label='Force JAcobian')
+#ax_V.set_xlabel("time step ",fontdict=None,labelpad=0)
+#ax_V.legend(loc='best',fontsize=8)
+#ax_V.grid(True,linestyle='-')
+#ax_V.set_title("FD3 ", fontdict= None, loc = 'center',pad=5)
+#fig_V.savefig('FD3.pdf',format='pdf')
+
+#fig_V, ax_V = plt.subplots()
+#ax_V.plot(dataFD['i'], dataFD['DFDX'], marker=next(marker),linestyle=next(line),label='F dx with FD')
+#ax_V.set_xlabel("time step ",fontdict=None,labelpad=0)
+#ax_V.legend(loc='best',fontsize=8)
+#ax_V.grid(True,linestyle='-')
+#ax_V.set_title("FD4 ", fontdict= None, loc = 'center',pad=5)
+#fig_V.savefig('FD4.pdf',format='pdf')
+
+#test_e = pd.read_csv("../../test_e.csv")
+
+#print(test_e)
+#x,y,z = np.loadtxt(open("../../test_e.csv"), delimiter=",", skiprows=1,unpack=True)
+#fig = plt.figure()
+#ax = Axes3D(fig)
+#surf = ax.plot_trisurf(x, y, z, cmap=cm.jet, linewidth=0.1)
+#ax.scatter(x_best,y_best,z_best)
+#fig.colorbar(surf, shrink=0.5, aspect=5)
+#plt.savefig('test_e.pdf')
 
 
 plt.show()

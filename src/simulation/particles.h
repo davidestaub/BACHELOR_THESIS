@@ -21,8 +21,12 @@ public:
     Vector2d tmp_noise;
     Vector2d tmp_update;
     double mass,radius;
+    double density;
+    double charge;
     double six_Pi_mu_r;
     int index = -1;
+
+    double p_relative_permittivity = 0.0; //temp
 
     static double time_step;
     static double radius_for_spring;
@@ -227,6 +231,13 @@ public:
 
 };
 
-double Particle::time_step =100.0; // seconds
+double Particle::time_step =0.05; // seconds
 double Particle::radius_for_spring = 10;
 double Particle::eta = 1.0 * std::pow(10,-3);
+
+class Electrode{
+public:
+    double charge;
+    Vector2d position;
+    Electrode(double charge_, Vector2d position_): charge(charge_), position(position_){}
+};
