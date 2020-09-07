@@ -165,9 +165,82 @@ public:
         EndMainMenuBar();
 
         BeginMainMenuBar();
+        if(BeginMenu("Particles")){
+            int i = 0;
+            for(auto& particle_pair: connected_particles){
+                Particle& A = std::get<0>(particle_pair);
+                Particle& B = std::get<1>(particle_pair);
+                if(!A.visited){
+                    std::string label = "Particle ";
+                    label+= std::to_string(i);
+                    const char* label_ = label.c_str();
+                    if(CollapsingHeader(label_)){
+                        std::string mass_label = label;
+                        std::string mass = " mass";
+                        mass_label+= mass;
+                        const char* mass_label_ = mass_label.c_str();
+                        if(SliderScalar(mass_label_,ImGuiDataType_Double,&A.mass,&min_mass,&max_mass)){
+
+                        }
+
+                        std::string charge_label = label;
+                        std::string charge = " charge";
+                        charge_label+= charge;
+                        const char* charge_label_ = charge_label.c_str();
+                        if(SliderScalar(charge_label_,ImGuiDataType_Double,&A.charge,&min_charge,&max_charge)){
+
+                        }
+                        std::string radius_label = label;
+                        std::string radius = " radius";
+                        radius_label += radius;
+                        const char* radius_label_ = radius_label.c_str();
+                        if(SliderScalar(radius_label_,ImGuiDataType_Double,&A.radius,&min_radius,&max_radius)){
+
+                        }
+                    }
+                    A.visited=true;
+                    i++;
+                }
+                if(!B.visited){
+                    std::string label = "Particle ";
+                    label+= std::to_string(i);
+                    const char* label_ = label.c_str();
+                    if(CollapsingHeader(label_)){
+                        std::string mass_label = label;
+                        std::string mass = " mass";
+                        mass_label+= mass;
+                        const char* mass_label_ = mass_label.c_str();
+                        if(SliderScalar(mass_label_,ImGuiDataType_Double,&B.mass,&min_mass,&max_mass)){
+
+                        }
+                        std::string charge_label = label;
+                        std::string charge = " charge";
+                        charge_label+= charge;
+                        const char* charge_label_ = charge_label.c_str();
+                        if(SliderScalar(charge_label_,ImGuiDataType_Double,&B.charge,&min_charge,&max_charge)){
+
+                        }
+                        std::string radius_label = label;
+                        std::string radius = " radius";
+                        radius_label += radius;
+                        const char* radius_label_ = radius_label.c_str();
+                        if(SliderScalar(radius_label_,ImGuiDataType_Double,&B.radius,&min_radius,&max_radius)){
+
+                        }
+                    }
+                    B.visited=true;
+                    i++;
+                }
+
+            }
+            simulation.reset_flags(connected_particles);
+            ImGui::EndMenu();
+        }
+        EndMainMenuBar();
+
+        BeginMainMenuBar();
         if(BeginMenu("Control")) {
             if (CollapsingHeader("Springs")) {
-                Indent();
                 if (SliderScalar("Stiffnes Constant", ImGuiDataType_Double, &simulation.stiffnes_constant,
                                  &min_stiffnes_constant, &max_stiffnes_constant))
                     std::cout << simulation.stiffnes_constant;
@@ -509,6 +582,13 @@ public:
     double max_lower_electrode_voltage = 300.0;
     double min_upper_electrode_voltage = -300.0;
     double max_upper_electrode_voltage = 0.0;
+    double min_mass = 0.1;
+    double max_mass = 100;
+    double min_charge = -30;
+    double max_charge = 30.0;
+    double min_radius = 1.0;
+    double max_radius = 200.0;
+
 
 
 

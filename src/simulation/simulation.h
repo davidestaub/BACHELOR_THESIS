@@ -346,6 +346,7 @@ public:
             electricalfield_force_vector[A.index +1] = get_electrical_force(A)[1];
             electricalfield_force_vector[B.index] = get_electrical_force(B)[0];
             electricalfield_force_vector[B.index+1] = get_electrical_force(B)[1];
+            std::cout<<" e force = "<<electricalfield_force_vector[A.index +1]<<std::endl;
 
 
 
