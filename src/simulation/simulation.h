@@ -23,8 +23,8 @@ using Eigen::MatrixXd;
 
 class Simulation{
 public:
-    Electrode lower_electrode = Electrode(1.0,{0.0,0.0});
-    Electrode upper_electrode = Electrode(-1.0,{100.0,100.0});
+    Electrode lower_electrode = Electrode(1.0,{-100.0,-500.0}, 50.0,500.0,240.0);
+    Electrode upper_electrode = Electrode(-1.0,{100.0,500.0},50.0,500.0,0.0);
     int num_steps = 1;
     double time_step = Particle::time_step;
     int time_index = 0;
@@ -33,6 +33,7 @@ public:
     std::vector<double> potential_energy;
     VectorXd spring_force_vector;
     VectorXd friction_vector;
+    VectorXd electricalfield_force_vector;
     MatrixXd spring_force_matrix_dx;
     MatrixXd spring_force_matrix_dv;
     MatrixXd friction_matrix_dv;
@@ -341,6 +342,12 @@ public:
             friction_matrix_dv.block<2,2>(A.index,A.index) = get_friction_force_dv(A);
             friction_matrix_dv.block<2,2>(B.index,B.index) = get_friction_force_dv(B);
 
+            electricalfield_force_vector[A.index] = get_electrical_force(A)[0];
+            electricalfield_force_vector[A.index +1] = get_electrical_force(A)[1];
+            electricalfield_force_vector[B.index] = get_electrical_force(B)[0];
+            electricalfield_force_vector[B.index+1] = get_electrical_force(B)[1];
+
+
 
            // std::cout<<"Spring Force DX After Filling at positions "<<A.index<<" and "<<B.index<<"\n"<<spring_force_matrix_dx<<"\n";
             spring_force_derivative_x_in_x.push_back(spring_force_matrix_dx(A.index+1,A.index+1));
@@ -449,7 +456,7 @@ public:
     }
 
     VectorXd get_g_with_drag(VectorXd x, std::vector<std::tuple <Particle&,Particle&,double> > &connected_particles){
-        VectorXd F_x = get_current_spring_force(connected_particles,x) - get_current_friction_force(connected_particles,x);
+        VectorXd F_x = get_current_spring_force(connected_particles,x) - get_current_friction_force(connected_particles,x) + electricalfield_force_vector;
         //  std::cout<<" F = "<<std::endl<<F_x<<std::endl;
         // std::cout<<"mass matrix = "<<std::endl<<mass_matrix<<std::endl;
         return mass_matrix * (x - 2.0 * position_vector + position_vector_minus_1) - std::pow(time_step, 2) * F_x;
@@ -760,12 +767,12 @@ public:
 
     //electric stuff from particle and electric fiel paper
     Vector2d get_electrical_force(Particle particle){
-        return get_coulomb_force(particle) + get_image_force(particle) + get_gradient_force(particle);
+        return get_coulomb_force(particle) /*+ get_image_force(particle) + get_gradient_force(particle)*/;
     }
 
 
     Vector2d get_coulomb_force(Particle particle){
-        return get_electrical_field(particle) * particle.charge;
+        return get_electrical_field() * particle.charge;
     }
 
     //TODO
@@ -780,9 +787,12 @@ public:
         return {0.0,0.0};
     }
 
-    //TODO
-    Vector2d get_electrical_field(Particle particle){
-        return {0.0,0.0};
+
+    Vector2d get_electrical_field(){
+        Vector2d E_field;
+        E_field[1] =  (lower_electrode.voltage - upper_electrode.voltage)/(std::abs(lower_electrode.position[1] - upper_electrode.position[1]));
+        E_field[0] = 0.0;
+        return E_field;
     }
 
     Vector2d get_electrical_field_dx(Particle particle){
@@ -827,6 +837,7 @@ public:
         velocity_vector = VectorXd::Zero(size);
         position_vector = VectorXd::Zero(size);
         position_vector_minus_1 = VectorXd::Zero(size);
+        electricalfield_force_vector = VectorXd::Zero(size);
         reset_flags(connected_particles);
     }
 

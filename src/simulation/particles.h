@@ -35,7 +35,7 @@ public:
     bool visited  = false;
     bool visited_ekin = false;
     //everything in micro
-    Particle(double mass = 10.0 ,double radius = 10.0, Vector2d position = {200,200}): mass(mass), radius(radius), position(position) {
+    Particle(double mass = 10.0 ,double radius = 10.0, double charge_=0.0 ,Vector2d position = {200,200}): mass(mass), radius(radius), position(position), charge(charge_) {
         position = initial_position;//{350.0,300.0};
         velocity = initial_velocity;
         tmp_drag = {0,0};
@@ -239,5 +239,8 @@ class Electrode{
 public:
     double charge;
     Vector2d position;
-    Electrode(double charge_, Vector2d position_): charge(charge_), position(position_){}
+    double length;
+    double width;
+    double voltage;
+    Electrode(double charge_, Vector2d position_,double length_, double width_,double voltage_): charge(charge_), position(position_), length(length_), width(width_), voltage(voltage_){}
 };

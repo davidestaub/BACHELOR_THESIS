@@ -157,36 +157,77 @@ public:
         End();*/
 
         BeginMainMenuBar();
-        if(BeginMenu("Control")){
+        if(BeginMenu("Debug")){
             Checkbox("draw cursor", &drawCursor);
             Checkbox("draw circles", &drawCircles);
             ImGui::EndMenu();
         }
         EndMainMenuBar();
 
-        if(CollapsingHeader("Springs")){
-            Indent();
-            if(SliderScalar("Stiffnes Constant",ImGuiDataType_Double, &simulation.stiffnes_constant, &min_stiffnes_constant, &max_stiffnes_constant))
-                std::cout<<simulation.stiffnes_constant;
-        }
-
-        if(CollapsingHeader("Drag")){
-            if(SliderScalar("Viscosity Multiplier", ImGuiDataType_Double, &simulation.viscosity_multiplier, &min_viscosity_multiplier, &max_viscosity_multiplier))
-                std::cout<<simulation.viscosity_multiplier;
-        }
-
-        if(CollapsingHeader("Brownian Motion")){
-            if(SliderScalar("Brownian Multiplier", ImGuiDataType_Double, &simulation.brownian_motion_multiplier, &min_brownian_motion_multiplier, &max_brownian_motion_multiplier))
-                std::cout<<simulation.brownian_motion_multiplier;
-        }
-        if(CollapsingHeader("Simulation")){
-            if(SliderScalar("Time Step", ImGuiDataType_Double, &simulation.time_step, &min_time_step, &max_time_step)){
-                std::cout<<simulation.time_step;
+        BeginMainMenuBar();
+        if(BeginMenu("Control")) {
+            if (CollapsingHeader("Springs")) {
+                Indent();
+                if (SliderScalar("Stiffnes Constant", ImGuiDataType_Double, &simulation.stiffnes_constant,
+                                 &min_stiffnes_constant, &max_stiffnes_constant))
+                    std::cout << simulation.stiffnes_constant;
             }
-            if(SliderScalar("Max itteration",ImGuiDataType_S32,&simulation.max_iterations,&min_max_iterations,&max_max_iterations)){
-                std::cout<<simulation.max_iterations;
+
+            if (CollapsingHeader("Drag")) {
+                if (SliderScalar("Viscosity Multiplier", ImGuiDataType_Double, &simulation.viscosity_multiplier,
+                                 &min_viscosity_multiplier, &max_viscosity_multiplier))
+                    std::cout << simulation.viscosity_multiplier;
             }
+
+            if (CollapsingHeader("Brownian Motion")) {
+                if (SliderScalar("Brownian Multiplier", ImGuiDataType_Double, &simulation.brownian_motion_multiplier,
+                                 &min_brownian_motion_multiplier, &max_brownian_motion_multiplier))
+                    std::cout << simulation.brownian_motion_multiplier;
+            }
+            if (CollapsingHeader("Simulation")) {
+                if (SliderScalar("Time Step", ImGuiDataType_Double, &simulation.time_step, &min_time_step,
+                                 &max_time_step)) {
+                    std::cout << simulation.time_step;
+                }
+                if (SliderScalar("Max itteration", ImGuiDataType_S32, &simulation.max_iterations, &min_max_iterations,
+                                 &max_max_iterations)) {
+                    std::cout << simulation.max_iterations;
+                }
+            }
+            if(CollapsingHeader("Electrodes")){
+                if(CollapsingHeader("Lower Electrode")){
+                    if(SliderScalar(" X position Lower Electrode",ImGuiDataType_Double, &simulation.lower_electrode.position[0], &min_lower_electrode_x_position, &max_lower_electrode_x_position)){
+
+                    }
+                    if(SliderScalar(" Y position Lower Electrode",ImGuiDataType_Double, &simulation.lower_electrode.position[1], &min_lower_electrode_y_position, &max_lower_electrode_y_position)){
+
+                    }
+                    if(SliderScalar(" Charge Lower Electrode",ImGuiDataType_Double, &simulation.lower_electrode.charge, &min_lower_electrode_charge, &max_lower_electrode_charge)){
+
+                    }
+                    if(SliderScalar(" Voltage Lower Electrode",ImGuiDataType_Double, &simulation.lower_electrode.voltage, &min_lower_electrode_voltage, &max_lower_electrode_voltage)){
+
+                    }
+                }
+                if(CollapsingHeader("Upper Electrode")){
+                    if(SliderScalar(" X position Upper Electrode",ImGuiDataType_Double, &simulation.upper_electrode.position[0], &min_upper_electrode_x_position, &max_upper_electrode_x_position)){
+
+                    }
+                    if(SliderScalar(" Y position Upper Electrode",ImGuiDataType_Double, &simulation.upper_electrode.position[1], &min_upper_electrode_y_position, &max_upper_electrode_y_position)){
+
+                    }
+                    if(SliderScalar(" Charge upper Electrode",ImGuiDataType_Double, &simulation.upper_electrode.charge, &min_upper_electrode_charge, &max_upper_electrode_charge)){
+
+                    }
+                    if(SliderScalar(" Voltage Upper Electrode",ImGuiDataType_Double, &simulation.upper_electrode.voltage, &min_upper_electrode_voltage, &max_upper_electrode_voltage)){
+
+                    }
+
+                }
+            }
+            ImGui::EndMenu();
         }
+        EndMainMenuBar();
     }
 
     void drawNanoVG() override {
@@ -198,6 +239,28 @@ public:
         nvgStrokeColor(vg, rect.colorStrokeBox);
         nvgStrokeWidth(vg, 10.0f);
         nvgStroke(vg);
+
+        if(drawRectangle){
+            auto drawRectangle = [this](const Rectangle &rectangle, bool is_lower_electrode){
+
+                nvgBeginPath(vg);
+                nvgRect(vg,rectangle.position[0] + center_of_frame[0], rectangle.position[1] + center_of_frame[1], rectangle.width,rectangle.height);
+
+                if(is_lower_electrode){
+                    nvgFillColor(vg,nvgRGBA(250,0,0,200));
+                }
+                else{
+                    nvgFillColor(vg,nvgRGBA(0,0,250,200));
+                }
+                nvgFill(vg);
+                nvgStrokeColor(vg, rectangle.colorStroke);
+                nvgStrokeWidth(vg, 10.0f);
+                nvgStroke(vg);
+
+            };
+            drawRectangle(Rectangle(simulation.lower_electrode.position, simulation.lower_electrode.width,simulation.lower_electrode.length),true);
+            drawRectangle(Rectangle(simulation.upper_electrode.position, simulation.upper_electrode.width,simulation.upper_electrode.length),false);
+        }
 
         if(drawCircles)
         {
@@ -218,16 +281,18 @@ public:
             /*for(const auto &p : connect_vector) //change to particles for std sim
                 drawCircle(Circle(p.position,p.radius));*/
             for(auto &pair : connected_particles) { //change to particles for std sim
-               // if(!pair.first.is_drawn) {
-                    drawCircle(Circle(std::get<0>(pair).position, std::get<0>(pair).radius),1);
-                 //   pair.first.is_drawn = true;
-               // }
-               // if(!pair.second.is_drawn) {
-                    drawCircle(Circle(std::get<1>(pair).position, std::get<1>(pair).radius),2);
-                //    pair.second.is_drawn = true;
-               // }
+
+               if(!std::get<0>(pair).visited) {
+                   drawCircle(Circle(std::get<0>(pair).position, std::get<0>(pair).radius), 1);
+                   std::get<0>(pair).visited = true;
+               }
+               if(!std::get<1>(pair).visited) {
+                   drawCircle(Circle(std::get<1>(pair).position, std::get<1>(pair).radius), 2);
+                   std::get<1>(pair).visited = true;
+               }
 
             }
+            simulation.reset_flags(connected_particles);
             /*for(auto &particle : particles){
                 drawCircle(Circle(particle.position, particle.radius));
             }*/ //uncomment this if you want also single particles
@@ -352,15 +417,15 @@ public:
     double zoom = 10;
     int base;
 
-    Particle BIG_A = Particle(100,40, {520,-100});
-    Particle SMALL_B = Particle(10,15,{500,-90});
+    //Particle BIG_A = Particle(100,40, {520,-100});
+    //Particle SMALL_B = Particle(10,15,{500,-90});
 
 
-    Particle A = Particle(50.0,20.0,{100.0,100.0});
-    Particle B = Particle(50.0,20.0,{200.0,100.0});
-    Particle C = Particle(50.0,20.0,{150.0,0.0});
+    Particle A = Particle(50.0,20.0,1.0,{100.0,100.0});
+    Particle B = Particle(50.0,20.0,1.0,{200.0,100.0});
+    Particle C = Particle(50.0,20.0,1.0,{150.0,0.0});
 
-    Particle A2 = Particle(20,20,{100,100});
+  /*  Particle A2 = Particle(20,20,{100,100});
     Particle B2 = Particle(20,20,{0,0});
     Particle C2 = Particle(20,20,{-100,-100});
 
@@ -387,11 +452,11 @@ public:
     Particle C6 = Particle(20,20,{-400,400});
     Particle D6 = Particle(20,20,{-400,400});
     Particle E6 = Particle(20,20,{-500,400});
-    Particle F6 = Particle(20,20,{-400,200});
+    Particle F6 = Particle(20,20,{-400,200});*/
 
     std::vector<Particle> connect_vector;
 
-    Particle particle_1;
+    /*Particle particle_1;
     Particle particle_2 = Particle(10,10,{400,-400});
     Particle particle_3 = Particle(10,20,{-200,-200});
     Particle particle_4 = Particle(10,10,{500,200});
@@ -402,7 +467,7 @@ public:
     Particle particle_9 = Particle(10,10,{470,-100});
     Particle particle_10 = Particle(10,10,{-600,300});
 
-    Particle loner = Particle(10,30,{-600,-600});
+    Particle loner = Particle(10,30,{-600,-600});*/
     std::vector<Particle> particles;
     std::vector<std::tuple <Particle&,Particle&,double> > connected_particles;
     Simulation simulation;
@@ -415,6 +480,7 @@ public:
 
     bool drawCursor = false;
     bool drawCircles = true;
+    bool drawRectangle = true;
 
     double min_stiffnes_constant = 0.0;
     double max_stiffnes_constant = 100000.0;
@@ -426,6 +492,38 @@ public:
     double max_time_step = 10.0;
     int min_max_iterations = 100;
     int max_max_iterations = 1000000;
+    double min_lower_electrode_x_position = -1000.0;
+    double max_lower_electrode_x_position = 1000.0;
+    double min_lower_electrode_y_position = -1000.0;
+    double max_lower_electrode_y_position = 1000.0;
+    double min_upper_electrode_x_position = -1000.0;
+    double max_upper_electrode_x_position = 1000.0;
+    double min_upper_electrode_y_position = -1000.0;
+    double max_upper_electrode_y_position = 1000.0;
+    double min_lower_electrode_charge = -10.0;
+    double max_lower_electrode_charge = 10.0;
+    double min_upper_electrode_charge = -10.0;
+    double max_upper_electrode_charge = 10.0;
+
+    double min_lower_electrode_voltage = 0.0;
+    double max_lower_electrode_voltage = 300.0;
+    double min_upper_electrode_voltage = -300.0;
+    double max_upper_electrode_voltage = 0.0;
+
+
+
+    struct Rectangle
+    {
+        Rectangle(Vector2d p, double w, double h){
+            this->position = p;
+            this->width = w;
+            this->height = h;
+        }
+        Vector2d position;
+        double height;
+        double width;
+        NVGcolor colorFill = nvgRGBA(50, 50, 50, 100) , colorStroke = nvgRGBA(50, 50, 50, 100);
+    };
 
     struct Circle
     {
