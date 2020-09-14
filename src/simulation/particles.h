@@ -25,6 +25,11 @@ public:
     double charge;
     double six_Pi_mu_r;
     int index = -1;
+    double permittivity;
+    double conductivity;
+
+
+    bool dissolve = false;
 
     double p_relative_permittivity = 0.0; //temp
 
@@ -34,19 +39,26 @@ public:
     bool is_drawn = false;
     bool visited  = false;
     bool visited_ekin = false;
+
     //everything in micro
-    Particle(double mass = 10.0 ,double radius = 10.0, double charge_=0.0 ,Vector2d position = {200,200}): mass(mass), radius(radius), position(position), charge(charge_) {
+    Particle(double mass = 10.0 ,double radius = 10.0, double charge_=0.0 ,Vector2d position = {200,200}, double permittivity_ = 2.4, double conductivity_ = std::pow(10,-14)): mass(mass), radius(radius), position(position), charge(charge_), permittivity(permittivity_), conductivity(conductivity_){
         position = initial_position;//{350.0,300.0};
         velocity = initial_velocity;
         tmp_drag = {0,0};
         tmp_noise = {0,0};
         tmp_update = {0,0};
         six_Pi_mu_r = ( 6.0 * M_PI * eta * (radius*std::pow(10,-6))  * std::pow(10,6) );
+        density = mass/(M_PI * std::pow(radius,2));
         //changed initial radius to much bigger, previously 10^-6
 
     }
     Vector2d initial_position = {200,200};
     Vector2d initial_velocity = {0.0,0.0};
+
+    void dissolve_particle(double dissolve_rate){
+        this->radius = this->radius - dissolve_rate;
+        this->mass = this->mass - std::pow(dissolve_rate,2);
+    }
 
 
     Vector2d force(Particle &particle) {
@@ -231,7 +243,7 @@ public:
 
 };
 
-double Particle::time_step =0.05; // seconds
+double Particle::time_step =0.05* std::pow(10,-6); // seconds
 double Particle::radius_for_spring = 10;
 double Particle::eta = 1.0 * std::pow(10,-3);
 
@@ -242,5 +254,7 @@ public:
     double length;
     double width;
     double voltage;
-    Electrode(double charge_, Vector2d position_,double length_, double width_,double voltage_): charge(charge_), position(position_), length(length_), width(width_), voltage(voltage_){}
+    double peak_voltage;
+    double frequency;
+    Electrode(double charge_, Vector2d position_,double length_, double width_,double voltage_,double frequency_, double peak_voltage_): charge(charge_), position(position_), length(length_), width(width_), voltage(voltage_), frequency(frequency_), peak_voltage(peak_voltage_){}
 };

@@ -48,8 +48,8 @@ public:
        //connect_vector.push_back(B);
       // particles.push_back(loner);
        simulation.connect(A,B,(A.radius+B.radius),connected_particles);
-       simulation.connect(B,C,(C.radius+B.radius),connected_particles);
-       simulation.connect(A,C, (A.radius+C.radius),connected_particles);
+//       simulation.connect(B,C,(C.radius+B.radius),connected_particles);
+     //  simulation.connect(A,C, (A.radius+C.radius),connected_particles);
 /*
         simulation.connect(A2,B2,(A2.radius+B2.radius),connected_particles);
         simulation.connect(B2,C2,(C2.radius+B2.radius),connected_particles);
@@ -107,6 +107,8 @@ public:
 
 
 
+
+
     void process() override {
         my_data.open("data.csv");
 
@@ -139,9 +141,7 @@ public:
            simulation.run_simulation_for_connected_Particles(connected_particles);
 
             simulation.time_index++;
-       /* if(simulation.newton_counter > 10){
-            runSim = false;
-        }*/
+
         }
         my_data.close();
     }
@@ -197,6 +197,26 @@ public:
                         if(SliderScalar(radius_label_,ImGuiDataType_Double,&A.radius,&min_radius,&max_radius)){
 
                         }
+                        std::string permittivity_label = label;
+                        std::string permittivity = " permittivity";
+                        permittivity_label += permittivity;
+                        const char* permittivity_label_ = permittivity_label.c_str();
+                        if(SliderScalar(permittivity_label_,ImGuiDataType_Double,&A.permittivity,&min_permittivity,&max_permittivity)){
+
+                        }
+                        std::string conductivity_label = label;
+                        std::string conductivity = " conductivity";
+                        conductivity_label += conductivity;
+                        const char* conductivity_label_ = conductivity_label.c_str();
+                        if(SliderScalar(conductivity_label_,ImGuiDataType_Double,&A.conductivity,&min_conductivity,&max_conductivity)){
+
+                        }
+
+                        std::string dissolve_label = label;
+                        std::string dissolve = " dissolve";
+                        dissolve_label+=dissolve;
+                        const char* dissolve_label_ = dissolve_label.c_str();
+                        Checkbox(dissolve_label_,&A.dissolve);
                     }
                     A.visited=true;
                     i++;
@@ -227,6 +247,26 @@ public:
                         if(SliderScalar(radius_label_,ImGuiDataType_Double,&B.radius,&min_radius,&max_radius)){
 
                         }
+                        std::string permittivity_label = label;
+                        std::string permittivity = " permittivity";
+                        permittivity_label += permittivity;
+                        const char* permittivity_label_ = permittivity_label.c_str();
+                        if(SliderScalar(permittivity_label_,ImGuiDataType_Double,&B.permittivity,&min_permittivity,&max_permittivity)){
+
+                        }
+                        std::string conductivity_label = label;
+                        std::string conductivity = " conductivity";
+                        conductivity_label += conductivity;
+                        const char* conductivity_label_ = conductivity_label.c_str();
+                        if(SliderScalar(conductivity_label_,ImGuiDataType_Double,&B.conductivity,&min_conductivity,&max_conductivity)){
+
+                        }
+                        std::string dissolve_label = label;
+                        std::string dissolve = " dissolve";
+                        dissolve_label+=dissolve;
+                        const char* dissolve_label_ = dissolve_label.c_str();
+                        Checkbox(dissolve_label_,&B.dissolve);
+
                     }
                     B.visited=true;
                     i++;
@@ -281,6 +321,13 @@ public:
                     if(SliderScalar(" Voltage Lower Electrode",ImGuiDataType_Double, &simulation.lower_electrode.voltage, &min_lower_electrode_voltage, &max_lower_electrode_voltage)){
 
                     }
+                    if(SliderScalar(" Frequency Lower Electrode",ImGuiDataType_Double, &simulation.lower_electrode.frequency, &min_lower_electrode_frequency, &max_lower_electrode_frequency)){
+
+                    }
+
+                    if(SliderScalar(" Peak Voltage Lower Electrode",ImGuiDataType_Double, &simulation.lower_electrode.peak_voltage, &min_lower_electrode_peak_voltage, &max_lower_electrode_peak_voltage)){
+
+                    }
                 }
                 if(CollapsingHeader("Upper Electrode")){
                     if(SliderScalar(" X position Upper Electrode",ImGuiDataType_Double, &simulation.upper_electrode.position[0], &min_upper_electrode_x_position, &max_upper_electrode_x_position)){
@@ -314,10 +361,11 @@ public:
         nvgStroke(vg);
 
         if(drawRectangle){
-            auto drawRectangle = [this](const Rectangle &rectangle, bool is_lower_electrode){
+            auto drawRectangle = [this](const Rectangle &rectangle, bool is_lower_electrode,double scale, Vector2d distance){
 
                 nvgBeginPath(vg);
-                nvgRect(vg,rectangle.position[0] + center_of_frame[0], rectangle.position[1] + center_of_frame[1], rectangle.width,rectangle.height);
+
+                nvgRect(vg,rectangle.position[0] + distance[0] * scale + center_of_frame[0], rectangle.position[1]+ distance[1] * scale + center_of_frame[1], rectangle.width,rectangle.height);
 
                 if(is_lower_electrode){
                     nvgFillColor(vg,nvgRGBA(250,0,0,200));
@@ -331,15 +379,18 @@ public:
                 nvgStroke(vg);
 
             };
-            drawRectangle(Rectangle(simulation.lower_electrode.position, simulation.lower_electrode.width,simulation.lower_electrode.length),true);
-            drawRectangle(Rectangle(simulation.upper_electrode.position, simulation.upper_electrode.width,simulation.upper_electrode.length),false);
+            Vector2d formation_center= (simulation.lower_electrode.position + simulation.upper_electrode.position) * 0.5;
+            Vector2d distance_1 = formation_center - simulation.lower_electrode.position;
+            Vector2d distance_2 = formation_center - simulation.upper_electrode.position;
+            drawRectangle(Rectangle(simulation.lower_electrode.position, simulation.lower_electrode.width,simulation.lower_electrode.length),true, (1.0/mscale),distance_1);
+            drawRectangle(Rectangle(simulation.upper_electrode.position, simulation.upper_electrode.width,simulation.upper_electrode.length),false,(1.0/mscale),distance_2);
         }
 
         if(drawCircles)
         {
-            auto drawCircle = [this](const Circle &circle,int tmpfortest){
+            auto drawCircle = [this](const Circle &circle,int tmpfortest, double scale, Vector2d distance){
                 nvgBeginPath(vg);
-                nvgCircle(vg, circle.pos[0] + center_of_frame[0], circle.pos[1]+ center_of_frame[1], circle.radius);
+                nvgCircle(vg, (circle.pos[0]  + distance[0] * scale) + center_of_frame[0], (circle.pos[1] + distance[1] * scale) + center_of_frame[1], circle.radius *scale);
                 if(tmpfortest ==1) {
                     nvgFillColor(vg, nvgRGBA(150, 0, 0, 100));
                 }else{
@@ -353,14 +404,42 @@ public:
 
             /*for(const auto &p : connect_vector) //change to particles for std sim
                 drawCircle(Circle(p.position,p.radius));*/
+
+            Vector2d formation_center;
+            formation_center.setZero();
+            double objects_total = simulation.size;
+            for(auto &pair : connected_particles){
+
+                if(!std::get<0>(pair).visited) {
+                    formation_center = formation_center + std::get<0>(pair).position;
+                    std::get<0>(pair).visited = true;
+                }
+                if(!std::get<1>(pair).visited) {
+                    formation_center = formation_center + std::get<1>(pair).position;
+                    std::get<1>(pair).visited = true;
+                }
+
+            }
+            formation_center[0] = formation_center[0]/objects_total;
+            formation_center[1] = formation_center[1]/objects_total;
+            simulation.reset_flags(connected_particles);
+
+
+
             for(auto &pair : connected_particles) { //change to particles for std sim
 
+
+
+
+
                if(!std::get<0>(pair).visited) {
-                   drawCircle(Circle(std::get<0>(pair).position, std::get<0>(pair).radius), 1);
+                   Vector2d distance = formation_center - std::get<0>(pair).position;
+                   drawCircle(Circle(std::get<0>(pair).position, std::get<0>(pair).radius), 1, (1.0/mscale), distance);
                    std::get<0>(pair).visited = true;
                }
                if(!std::get<1>(pair).visited) {
-                   drawCircle(Circle(std::get<1>(pair).position, std::get<1>(pair).radius), 2);
+                   Vector2d distance = formation_center - std::get<1>(pair).position;
+                   drawCircle(Circle(std::get<1>(pair).position, std::get<1>(pair).radius), 2, (1.0/mscale), distance);
                    std::get<1>(pair).visited = true;
                }
 
@@ -398,7 +477,7 @@ protected:
 
     }
 
-    void scrollWheel(double  /*xoffset*/, double yoffset) override {
+    void scrollWheel(double  xoffset, double yoffset) override {
         double zoomOld = zoom;
         zoom *= std::pow(1.10, yoffset);
         double cursorPos[2] = { mouseState.lastMouseX, mouseState.lastMouseY };
@@ -427,6 +506,7 @@ protected:
             runSim =!runSim;
             simulation.reset_simulation(connected_particles);
         }
+
     }
 
 
@@ -493,10 +573,12 @@ public:
     //Particle BIG_A = Particle(100,40, {520,-100});
     //Particle SMALL_B = Particle(10,15,{500,-90});
 
+    double mscale = std::pow(10,-6);
 
-    Particle A = Particle(50.0,20.0,1.0,{100.0,100.0});
-    Particle B = Particle(50.0,20.0,1.0,{200.0,100.0});
-    Particle C = Particle(50.0,20.0,1.0,{150.0,0.0});
+
+    Particle A = Particle(50.0 *mscale ,200.0 * mscale,1.0,{100.0 * mscale,100.0 * mscale});
+    Particle B = Particle(50.0 * mscale,20.0* mscale,1.0,{140.0 * mscale,100.0 * mscale});
+    //Particle C = Particle(50.0,20.0,1.0,{150.0,0.0});
 
   /*  Particle A2 = Particle(20,20,{100,100});
     Particle B2 = Particle(20,20,{0,0});
@@ -561,18 +643,18 @@ public:
     double max_viscosity_multiplier = 1000.0;
     double min_brownian_motion_multiplier = 0.0;
     double max_brownian_motion_multiplier = 10.0;
-    double min_time_step = 0.0;
-    double max_time_step = 10.0;
+    double min_time_step = 0.0* mscale;
+    double max_time_step = 1000.0 * mscale;
     int min_max_iterations = 100;
     int max_max_iterations = 1000000;
-    double min_lower_electrode_x_position = -1000.0;
-    double max_lower_electrode_x_position = 1000.0;
-    double min_lower_electrode_y_position = -1000.0;
-    double max_lower_electrode_y_position = 1000.0;
-    double min_upper_electrode_x_position = -1000.0;
-    double max_upper_electrode_x_position = 1000.0;
-    double min_upper_electrode_y_position = -1000.0;
-    double max_upper_electrode_y_position = 1000.0;
+    double min_lower_electrode_x_position = -1000.0 * mscale;
+    double max_lower_electrode_x_position = 1000.0* mscale;
+    double min_lower_electrode_y_position = -1000.0* mscale;
+    double max_lower_electrode_y_position = 1000.0* mscale;
+    double min_upper_electrode_x_position = -1000.0* mscale;
+    double max_upper_electrode_x_position = 1000.0* mscale;
+    double min_upper_electrode_y_position = -1000.0* mscale;
+    double max_upper_electrode_y_position = 1000.0* mscale;
     double min_lower_electrode_charge = -10.0;
     double max_lower_electrode_charge = 10.0;
     double min_upper_electrode_charge = -10.0;
@@ -582,12 +664,21 @@ public:
     double max_lower_electrode_voltage = 300.0;
     double min_upper_electrode_voltage = -300.0;
     double max_upper_electrode_voltage = 0.0;
-    double min_mass = 0.1;
-    double max_mass = 100;
+    double min_mass = 0.1 * mscale;
+    double max_mass = 100 * mscale;
     double min_charge = -30;
     double max_charge = 30.0;
-    double min_radius = 1.0;
-    double max_radius = 200.0;
+    double min_radius = 1.0 * mscale;
+    double max_radius = 200.0 * mscale;
+    double min_lower_electrode_frequency = 0.0;
+    double max_lower_electrode_frequency = 100.0;
+    double min_lower_electrode_peak_voltage = 0.0;
+    double max_lower_electrode_peak_voltage = 1000.0;
+    double min_permittivity = 0.0;
+    double max_permittivity = 200.0;
+    double min_conductivity = 0.0;
+    double max_conductivity = 1.0;
+
 
 
 
