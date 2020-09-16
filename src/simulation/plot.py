@@ -18,12 +18,43 @@ import glob
 
 data = pd.read_csv("../../data.csv")
 data2 = pd.read_csv("../../data2.csv")
+v_w_data = pd.read_csv("../../v_w.csv")
+print(v_w_data)
+
+v_E_data = pd.read_csv("../../v_E.csv")
+print(v_E_data)
 
 velocities = pd.read_csv("../../velocities.csv")
 print(velocities)
 
 marker = itertools.cycle(('+','.','o','*'))
 line = itertools.cycle((':','-.','--'))
+
+fig_V, ax_V = plt.subplots()
+plt.tight_layout
+
+ax_V.plot(v_w_data['Frequency'], v_w_data[' Velocity'] * pow(10,6), marker=next(marker),linestyle=next(line))
+
+ax_V.set_xlabel("Frequency",fontdict=None,labelpad=0)
+ax_V.set_ylabel("Velocity",fontdict=None,labelpad=-5, rotation=0,)
+ax_V.legend(loc='best',fontsize=8)
+ax_V.grid(True,linestyle='-')
+ax_V.set_title("Velocity vs Frequency in micrometer/s ", fontdict= None, loc = 'center',pad=5)
+fig_V.savefig('Velocity_frequency.pdf',format='pdf')
+
+fig_V, ax_V = plt.subplots()
+plt.tight_layout
+
+ax_V.plot(v_E_data['E Field'], v_E_data[' Velocity'] * pow(10,6), marker=next(marker),linestyle=next(line))
+
+ax_V.set_xlabel("E Field",fontdict=None,labelpad=0)
+ax_V.set_ylabel("Velocity",fontdict=None,labelpad=-5, rotation=0,)
+ax_V.legend(loc='best',fontsize=8)
+ax_V.grid(True,linestyle='-')
+ax_V.set_title("Velocity vs E Fieldin micrometer/s ", fontdict= None, loc = 'center',pad=5)
+fig_V.savefig('Velocity_E_Field.pdf',format='pdf')
+
+
 
 fig_V, ax_V = plt.subplots()
 plt.tight_layout()

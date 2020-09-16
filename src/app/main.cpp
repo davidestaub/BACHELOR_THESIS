@@ -217,6 +217,32 @@ public:
                         dissolve_label+=dissolve;
                         const char* dissolve_label_ = dissolve_label.c_str();
                         Checkbox(dissolve_label_,&A.dissolve);
+
+                        std::string silica_label = label;
+                        std::string silica = " Silica";
+                        silica_label+=silica;
+                        const char* silica_label_ = silica_label.c_str();
+                        if(Checkbox(silica_label_,&is_silica_1)){
+                            A.permittivity = 3.9;
+                            A.density = 2650.0;
+                            A.radius = 3.0 * mscale;
+                            A.mass = M_PI * std::pow(A.radius,2) * A.density;
+                            A.conductivity = 0.0;
+                        }
+                        std::string PS_label = label;
+                        std::string PS = " PS";
+                        PS_label+=PS;
+                        const char* PS_label_ = PS_label.c_str();
+                        if(Checkbox(PS_label_, &is_PS_1)){
+                            A.permittivity = 2.5;
+                            A.density = 1050;
+                            A.radius = 3.0 * mscale;
+                            A.mass = M_PI * std::pow(A.radius,2) * A.density;
+                            A.conductivity = 5 * std::pow(10,-9);
+
+                        }
+
+
                     }
                     A.visited=true;
                     i++;
@@ -267,6 +293,32 @@ public:
                         const char* dissolve_label_ = dissolve_label.c_str();
                         Checkbox(dissolve_label_,&B.dissolve);
 
+                        std::string silica_label = label;
+                        std::string silica = " Silica";
+                        silica_label+=silica;
+                        const char* silica_label_ = silica_label.c_str();
+                        if(Checkbox(silica_label_,&is_silica_2)){
+                            B.permittivity = 3.9;
+                            B.density = 2650.0;
+                            B.radius = 2.0 * mscale;
+                            B.mass = M_PI * std::pow(B.radius,2) * B.density;
+                            B.conductivity = 0.0;
+                        }
+                        std::string PS_label = label;
+                        std::string PS = " PS";
+                        PS_label+=PS;
+                        const char* PS_label_ = PS_label.c_str();
+
+
+                        if(Checkbox(PS_label_, &is_PS_2)){
+                            B.permittivity = 2.5;
+                            B.density = 1050;
+                            B.radius = 2.0 * mscale;
+                            B.mass = M_PI * std::pow(A.radius,2) * A.density;
+                            B.conductivity = 5 * std::pow(10,-9);
+
+                        }
+
                     }
                     B.visited=true;
                     i++;
@@ -290,6 +342,19 @@ public:
                 if (SliderScalar("Viscosity Multiplier", ImGuiDataType_Double, &simulation.viscosity_multiplier,
                                  &min_viscosity_multiplier, &max_viscosity_multiplier))
                     std::cout << simulation.viscosity_multiplier;
+            }
+
+            if(CollapsingHeader("Experiments")){
+                if(Checkbox(" Silica - Silica Experiment", &first_experiment)){
+                    simulation.beta = 1.0;
+                    simulation.lower_electrode.peak_voltage = 6.5;
+                    simulation.upper_electrode.position[1] = simulation.lower_electrode.position[1] + 100.0 * mscale;
+                }
+                if(Checkbox(" PS - PS Experiment", &second_experiment)){
+                    simulation.beta = 1.0;
+                    simulation.lower_electrode.frequency = 500.0;
+                    simulation.upper_electrode.position[1] = simulation.lower_electrode.position[1] + 100.0 * mscale;
+                }
             }
 
             if (CollapsingHeader("Brownian Motion")) {
@@ -576,7 +641,7 @@ public:
     double mscale = std::pow(10,-6);
 
 
-    Particle A = Particle(50.0 *mscale ,200.0 * mscale,1.0,{100.0 * mscale,100.0 * mscale});
+    Particle A = Particle(50.0 *mscale ,20.0 * mscale,1.0,{100.0 * mscale,100.0 * mscale});
     Particle B = Particle(50.0 * mscale,20.0* mscale,1.0,{140.0 * mscale,100.0 * mscale});
     //Particle C = Particle(50.0,20.0,1.0,{150.0,0.0});
 
@@ -644,7 +709,7 @@ public:
     double min_brownian_motion_multiplier = 0.0;
     double max_brownian_motion_multiplier = 10.0;
     double min_time_step = 0.0* mscale;
-    double max_time_step = 1000.0 * mscale;
+    double max_time_step = 1.0;
     int min_max_iterations = 100;
     int max_max_iterations = 1000000;
     double min_lower_electrode_x_position = -1000.0 * mscale;
@@ -671,13 +736,20 @@ public:
     double min_radius = 1.0 * mscale;
     double max_radius = 200.0 * mscale;
     double min_lower_electrode_frequency = 0.0;
-    double max_lower_electrode_frequency = 100.0;
+    double max_lower_electrode_frequency = 12000.0;
     double min_lower_electrode_peak_voltage = 0.0;
     double max_lower_electrode_peak_voltage = 1000.0;
     double min_permittivity = 0.0;
     double max_permittivity = 200.0;
     double min_conductivity = 0.0;
-    double max_conductivity = 1.0;
+    double max_conductivity = 1.0 * std::pow(10,-3);
+
+    bool is_silica_1 = false;
+    bool is_silica_2 = false;
+    bool first_experiment = false;
+    bool second_experiment = false;
+    bool is_PS_1 = false;
+    bool is_PS_2 = false;
 
 
 
@@ -757,6 +829,20 @@ int main(int, char**)
         myfile << app.simulation.total_energy[i]<<","<<app.simulation.kinetic_energy[i]<<","<<app.simulation.potential_energy[i]<<","<<app.simulation.e_vec[i]<<","<<app.simulation.spring_force_vec_over_time_x[i]/app.simulation.stiffnes_constant<<","<<app.simulation.spring_force_vec_over_time_y[i]/app.simulation.stiffnes_constant<<","<<app.simulation.A_B_DISTANCE[i]<<","<<app.simulation.spring_force_derivative_x_in_x[i]/app.simulation.stiffnes_constant<<","<<app.simulation.position_vec_over_time_in_x[i]<<","<<app.simulation.position_vec_over_time_in_y[i]<<","<<i<<std::endl;
     }
 
+    std::ofstream v_w;
+    v_w.open("../../../v_w.csv");
+    v_w <<" Velocity"<<","<<"Frequency"<<std::endl;
+    for(int i = 0; i<app.simulation.frequencies.size();i++){
+        v_w<<app.simulation.velocities[i]<<","<<app.simulation.frequencies[i]<<std::endl;
+    }
+
+    std::ofstream v_E;
+    v_E.open("../../../v_E.csv");
+    v_E <<" Velocity"<<","<<"E Field"<<std::endl;
+    for(int i = 0; i<app.simulation.Efields.size();i++){
+        v_E<<app.simulation.velocities_2[i]<<","<<app.simulation.Efields[i]<<std::endl;
+    }
+
     std::ofstream velocities;
     velocities.open ("../../../velocities.csv");
     std::cout<<"test2"<<std::endl;
@@ -792,6 +878,8 @@ int main(int, char**)
     best<<"x"<<","<<"y"<<","<<"z"<<std::endl;
     best<<app.simulation.best_found[0]<<","<<app.simulation.best_found[1]<<","<<app.simulation.best_found[2]<<std::endl;
     myfile.close();
+    v_w.close();
+    v_E.close();
     myfile2.close();
     myfile3.close();
     best.close();
