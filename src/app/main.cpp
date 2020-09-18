@@ -160,6 +160,7 @@ public:
         if(BeginMenu("Debug")){
             Checkbox("draw cursor", &drawCursor);
             Checkbox("draw circles", &drawCircles);
+            Checkbox(" Switch view", &switch_view);
             ImGui::EndMenu();
         }
         EndMainMenuBar();
@@ -226,7 +227,7 @@ public:
                             A.permittivity = 3.9;
                             A.density = 2650.0;
                             A.radius = 3.0 * mscale;
-                            A.mass = M_PI * std::pow(A.radius,2) * A.density;
+
                             A.conductivity = 0.0;
                         }
                         std::string PS_label = label;
@@ -237,7 +238,7 @@ public:
                             A.permittivity = 2.5;
                             A.density = 1050;
                             A.radius = 3.0 * mscale;
-                            A.mass = M_PI * std::pow(A.radius,2) * A.density;
+
                             A.conductivity = 5 * std::pow(10,-9);
 
                         }
@@ -301,7 +302,6 @@ public:
                             B.permittivity = 3.9;
                             B.density = 2650.0;
                             B.radius = 2.0 * mscale;
-                            B.mass = M_PI * std::pow(B.radius,2) * B.density;
                             B.conductivity = 0.0;
                         }
                         std::string PS_label = label;
@@ -314,7 +314,6 @@ public:
                             B.permittivity = 2.5;
                             B.density = 1050;
                             B.radius = 2.0 * mscale;
-                            B.mass = M_PI * std::pow(A.radius,2) * A.density;
                             B.conductivity = 5 * std::pow(10,-9);
 
                         }
@@ -348,12 +347,13 @@ public:
                 if(Checkbox(" Silica - Silica Experiment", &first_experiment)){
                     simulation.beta = 1.0;
                     simulation.lower_electrode.peak_voltage = 6.5;
-                    simulation.upper_electrode.position[1] = simulation.lower_electrode.position[1] + 100.0 * mscale;
+                    simulation.upper_electrode.position[2] = simulation.lower_electrode.position[2] + 100.0 * mscale;
                 }
                 if(Checkbox(" PS - PS Experiment", &second_experiment)){
-                    simulation.beta = 1.0;
-                    simulation.lower_electrode.frequency = 500.0;
-                    simulation.upper_electrode.position[1] = simulation.lower_electrode.position[1] + 100.0 * mscale;
+                    simulation.beta = 0.02;
+                    //simulation.lower_electrode.frequency = 500.0;
+                    simulation.lower_electrode.peak_voltage = 6.5;
+                    simulation.upper_electrode.position[2] = simulation.lower_electrode.position[2] + 100.0 * mscale;
                 }
             }
 
@@ -378,6 +378,9 @@ public:
 
                     }
                     if(SliderScalar(" Y position Lower Electrode",ImGuiDataType_Double, &simulation.lower_electrode.position[1], &min_lower_electrode_y_position, &max_lower_electrode_y_position)){
+
+                    }
+                    if(SliderScalar(" Z position Lower Electrode",ImGuiDataType_Double, &simulation.lower_electrode.position[2], &min_lower_electrode_y_position, &max_lower_electrode_y_position)){
 
                     }
                     if(SliderScalar(" Charge Lower Electrode",ImGuiDataType_Double, &simulation.lower_electrode.charge, &min_lower_electrode_charge, &max_lower_electrode_charge)){
@@ -426,53 +429,87 @@ public:
         nvgStroke(vg);
 
         if(drawRectangle){
-            auto drawRectangle = [this](const Rectangle &rectangle, bool is_lower_electrode,double scale, Vector2d distance){
+            auto drawRectangle = [this](const Rectangle &rectangle, bool is_lower_electrode,double scale, Vector3d distance){
+                if(switch_view){
+                    nvgBeginPath(vg);
 
-                nvgBeginPath(vg);
+                    nvgRect(vg,rectangle.position[0] + distance[0] * scale + center_of_frame[0], rectangle.position[1]+ distance[1] * scale + center_of_frame[1], rectangle.width,rectangle.depth);
 
-                nvgRect(vg,rectangle.position[0] + distance[0] * scale + center_of_frame[0], rectangle.position[1]+ distance[1] * scale + center_of_frame[1], rectangle.width,rectangle.height);
+                    if(is_lower_electrode){
+                        nvgFillColor(vg,nvgRGBA(250,0,0,200));
+                    }
+                    else{
+                        nvgFillColor(vg,nvgRGBA(0,0,250,200));
+                    }
+                    nvgFill(vg);
+                    nvgStrokeColor(vg, rectangle.colorStroke);
+                    nvgStrokeWidth(vg, 10.0f);
+                    nvgStroke(vg);
+                }else{
+                    nvgBeginPath(vg);
 
-                if(is_lower_electrode){
-                    nvgFillColor(vg,nvgRGBA(250,0,0,200));
+                    nvgRect(vg,rectangle.position[0] + distance[0] * scale + center_of_frame[0], rectangle.position[2]+ distance[2] * scale + center_of_frame[2], rectangle.width,rectangle.height);
+
+                    if(is_lower_electrode){
+                        nvgFillColor(vg,nvgRGBA(250,0,0,200));
+                    }
+                    else{
+                        nvgFillColor(vg,nvgRGBA(0,0,250,200));
+                    }
+                    nvgFill(vg);
+                    nvgStrokeColor(vg, rectangle.colorStroke);
+                    nvgStrokeWidth(vg, 10.0f);
+                    nvgStroke(vg);
                 }
-                else{
-                    nvgFillColor(vg,nvgRGBA(0,0,250,200));
-                }
-                nvgFill(vg);
-                nvgStrokeColor(vg, rectangle.colorStroke);
-                nvgStrokeWidth(vg, 10.0f);
-                nvgStroke(vg);
+
+
 
             };
-            Vector2d formation_center= (simulation.lower_electrode.position + simulation.upper_electrode.position) * 0.5;
-            Vector2d distance_1 = formation_center - simulation.lower_electrode.position;
-            Vector2d distance_2 = formation_center - simulation.upper_electrode.position;
-            drawRectangle(Rectangle(simulation.lower_electrode.position, simulation.lower_electrode.width,simulation.lower_electrode.length),true, (1.0/mscale),distance_1);
-            drawRectangle(Rectangle(simulation.upper_electrode.position, simulation.upper_electrode.width,simulation.upper_electrode.length),false,(1.0/mscale),distance_2);
+            Vector3d formation_center= (simulation.lower_electrode.position + simulation.upper_electrode.position) * 0.5;
+            Vector3d distance_1 = formation_center - simulation.lower_electrode.position;
+            Vector3d distance_2 = formation_center - simulation.upper_electrode.position;
+            drawRectangle(Rectangle(simulation.lower_electrode.position, simulation.lower_electrode.width,simulation.lower_electrode.length,simulation.lower_electrode.depth),true, (1.0/mscale),distance_1);
+            drawRectangle(Rectangle(simulation.upper_electrode.position, simulation.upper_electrode.width,simulation.upper_electrode.length,simulation.upper_electrode.depth),false,(1.0/mscale),distance_2);
         }
 
         if(drawCircles)
         {
-            auto drawCircle = [this](const Circle &circle,int tmpfortest, double scale, Vector2d distance){
-                nvgBeginPath(vg);
-                nvgCircle(vg, (circle.pos[0]  + distance[0] * scale) + center_of_frame[0], (circle.pos[1] + distance[1] * scale) + center_of_frame[1], circle.radius *scale);
-                if(tmpfortest ==1) {
-                    nvgFillColor(vg, nvgRGBA(150, 0, 0, 100));
+            auto drawCircle = [this](const Circle &circle,int tmpfortest, double scale, Vector3d distance){
+                if(switch_view){
+                    nvgBeginPath(vg);
+                    nvgCircle(vg, (circle.pos[0]  + distance[0] * scale) + center_of_frame[0], (circle.pos[1] + distance[1] * scale) + center_of_frame[1], circle.radius *scale);
+                    if(tmpfortest ==1) {
+                        nvgFillColor(vg, nvgRGBA(150, 0, 0, 100));
+                    }else{
+                        nvgFillColor(vg, nvgRGBA(0, 0, 150, 100));
+                    }
+                    nvgFill(vg);
+                    nvgStrokeColor(vg, circle.colorStroke);
+                    nvgStrokeWidth(vg, 10.0f);
+                    nvgStroke(vg);
                 }else{
-                    nvgFillColor(vg, nvgRGBA(0, 0, 150, 100));
+                    nvgBeginPath(vg);
+                    nvgCircle(vg, (circle.pos[0]  + distance[0] * scale) + center_of_frame[0], (circle.pos[2] + distance[2] * scale) + center_of_frame[2], circle.radius *scale);
+                    if(tmpfortest ==1) {
+                        nvgFillColor(vg, nvgRGBA(150, 0, 0, 100));
+                    }else{
+                        nvgFillColor(vg, nvgRGBA(0, 0, 150, 100));
+                    }
+                    nvgFill(vg);
+                    nvgStrokeColor(vg, circle.colorStroke);
+                    nvgStrokeWidth(vg, 10.0f);
+                    nvgStroke(vg);
                 }
-                nvgFill(vg);
-                nvgStrokeColor(vg, circle.colorStroke);
-                nvgStrokeWidth(vg, 10.0f);
-                nvgStroke(vg);
+
             };
 
             /*for(const auto &p : connect_vector) //change to particles for std sim
                 drawCircle(Circle(p.position,p.radius));*/
 
-            Vector2d formation_center;
+            Vector3d formation_center;
             formation_center.setZero();
-            double objects_total = simulation.size;
+            double objects_total = simulation.size/3;
+
             for(auto &pair : connected_particles){
 
                 if(!std::get<0>(pair).visited) {
@@ -485,8 +522,13 @@ public:
                 }
 
             }
-            formation_center[0] = formation_center[0]/objects_total;
-            formation_center[1] = formation_center[1]/objects_total;
+            formation_center[0] = formation_center[0]/(objects_total);
+            formation_center[1] = formation_center[1]/(objects_total);
+            formation_center[2] = formation_center[2]/(objects_total);
+
+            Vector3d formation_center_2 = formation_center * 3;
+            //std::cout<<" formation center 1 = "<<formation_center<<std::endl;
+            //std::cout<<" formation center 2 = "<<formation_center_2<<std::endl;
             simulation.reset_flags(connected_particles);
 
 
@@ -498,13 +540,14 @@ public:
 
 
                if(!std::get<0>(pair).visited) {
-                   Vector2d distance = formation_center - std::get<0>(pair).position;
-                   drawCircle(Circle(std::get<0>(pair).position, std::get<0>(pair).radius), 1, (1.0/mscale), distance);
+                   Vector3d distance = formation_center - std::get<0>(pair).position;
+                   //std::cout<<"distance = "<<distance<<std::endl;
+                   drawCircle(Circle(std::get<0>(pair).position, std::get<0>(pair).radius), 1, 2.0 *(1.0/mscale), distance);
                    std::get<0>(pair).visited = true;
                }
                if(!std::get<1>(pair).visited) {
-                   Vector2d distance = formation_center - std::get<1>(pair).position;
-                   drawCircle(Circle(std::get<1>(pair).position, std::get<1>(pair).radius), 2, (1.0/mscale), distance);
+                   Vector3d distance = formation_center - std::get<1>(pair).position;
+                   drawCircle(Circle(std::get<1>(pair).position, std::get<1>(pair).radius), 2, 2.0 *(1.0/mscale), distance);
                    std::get<1>(pair).visited = true;
                }
 
@@ -628,7 +671,7 @@ private:
     }
 
 public:
-    Vector2d center_of_frame = {1000,1000};
+    Vector3d center_of_frame = {1000,1000,1000};
     bool runSim = false;
     double cursorPosDown[2]{};
     double translation[2] = {0.75*pixelRatio, -0.25*pixelRatio};
@@ -641,8 +684,8 @@ public:
     double mscale = std::pow(10,-6);
 
 
-    Particle A = Particle(50.0 *mscale ,20.0 * mscale,1.0,{100.0 * mscale,100.0 * mscale});
-    Particle B = Particle(50.0 * mscale,20.0* mscale,1.0,{140.0 * mscale,100.0 * mscale});
+    Particle A = Particle(50.0 *mscale ,20.0 * mscale,-1.0,{100.0 * mscale,100.0 * mscale, 100.0 * mscale});
+    Particle B = Particle(50.0 * mscale,20.0* mscale,-1.0,{240.0 * mscale,100.0 * mscale, 100.0 * mscale});
     //Particle C = Particle(50.0,20.0,1.0,{150.0,0.0});
 
   /*  Particle A2 = Particle(20,20,{100,100});
@@ -708,7 +751,7 @@ public:
     double max_viscosity_multiplier = 1000.0;
     double min_brownian_motion_multiplier = 0.0;
     double max_brownian_motion_multiplier = 10.0;
-    double min_time_step = 0.0* mscale;
+    double min_time_step = 100.0* mscale;
     double max_time_step = 1.0;
     int min_max_iterations = 100;
     int max_max_iterations = 1000000;
@@ -751,34 +794,38 @@ public:
     bool is_PS_1 = false;
     bool is_PS_2 = false;
 
+    bool switch_view = false;
+
 
 
 
 
     struct Rectangle
     {
-        Rectangle(Vector2d p, double w, double h){
+        Rectangle(Vector3d p, double w, double h, double d){
             this->position = p;
             this->width = w;
             this->height = h;
+            this->depth = d;
         }
-        Vector2d position;
+        Vector3d position;
         double height;
         double width;
+        double depth;
         NVGcolor colorFill = nvgRGBA(50, 50, 50, 100) , colorStroke = nvgRGBA(50, 50, 50, 100);
     };
 
     struct Circle
     {
-        Circle(Vector2d p, double r=10){ //took away struct
+        Circle(Vector3d p, double r=10){ //took away struct
             this->pos = p;
             this->radius = r;
         }
-        bool isInside(const Vector2d &x){
+        bool isInside(const Vector3d &x){
             return (x-pos).squaredNorm() <= radius*radius;
         }
 
-        Vector2d pos;
+        Vector3d pos;
         double radius;
         NVGcolor colorFill= nvgRGBA(50, 50, 50, 100) , colorStroke = nvgRGBA(50, 50, 50, 100);
 

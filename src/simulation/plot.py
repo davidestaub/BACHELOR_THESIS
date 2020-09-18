@@ -33,7 +33,7 @@ line = itertools.cycle((':','-.','--'))
 fig_V, ax_V = plt.subplots()
 plt.tight_layout
 
-ax_V.plot(v_w_data['Frequency'], v_w_data[' Velocity'] * pow(10,6), marker=next(marker),linestyle=next(line))
+ax_V.plot(v_w_data['Frequency'], v_w_data[' Velocity'], marker=next(marker),linestyle=next(line))
 
 ax_V.set_xlabel("Frequency",fontdict=None,labelpad=0)
 ax_V.set_ylabel("Velocity",fontdict=None,labelpad=-5, rotation=0,)
@@ -45,7 +45,7 @@ fig_V.savefig('Velocity_frequency.pdf',format='pdf')
 fig_V, ax_V = plt.subplots()
 plt.tight_layout
 
-ax_V.plot(v_E_data['E Field'], v_E_data[' Velocity'] * pow(10,6), marker=next(marker),linestyle=next(line))
+ax_V.plot(v_E_data['E Field'], v_E_data[' Velocity'] , marker=next(marker),linestyle=next(line))
 
 ax_V.set_xlabel("E Field",fontdict=None,labelpad=0)
 ax_V.set_ylabel("Velocity",fontdict=None,labelpad=-5, rotation=0,)

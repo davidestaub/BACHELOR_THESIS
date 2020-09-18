@@ -12,11 +12,13 @@ using Eigen::Vector2d;
 using Eigen::VectorXd;
 using Eigen::Matrix2d;
 using Eigen::Matrix;
+using Eigen::Vector3d;
+using Eigen::Matrix3d;
 
 
 class Particle{
 public:
-    Vector2d velocity, position;
+    Vector3d velocity, position;
     Vector2d tmp_drag;
     Vector2d tmp_noise;
     Vector2d tmp_update;
@@ -41,26 +43,27 @@ public:
     bool visited_ekin = false;
 
     //everything in micro
-    Particle(double mass = 10.0 ,double radius = 10.0, double charge_=0.0 ,Vector2d position = {200,200}, double permittivity_ = 2.4, double conductivity_ = std::pow(10,-14)): mass(mass), radius(radius), position(position), charge(charge_), permittivity(permittivity_), conductivity(conductivity_){
+    Particle(double density_ = 10.0 ,double radius = 10.0, double charge_=0.0 ,Vector3d position = {200,200,0.0}, double permittivity_ = 2.4, double conductivity_ = std::pow(10,-14)): density(density_), radius(radius), position(position), charge(charge_), permittivity(permittivity_), conductivity(conductivity_){
         position = initial_position;//{350.0,300.0};
         velocity = initial_velocity;
         tmp_drag = {0,0};
         tmp_noise = {0,0};
         tmp_update = {0,0};
         six_Pi_mu_r = ( 6.0 * M_PI * eta * (radius*std::pow(10,-6))  * std::pow(10,6) );
-        density = mass/(M_PI * std::pow(radius,2));
+        mass = density * (4.0/3.0) * M_PI * std::pow(radius,3);
+
         //changed initial radius to much bigger, previously 10^-6
 
     }
-    Vector2d initial_position = {200,200};
-    Vector2d initial_velocity = {0.0,0.0};
+    Vector3d initial_position = {200,200,0.0};
+    Vector3d initial_velocity = {0.0,0.0,0.0};
 
     void dissolve_particle(double dissolve_rate){
         this->radius = this->radius - dissolve_rate;
         this->mass = this->mass - std::pow(dissolve_rate,2);
     }
 
-
+/*
     Vector2d force(Particle &particle) {
         Vector2d force_;
         force_[0] = std::pow(particle.position[0], 2) + particle.velocity[0];
@@ -81,9 +84,9 @@ public:
         dforce_dv_<<1.0,0,0,1.0;
         return dforce_dv_;
     }
+*/
 
-
-    Vector2d delta_v(Particle &particle) {
+    /*Vector2d delta_v(Particle &particle) {
         Eigen::SparseMatrix<double> A(2, 2);
         Eigen::SparseMatrix<double> Identity(2, 2);
         Identity.setIdentity();
@@ -97,7 +100,8 @@ public:
         delta_v_ = solver.solve(b);
         return delta_v_;
     }
-
+    */
+    /*
     Vector2d push_force(Particle &particle){
         Vector2d force_;
         force_ = -particle.position; //push inwards
@@ -129,9 +133,6 @@ public:
         delta_v_ = solver.solve(b);
         return delta_v_;
     }
-
-
-
 
     //circle force field
 
@@ -185,10 +186,6 @@ public:
 
     }
 
-
-
-
-
     Vector2d circle_force(Particle &particle){
         Vector2d force_;
         force_[0] = -particle.position[1];
@@ -227,6 +224,7 @@ public:
         return delta_v_;
 
     }
+    */
 
     //end circle force field
 
@@ -250,11 +248,12 @@ double Particle::eta = 1.0 * std::pow(10,-3);
 class Electrode{
 public:
     double charge;
-    Vector2d position;
+    Vector3d position;
     double length;
     double width;
     double voltage;
     double peak_voltage;
     double frequency;
-    Electrode(double charge_, Vector2d position_,double length_, double width_,double voltage_,double frequency_, double peak_voltage_): charge(charge_), position(position_), length(length_), width(width_), voltage(voltage_), frequency(frequency_), peak_voltage(peak_voltage_){}
+    double depth;
+    Electrode(double charge_, Vector3d position_,double length_, double width_, double depth_ ,double voltage_,double frequency_, double peak_voltage_): charge(charge_), position(position_), length(length_), width(width_), depth(depth_), voltage(voltage_), frequency(frequency_), peak_voltage(peak_voltage_){}
 };
