@@ -16,6 +16,9 @@ import os
 import glob
 #os.chdir()
 
+position = pd.read_csv("../../position.csv")
+print(position)
+
 data = pd.read_csv("../../data.csv")
 data2 = pd.read_csv("../../data2.csv")
 v_w_data = pd.read_csv("../../v_w.csv")
@@ -33,7 +36,23 @@ line = itertools.cycle((':','-.','--'))
 fig_V, ax_V = plt.subplots()
 plt.tight_layout
 
-ax_V.plot(v_w_data['Frequency'], v_w_data[' Velocity'], marker=next(marker),linestyle=next(line))
+ax_V.plot(position['Time Step'], position['Position in X'], marker=next(marker),linestyle=next(line))
+#ax_V.plot(position['Time Step'], position['Position in Y'], marker=next(marker),linestyle=next(line))
+
+ax_V.set_xlabel("Time Step",fontdict=None,labelpad=0)
+ax_V.set_ylabel("Position",fontdict=None,labelpad=-5, rotation=0,)
+ax_V.legend(loc='best',fontsize=8)
+ax_V.grid(True,linestyle='-')
+ax_V.set_title("Position new ", fontdict= None, loc = 'center',pad=5)
+fig_V.savefig('pos_new.pdf',format='pdf')
+
+fig_V, ax_V = plt.subplots()
+plt.tight_layout
+
+fig_V, ax_V = plt.subplots()
+plt.tight_layout
+
+ax_V.plot(v_w_data['Frequency'], v_w_data[' Velocity'] * -1 * pow(10,6), marker=next(marker),linestyle=next(line))
 
 ax_V.set_xlabel("Frequency",fontdict=None,labelpad=0)
 ax_V.set_ylabel("Velocity",fontdict=None,labelpad=-5, rotation=0,)

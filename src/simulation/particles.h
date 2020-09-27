@@ -29,6 +29,8 @@ public:
     int index = -1;
     double permittivity;
     double conductivity;
+    double zeta_potential;
+    double stern_layer_conductance;
 
 
     bool dissolve = false;
@@ -43,7 +45,7 @@ public:
     bool visited_ekin = false;
 
     //everything in micro
-    Particle(double density_ = 10.0 ,double radius = 10.0, double charge_=0.0 ,Vector3d position = {200,200,0.0}, double permittivity_ = 2.4, double conductivity_ = std::pow(10,-14)): density(density_), radius(radius), position(position), charge(charge_), permittivity(permittivity_), conductivity(conductivity_){
+    Particle(double density_ = 1000.0 ,double radius = 10.0, double charge_=0.0 ,Vector3d position = {200,200,0.0}, double permittivity_ = 2.4, double conductivity_ = std::pow(10,-14)): density(density_), radius(radius), position(position), charge(charge_), permittivity(permittivity_), conductivity(conductivity_){
         position = initial_position;//{350.0,300.0};
         velocity = initial_velocity;
         tmp_drag = {0,0};
@@ -51,6 +53,8 @@ public:
         tmp_update = {0,0};
         six_Pi_mu_r = ( 6.0 * M_PI * eta * (radius*std::pow(10,-6))  * std::pow(10,6) );
         mass = density * (4.0/3.0) * M_PI * std::pow(radius,3);
+        stern_layer_conductance = 1 * std::pow(10,-9);
+        zeta_potential = -57.0 * std::pow(10,-3);
 
         //changed initial radius to much bigger, previously 10^-6
 
@@ -256,4 +260,12 @@ public:
     double frequency;
     double depth;
     Electrode(double charge_, Vector3d position_,double length_, double width_, double depth_ ,double voltage_,double frequency_, double peak_voltage_): charge(charge_), position(position_), length(length_), width(width_), depth(depth_), voltage(voltage_), frequency(frequency_), peak_voltage(peak_voltage_){}
+};
+
+class Particle_pair{
+public:
+    double rest_length;
+    Particle_pair(Particle& A, Particle& B, VectorXd index_list){
+        rest_length= 0.0;
+    }
 };

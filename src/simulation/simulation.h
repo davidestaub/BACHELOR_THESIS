@@ -47,9 +47,19 @@ public:
     VectorXd position_vector_minus_2;
     VectorXd initial_position_vector;
     bool first_itteration = true;
+    bool dimers_only = true;
     double micro_time_step = time_step * std::pow(10,6);
 
-    double beta = 1.0;
+    double beta_ehd = 0.03;
+    double K_plus_charge = 1.0;
+    double CL_minus_charge = -1.0;
+    double elementary_charge = 1.60217662 * std::pow(10,-19);
+    double molarity = std::pow(10,-5) * std::pow(10,-3); // convert from mol/L to mol/m^3
+    double NA = 6.02214076  * std::pow(10,23);
+    double D_K_plus = 1.960 * std::pow(10,-9);
+    double D_Cl_minus = 2.030 * std::pow(10,-9);
+
+    bool safety = false;
 
 
     // all units in micro scale, (10^-6)
@@ -57,6 +67,9 @@ public:
     double eta = 1.0 * std::pow(10,-3); //viscosity of water in PA * seconds
     double dynamic_viscosity =  8.9 * std::pow(10,-4); //dynamic vsicosity of water in PA * s
     double viscosity_multiplier = 1.0;
+
+    double gas_constant = 8.31446261815324;
+    double faraday_constant = 9.64853321233100184 * std::pow(10,4);
 
     double vacuum_permittivity = 8.8541878176 * std::pow(10,-12);
     double relative_permittivity = 80.2; //water at room temperatur
@@ -116,6 +129,8 @@ public:
 
     std::vector<double> friction_force_over_time_x;
 
+    Vector3d ex = {1.0,0.0,0.0};
+
     bool test_bool = true;
 
     int max_iterations = 1000;
@@ -149,7 +164,7 @@ public:
 
     void UPDATE_SYSTEM_NEW(std::vector<std::tuple <Particle&,Particle&,double> > &connected_particles){
 
-        current_thermal_force = get_current_thermal_force(connected_particles); //make sure to only call it once a time step due to the random nature of the force.
+        current_thermal_force = safety * get_current_thermal_force(connected_particles); //make sure to only call it once a time step due to the random nature of the force.
 
         fill_spring_force_and_derivatives_NEW(connected_particles);
 
@@ -179,7 +194,10 @@ public:
 
         VectorXd tmp_tmp = position_vector;
         std::vector<std::tuple <Particle&,Particle&,double> > tmp_connected_particles = connected_particles;
+       // std::cout<<"pos old"<<std::get<0>(connected_particles[0]).position<<std::endl;
         update_positions_NEW(connected_particles,x_t_plus_1_old);
+       // std::cout<<"pos new"<<std::get<0>(connected_particles[0]).position<<std::endl;
+       // std::cout<<"time step"<<time_step<<std::endl;
         dFx_dx_FD.push_back( get_dFx_dx_FD(tmp_connected_particles, connected_particles, tmp, tmp_tmp, x_t_plus_1_old));
 
         double e = get_e(x_t_plus_1_old,connected_particles);
@@ -311,7 +329,7 @@ public:
             //  std::cout<<" x i +1="<<std::endl<<x_i_plus_1_tmp<<std::endl<<" e at x i+1 = "<<std::endl<<get_e(x_i_plus_1_tmp,connected_particles);
             //   std::cout<<" x i ="<<std::endl<<x_i<<std::endl<<" e at x i = "<<std::endl<<get_e(x_i,connected_particles);
 
-            while(get_g_with_drag(x_i_plus_1_tmp,connected_particles).norm() > get_g_with_drag(x_i,connected_particles).norm()){
+            while(get_g_with_drag(x_i_plus_1_tmp,connected_particles).norm() > get_g_with_drag(x_i,connected_particles).norm()/* get_e(x_i_plus_1_tmp,connected_particles) > get_e(x_i,connected_particles)*/){
                 //       std::cout<<" inside second while loop, e(x_i+1) = "<<get_e(x_i_plus_1_tmp,connected_particles)<<" and e(xi) = "<<get_e(x_i,connected_particles)<<std::endl;
                 t *= beta;
                 //      std::cout<<"t = "<<t<<std::endl;
@@ -388,10 +406,17 @@ public:
         std::tuple<Particle&,Particle&,double> particle_pair(A,B,restlength);
         connected_particles.push_back(particle_pair);
     }
+    void connect_new(Particle &A, Particle &B, double restlength, std::vector<std::tuple <Particle&,Particle&,double> > &connected_particles, int i){
+        std::tuple<Particle&,Particle&,double> particle_pair(A,B,restlength);
+        connected_particles[i] = particle_pair;
+    }
 
     void update_rest_length(std::vector<std::tuple <Particle&,Particle&,double> > &connected_particles){
-        for(auto& particle_pair : connected_particles){
-            std::get<2>(particle_pair) = set_rest_length_rad_plus_rad(std::get<0>(particle_pair), std::get<1>(particle_pair));
+        if(dimers_only) {
+            for (auto &particle_pair : connected_particles) {
+                std::get<2>(particle_pair) = set_rest_length_rad_plus_rad(std::get<0>(particle_pair),
+                                                                          std::get<1>(particle_pair));
+            }
         }
     }
 
@@ -553,11 +578,14 @@ public:
 
         for(auto& particle_pair : connected_particles) {
 
+
             Particle& A = std::get<0>(particle_pair);
             Particle& B = std::get<1>(particle_pair);
+          //  std::cout<<"A.index = "<<A.index<<" B.index = "<<B.index<<std::endl;
 
             Particle A_tmp = A;
             Particle B_tmp = B;
+          //  std::cout<<"Atmp.index = "<<A_tmp.index<<" Btmp.index = "<< B_tmp.index<<std::endl;
             A_tmp.position[0] = current_positions[A.index];
             A_tmp.position[1] = current_positions[A.index+1];
             A_tmp.position[2] = current_positions[A.index+2];
@@ -575,8 +603,10 @@ public:
             pos_at_B[1] = position_vector[B.index+1];
             pos_at_B[2] = position_vector[B.index+2];
 
-            A_tmp.velocity = (A_tmp.position - pos_at_A)/time_step;
-            B_tmp.velocity = (B_tmp.position - pos_at_B)/time_step;
+            A_tmp.velocity = ( A_tmp.position - pos_at_A )/time_step;
+            B_tmp.velocity = ( B_tmp.position -pos_at_B )/time_step;
+          //  std::cout<<" A tmp velocity = "<<A_tmp.velocity<<std::endl;
+          //  std::cout<<" B tmp velocity = "<<B_tmp.velocity<<std::endl;
 
             Vector3d current_friction_at_A = get_stokes_friction_force(A_tmp);
             Vector3d current_friction_at_B = get_stokes_friction_force(B_tmp);
@@ -589,7 +619,7 @@ public:
             current_friction_force[B_tmp.index + 2] =current_friction_at_B[2];
 
         }
-
+       // std::cout<<" current friction force = "<<current_friction_force<<" with time step = "<<time_step<<std::endl;
         return current_friction_force;
     }
 
@@ -630,14 +660,16 @@ public:
         velocity_vector.setZero();
 
 
+
         for(auto& particle_pair : connected_particles) {
 
             Particle& A = std::get<0>(particle_pair);
-            std::cout<<" Velocity  of particle"<<A.index<<"= "<<A.velocity[0]  << " micrometer/s"<<" and frequency is = "<<lower_electrode.frequency<<std::endl<<" time step = "<<time_step<<std::endl;
-
+          //  std::cout<<" Velocity  of particle"<<A.index<<"= "<<A.velocity[0]  << " micrometer/s"<<" and frequency is = "<<lower_electrode.frequency<<std::endl<<" time step = "<<time_step<<std::endl;
+          //  std::cout<<"A.mass = "<<A.mass<<std::endl;
+          //  std::cout<<"A.radius = "<<A.radius<<std::endl;
            // std::cout<<std::endl<<std::endl<<"POSITION"<<std::endl<<A.position<<std::endl;
             Particle& B = std::get<1>(particle_pair);
-            std::cout<<" Velocity  of particle"<<B.index<<"= "<<B.velocity[0]  << " micrometer/s"<<" and frequency is = "<<lower_electrode.frequency<<std::endl<<" time step = "<<time_step<<std::endl;
+          //  std::cout<<" Velocity  of particle"<<B.index<<"= "<<B.velocity[0]  << " micrometer/s"<<" and frequency is = "<<lower_electrode.frequency<<std::endl<<" time step = "<<time_step<<std::endl;
 
             Vector3d current_spring_force = NEW_get_damped_spring_force_without_damping(particle_pair);
             Matrix3d current_spring_force_dx = NEW_get_damped_spring_force_dXA_without_damping(particle_pair);
@@ -708,8 +740,10 @@ public:
                 initial_position_vector = position_vector;
             }
            // std::cout<<"Position Vector After filling \n"<<position_vector<<"\n";
-            position_vec_over_time_in_x.push_back(A.position[0]);
-            position_vec_over_time_in_y.push_back(A.position[1]);
+           if(A.index == 0) {
+               position_vec_over_time_in_x.push_back(A.position[0]);
+               position_vec_over_time_in_y.push_back(A.position[1]);
+           }
 
 
             velocity_vector(A.index) = A.velocity[0];
@@ -741,6 +775,7 @@ public:
             current_EHD_force[B.index+2] = local_EHD_force[2];
 
         }
+      //  std::cout<<" current full ehd force = "<< current_EHD_force<<std::endl;
         return current_EHD_force;
     }
 
@@ -812,24 +847,30 @@ public:
         VectorXd a = (x - 2.0 * position_vector + position_vector_minus_1);
         double x_t_M_x = 0.5 * a.transpose() * mass_matrix * a;
 
-        double E_x =  get_current_potential_energy(x,connected_particles)+ get_E_drag_indefinit_integral(x,connected_particles)+ get_E_electrical(x) + get_E_EHD(x,connected_particles);
+        double E_x =  get_current_potential_energy(x,connected_particles)+  safety *get_E_drag_indefinit_integral(x,connected_particles)+ safety * get_E_electrical(x) + safety *get_E_EHD(x,connected_particles);
 
         return   x_t_M_x +  std::pow(time_step,2) * E_x; //check again
     }
 
     VectorXd get_g_with_drag(VectorXd x, std::vector<std::tuple <Particle&,Particle&,double> > &connected_particles){
-        VectorXd F_x = get_current_spring_force(connected_particles,x) - get_current_friction_force(connected_particles,x) + electricalfield_force_vector + get_current_EHD_force(connected_particles,x) + current_thermal_force;
-       // std::cout<<" current thermal force = "<<current_thermal_force<<std::endl;
-       // std::cout<<"FS = \n"<<get_current_spring_force(connected_particles,x)<<"Fd = \n"<<get_current_friction_force(connected_particles,x)<<" Fel = \n "<<electricalfield_force_vector;
-       //   std::cout<<" F = "<<std::endl<<F_x<<std::endl;
-        // std::cout<<"mass matrix = "<<std::endl<<mass_matrix<<std::endl;
+        VectorXd current_ehd_force=get_current_EHD_force(connected_particles,x);
+        VectorXd F_x = get_current_spring_force(connected_particles,x) - safety *get_current_friction_force(connected_particles,x) + safety *electricalfield_force_vector + safety *get_current_EHD_force(connected_particles,x) + safety *current_thermal_force;
+      // std::cout<<" current ehd force inside g = "<<current_ehd_force<<std::endl;
+      //   std::cout<<" current thermal force = "<<current_thermal_force<<std::endl;
+       //  VectorXd tmp = 100*get_current_friction_force(connected_particles,x);
+      //   std::cout<<" new current fd ="<<get_current_friction_force(connected_particles,x)<<std::endl;
+      //  std::cout<<"FS = \n"<<get_current_spring_force(connected_particles,x)<<"Fd = \n"<<"a"<<tmp<<" Fel = \n "<<electricalfield_force_vector;
+      //    std::cout<<" F = "<<std::endl<<F_x<<std::endl;
+      //   std::cout<<"mass matrix = "<<std::endl<<mass_matrix<<std::endl;
       //  std::cout<<" M * (x-y) = \n"<<mass_matrix * (x - 2.0 * position_vector + position_vector_minus_1)<<std::endl;
+
+      //std::cout<<" Spring force = "<<get_current_spring_force(connected_particles,x)<<" drag force = "<<-get_current_friction_force(connected_particles,x)<<" electrical_force = "<<electricalfield_force_vector<<" EHD force = "<<get_current_EHD_force(connected_particles,x)<<" thermal force ="<<current_thermal_force<<std::endl;
 
         return mass_matrix * (x  - 2.0 * position_vector + position_vector_minus_1) - std::pow(time_step, 2) * F_x;
     }
 
     MatrixXd get_g_dx(VectorXd x, std::vector<std::tuple <Particle&,Particle&,double> > &connected_particles){
-        MatrixXd dF_dx = get_current_spring_force_jacobian(connected_particles,x) - get_current_friction_force_jacobian(connected_particles,x) + get_current_electrical_force_jacobian(connected_particles,x);
+        MatrixXd dF_dx = get_current_spring_force_jacobian(connected_particles,x) - safety  *get_current_friction_force_jacobian(connected_particles,x) + safety *get_current_electrical_force_jacobian(connected_particles,x);
       //  std::cout<<" cuurent spring force jacobian = "<<std::endl<<dF_dx<<std::endl;
       //std::cout<<"dfdx = \n"<<dF_dx;
         MatrixXd result = mass_matrix - (std::pow(time_step,2) * dF_dx);
@@ -1094,9 +1135,7 @@ public:
         reset_flags(connected_particles);
     }
 
-    double get_debye_length(Particle particle){
-        return 2.0 * particle.charge * std::sqrt((M_PI * particle.density)/(kB * T));
-    }
+
 
     Vector3d get_my_EHD_force(std::tuple <Particle&,Particle&,double> particle_pair){
         Particle& A = std::get<0>(particle_pair);
@@ -1104,62 +1143,150 @@ public:
 
         double r_A;
         double r_B;
+        double r_A_y;
+        double r_B_y;
+
+        Vector3d direction = A.position - B.position;
+        for(int i = 0; i<direction.size();i++){
+            direction[i] = std::abs(direction[i]);
+        }
+        double norm = direction.norm();
+        for(int i = 0; i<direction.size();i++){
+            direction[i] = direction[i]/norm;
+        }
+
+        double dprod = direction.dot(ex);
+        double theta_angle = std::acos(dprod);
+      //  std::cout<<"theta = "<<theta_angle<<std::endl;
+        //double theta_in_grad = theta_angle * 180.0 / M_PI;
+        double x_amount = std::cos(theta_angle);
+        double y_amount = 1- x_amount;
+
+
+
+
+
+
+
 
         if(A.position[0] > B.position[0]){
-            r_A =  A.radius;
-            r_B = - B.radius;
+            r_A =   - (A.radius + B.radius);
+            r_B = (B.radius + A.radius);
         }else{
-            r_A = -A.radius;
-            r_B =  B.radius;
+            r_A = (A.radius + B.radius);
+            r_B =  -(B.radius + A.radius);
         }
-        double U_EHD_A = get_U_EHD(A,r_A);
-        double U_EHD_B = get_U_EHD(B,r_B);
 
-        Vector3d F_EHD_A = {6.0 * M_PI * dynamic_viscosity * viscosity_multiplier * A.radius * U_EHD_A,0.0, 0.0};
-        Vector3d F_EHD_B = {6.0 * M_PI * dynamic_viscosity * viscosity_multiplier * B.radius * U_EHD_B,0.0,0.0};
+        if(A.position[1] > B.position[1]){
+            r_A_y =   - A.radius + B.radius;
+            r_B_y = (B.radius + A.radius);
+        }else{
+            r_A_y = (A.radius + B.radius);
+            r_B_y =  -(B.radius + A.radius);
+        }
+        std::cout<<" x amount = "<<x_amount<<std::endl;
+        std::cout<<" y amount = "<<y_amount<<std::endl;
+        double U_EHD_A = get_U_EHD(A,r_A) * x_amount;
+        double U_EHD_A_y = get_U_EHD(A,r_A_y) * y_amount;
+        std::cout<<" U A x="<<U_EHD_A<<" with RA = "<<A.radius<<std::endl;
+        std::cout<<" U A y="<<U_EHD_A_y<<" with RA = "<<A.radius<<std::endl;
+       // std::cout<<" U ehd in force = "<<U_EHD_A<<std::endl;
+        double U_EHD_B = get_U_EHD(B,r_B) * x_amount;
+        double U_EHD_B_y= get_U_EHD(B,r_B_y) * y_amount;
+        std::cout<<" U B ="<<U_EHD_B<<" with RB = "<<B.radius<<std::endl;
+       // std::cout<<" A velocity inside f ehd ="<<A.velocity<<std::endl;
+        double U_test = (U_EHD_A * A.radius + U_EHD_B * B.radius) / (A.radius + B.radius);
+        std::cout<<std::endl<<" U ="<<U_test<<std::endl<<std::endl;
+
+        Vector3d F_EHD_A = {6.0 * M_PI * dynamic_viscosity * viscosity_multiplier * A.radius * U_EHD_A,6.0 * M_PI * dynamic_viscosity * viscosity_multiplier * A.radius * U_EHD_A_y, 0.0};
+       // std::cout<<" F EHD a = "<<F_EHD_A<<std::endl;
+        Vector3d F_EHD_B = {6.0 * M_PI * dynamic_viscosity * viscosity_multiplier * B.radius * U_EHD_B,6.0 * M_PI * dynamic_viscosity * viscosity_multiplier * B.radius * U_EHD_B_y,0.0};
        // std::cout<<" EHD force for particle A with radius = "<<A.radius<<" = "<<F_EHD_A[0]<<std::endl;
        // std::cout<<" EHD force for particle B with radius = "<<B.radius<<" = "<<F_EHD_B[0]<<std::endl;
 
        // std::cout<<"FA = "<<F_EHD_A<<std::endl<<"FB = "<<F_EHD_B<<std::endl<<"FTOT = "<<F_EHD_A + F_EHD_B<<std::endl;
-
+       // std::cout<<" F Total= "<<F_EHD_A + F_EHD_B<<std::endl;
         return F_EHD_A + F_EHD_B;
     }
 
+    //WRONG
     double get_U_EHD(Particle particle,double r){ //deleted vacuum permittivity
-        /*double t1 = beta * relative_permittivity * get_debye_length(particle) * get_H() / dynamic_viscosity;
-        double t2 = std::pow(lower_electrode.peak_voltage/(2.0 * get_H()),2);
-        double t3 = (get_K1() + get_omega_bar(particle) * get_K2(particle))/(1.0 + std::pow(get_omega_bar(particle),2));
-         //std::cout<<" U EHD for Particle "<<particle.index<<" = "<<t1 * t2 * t3 * t4<<std::endl;
-        return  t1 * t2 * t3 * t4;*/
-
-        //unrelease paper
-       // double alpha = (lower_electrode.frequency * get_H()) /( get_debye_length(particle) * get_ion_diffusivity(particle));
-       // double alpha_2 = std::pow(alpha,2);
-       // double C = beta * relative_permittivity * vacuum_permittivity * std::pow(lower_electrode.peak_voltage/(2.0 * get_H()),2) * (alpha_2/(1.0 + alpha_2)) * (get_debye_length(particle) * get_ion_diffusivity(particle))/lower_electrode.frequency;
-        //return ((C * get_K2(particle)) / (dynamic_viscosity* viscosity_multiplier)) * ( (3.0 * (r/particle.radius))/( 2.0 * std::pow(1.0 + std::pow(r/particle.radius, 2),(5.0/2.0))) );
 
         //physrevlet paper
-         double w_bar = (lower_electrode.frequency * get_H()) /( get_debye_length(particle) * get_ion_diffusivity(particle));
+         double w_bar = (lower_electrode.frequency * get_H()) /( (1.0 /get_debye_length()) * get_ion_diffusivity());
+        // std::cout<<"W bar = "<<w_bar<<std::endl;
+
          double w_bar_2 = std::pow(w_bar,2);
-         double C =  relative_permittivity * vacuum_permittivity * std::pow((lower_electrode.peak_voltage/(2.0 * get_H())),2)
+         double C =  relative_permittivity * vacuum_permittivity *(1.0/get_debye_length()) * get_H() * std::pow((lower_electrode.peak_voltage/(2.0 * get_H())),2)
                  * ((get_K1(particle) + w_bar * get_K2(particle))/(1.0 + w_bar_2) );
+        // std::cout<<" C = "<<C<<std::endl;
          double f_r = (3.0 * (r/particle.radius))
                  / (  2.0 * std::pow((1.0 + std::pow((r/particle.radius),2) ),(5.0/2.0))   );
         // std::cout<<" U EHD for particle "<<particle.index<<" with radius "<<particle.radius<<" = "<<beta * (C / (dynamic_viscosity* viscosity_multiplier)) * f_r<<std::endl;
-         return  beta * (C / (dynamic_viscosity* viscosity_multiplier)) * f_r;
+       // std::cout<<"fr ="<<f_r<<std::endl;
+       // std::cout<<" beta ehd  ="<<beta_ehd<<std::endl;
+      //  std::cout<<" U ehd = "<<beta_ehd * (C / (dynamic_viscosity* viscosity_multiplier)) * f_r<<std::endl;
+         return  beta_ehd * (C / (dynamic_viscosity* viscosity_multiplier)) * f_r;
+
+        /* double alpha = (lower_electrode.frequency * get_H()) /( (1.0 /get_debye_length()) * get_ion_diffusivity());
+         double alpha_2 = std::pow(alpha,2);
+         double Vp = lower_electrode.peak_voltage;
+         double H = get_H();
+         double C = relative_permittivity * vacuum_permittivity * std::pow( (Vp/(2.0 * H)) ,2) *
+                 (alpha_2/(1.0 + alpha_2)) *
+                 (1.0/get_debye_length()) * get_ion_diffusivity() /lower_electrode.frequency;
+         double up = 3.0 * (r/particle.radius);
+         double down = 2.0 * std::pow(1.0 + std::pow((r/particle.radius),2),(5.0/2.0));
+         double f_r = up/down;
+         return (C * get_K2(particle) / (dynamic_viscosity * viscosity_multiplier) ) * f_r; */
     }
 
     double get_H(){
-
+       // std::cout<<"H = "<<0.5 * std::abs(lower_electrode.position[2] - upper_electrode.position[2])<<std::endl;
         return 0.5 * std::abs(lower_electrode.position[2] - upper_electrode.position[2]);
    }
 
     double get_omega_bar(Particle particle){
-        return (lower_electrode.frequency * get_H()) /(get_debye_length(particle) * get_ion_diffusivity(particle));
+        return (lower_electrode.frequency * get_H()) /(get_debye_length() * get_ion_diffusivity());
     }
 
-    double get_ion_diffusivity(Particle particle){
-        return (kB * T)/( 6.0 * M_PI * (dynamic_viscosity * viscosity_multiplier) * particle.radius);
+    //WRONG
+    double get_ion_diffusivity(){
+      //  std::cout<<" D = "<<(kB * T)/( 6.0 * M_PI * (dynamic_viscosity * viscosity_multiplier) * particle.radius)<<std::endl;
+        //return (kB * T)/( 6.0 * M_PI * (dynamic_viscosity * viscosity_multiplier) * particle.radius);
+       // return 1.47 * std::pow(10,-9);
+       return 0.5 * (D_K_plus + D_Cl_minus);
+    }
+    double get_ionic_strength(){
+        return 0.5 * (molarity * std::pow(K_plus_charge,2) + molarity * std::pow(CL_minus_charge,2));
+    }
+
+    //WRONG
+    double get_debye_length(){
+        // std::cout<<" debye length = "<<2.0 * particle.charge * std::sqrt((M_PI * particle.density)/(kB * T))<<std::endl;
+        //  return 2.0 * particle.charge * std::sqrt((M_PI * particle.density)/(kB * T));
+      //  std::cout<<" debye length = "<< std::sqrt((vacuum_permittivity * relative_permittivity * kB * T)/(2.0 * NA * std::pow(elementary_charge,2) * get_ionic_strength()))<<std::endl;
+      //  std::cout<<" new debye length with higher concentration = "<< std::sqrt((vacuum_permittivity * relative_permittivity * kB * T)/(2.0 * NA * std::pow(elementary_charge,2) * get_ionic_strength())) * std::pow(10,5)<<std::endl;
+        return std::sqrt((vacuum_permittivity * relative_permittivity * kB * T)/(2.0 * NA * std::pow(elementary_charge,2) * get_ionic_strength()));
+       // return 0.6 * std::pow(10,-9);
+        // return 150 * std::pow(10,-9);
+    }
+
+    double get_diffuse_layer_conductance(Particle particle){
+        double m = std::pow((gas_constant * T) / faraday_constant, 2) * (2.0 * relative_permittivity)/(3.0 * dynamic_viscosity * get_ion_diffusivity());
+       // std::cout<<"m= "<<m<<std::endl;
+        double t1 = (4.0 * std::pow(faraday_constant ,2)* molarity * (1.0 + 3.0 * m))/(gas_constant * T * (1.0/get_debye_length()));
+       // std::cout<<"t1= "<<t1<<std::endl;
+       // std::cout<<" cosh = "<<cosh((elementary_charge * particle.zeta_potential * std::pow(10,-3))/(2.0 * kB * T))<<std::endl;
+        double t2 = cosh((elementary_charge * particle.zeta_potential* std::pow(10,-3))/(2.0 * kB * T)) - 1.0;
+       // std::cout<<"t2= "<<t2<<std::endl;
+        return t1 * t2;
+
+    }
+
+    double get_conductivity(Particle particle){
+     //   std::cout<<" get conductivity = "<<(particle.stern_layer_conductance / particle.radius) + 2.0 * (get_diffuse_layer_conductance(particle)/particle.radius)<<std::endl;
+        return 2.0 *  (particle.stern_layer_conductance / particle.radius) /*+ 2.0 * (get_diffuse_layer_conductance(particle)/particle.radius)*/;
     }
 
     double get_Eo(){
@@ -1171,28 +1298,41 @@ public:
 
     // bith from clausius mossotti paper
     double get_K1(Particle particle){
-        double w_2 = std::pow(lower_electrode.frequency,2);
+        //double w_bar = (lower_electrode.frequency * get_H()) /( (1.0 /get_debye_length()) * get_ion_diffusivity());
+      //  std::cout<<"W bar = "<<w_bar<<std::endl;
+        double  w = lower_electrode.frequency;
+        double w_2 = std::pow(w,2);
+       // double w_2 = w_bar_2;
         double sigma_m = conductivity;
-        double sigma_p = particle.conductivity;
+        double sigma_p = get_conductivity(particle);
         double epsilon_p = particle.permittivity * vacuum_permittivity;
-        double epsilon_m = relative_permittivity * vacuum_permittivity;
+        double epsilon_m = relative_permittivity* vacuum_permittivity;
         double up = w_2 * (epsilon_p - epsilon_m) * (epsilon_p + 2.0 * epsilon_m) + (sigma_p - sigma_m) * (sigma_p + 2.0 * sigma_m);
         double down = w_2 * std::pow((epsilon_p + 2.0 * epsilon_m),2) + std::pow((sigma_p+ 2.0 * sigma_m),2);
+        std::cout<<" K1 = "<<up/down<<std::endl;
         return up/down;
 
 
     }
 
     double get_K2(Particle particle){
-        double w = lower_electrode.frequency;
-        double w_2 = std::pow(w,2);
+       // double w_bar = (lower_electrode.frequency * get_H()) /( (1.0 /get_debye_length()) * get_ion_diffusivity());
+      //  std::cout<<"W bar = "<<w_bar<<std::endl;
+
+       // double w_bar_2 = std::pow(w_bar,2);
+       // double w_2 = w_bar_2;
+       // double w = w_bar; // ?????;
+       double w = lower_electrode.frequency;
+       double w_2 = std::pow(w,2);
+
         double sigma_m = conductivity;
-        double sigma_p = particle.conductivity;
-        double epsilon_p = particle.permittivity * vacuum_permittivity;
-        double epsilon_m = relative_permittivity * vacuum_permittivity;
+        double sigma_p = get_conductivity(particle);
+        double epsilon_p = particle.permittivity* vacuum_permittivity;
+        double epsilon_m = relative_permittivity* vacuum_permittivity;
         double up = w * (sigma_m - sigma_p) * (epsilon_p + 2.0*epsilon_m) - (epsilon_p - epsilon_m) * (sigma_p + 2.0 * sigma_m);
         double down = w_2 * std::pow((epsilon_p + 2.0 * epsilon_m),2) + std::pow((sigma_p + 2.0 * sigma_m),2);
         //return ( w * (sigma_m - sigma_p)*(epsilon_p + 2.0 * epsilon_m) - (epsilon_p - epsilon_m)*(sigma_p + 2.0 * sigma_m)   )/(w_2 * std::pow((epsilon_p + 2.0 * epsilon_m),2) + std::pow((sigma_p + 2.0 * sigma_m),2));
+        std::cout<<" K2 = "<<up/down<<std::endl;
         return up/down;
     }
 

@@ -47,8 +47,26 @@ public:
        //connect_vector.push_back(A);
        //connect_vector.push_back(B);
       // particles.push_back(loner);
+
+
+      // L shaped particle system
+
        simulation.connect(A,B,(A.radius+B.radius),connected_particles);
-//       simulation.connect(B,C,(C.radius+B.radius),connected_particles);
+      //  simulation.connect(B,C,(B.radius + 2.0 *A.radius + C.radius),connected_particles);
+       // simulation.connect(A,C,(A.radius+C.radius),connected_particles);
+
+       // simulation.connect(C,D,(C.radius+D.radius),connected_particles);
+       // simulation.connect(Up,B,(Up.radius+B.radius),connected_particles);
+       // simulation.connect(D,B,(2.0 *A.radius+B.radius + 2.0 * C.radius + D.radius),connected_particles);
+       // simulation.connect(A,D,(A.radius+ 2.0 *C.radius + D.radius),connected_particles);
+       // simulation.connect(Up,A,(std::sqrt(std::pow(B.radius + A.radius,2) + std::pow(B.radius+Up.radius,2))), connected_particles);
+
+
+     // simulation.connect(A,B,(A.radius + B.radius),connected_particles);
+
+
+
+        ///      simulation.connect(B,C,(C.radius+B.radius),connected_particles);
      //  simulation.connect(A,C, (A.radius+C.radius),connected_particles);
 /*
         simulation.connect(A2,B2,(A2.radius+B2.radius),connected_particles);
@@ -115,6 +133,20 @@ public:
 
         if(runSim) {
 
+         //   simulation.connect_new(A,B,(A.radius + B.radius), connected_particles,0);
+
+            // L shaped particle system
+          /* simulation.connect_new(A,B,(A.radius+B.radius),connected_particles,0);
+            simulation.connect_new(B,C,(B.radius + 2.0 *A.radius + C.radius),connected_particles,1);
+            simulation.connect_new(A,C,(A.radius+C.radius),connected_particles,2);
+
+            simulation.connect_new(C,D,(C.radius+D.radius),connected_particles,3);
+            simulation.connect_new(Up,B,(Up.radius+B.radius),connected_particles,4);
+            simulation.connect_new(D,B,(2.0 *A.radius+B.radius + 2.0 * C.radius + D.radius),connected_particles,5);
+            simulation.connect_new(A,D,(A.radius+ 2.0 *C.radius + D.radius),connected_particles,6);
+            simulation.connect_new(Up,A,(std::sqrt(std::pow(B.radius + A.radius,2) + std::pow(B.radius+Up.radius,2))), connected_particles,7);
+*/
+
 
     // move image if right mouse button is pressed
         if(mouseState.rButtonPressed){
@@ -161,6 +193,8 @@ public:
             Checkbox("draw cursor", &drawCursor);
             Checkbox("draw circles", &drawCircles);
             Checkbox(" Switch view", &switch_view);
+            Checkbox("Safety off",&simulation.safety);
+            Checkbox("Dimers Only",&simulation.dimers_only);
             ImGui::EndMenu();
         }
         EndMainMenuBar();
@@ -206,10 +240,10 @@ public:
 
                         }
                         std::string conductivity_label = label;
-                        std::string conductivity = " conductivity";
+                        std::string conductivity = " stern layer conductance";
                         conductivity_label += conductivity;
                         const char* conductivity_label_ = conductivity_label.c_str();
-                        if(SliderScalar(conductivity_label_,ImGuiDataType_Double,&A.conductivity,&min_conductivity,&max_conductivity)){
+                        if(SliderScalar(conductivity_label_,ImGuiDataType_Double,&A.stern_layer_conductance,&min_conductivity,&max_conductivity)){
 
                         }
 
@@ -227,8 +261,9 @@ public:
                             A.permittivity = 3.9;
                             A.density = 2650.0;
                             A.radius = 3.0 * mscale;
-
+                            A.mass = A.density * (4.0/3.0) * M_PI * std::pow(A.radius,3); //new
                             A.conductivity = 0.0;
+                            A.stern_layer_conductance = 0.05 * std::pow(10,-9);
                         }
                         std::string PS_label = label;
                         std::string PS = " PS";
@@ -238,8 +273,11 @@ public:
                             A.permittivity = 2.5;
                             A.density = 1050;
                             A.radius = 3.0 * mscale;
-
-                            A.conductivity = 5 * std::pow(10,-9);
+                            A.mass = A.density * (4.0/3.0) * M_PI * std::pow(A.radius,3);
+                            //A.conductivity = 5 * std::pow(10,-9);
+                            A.stern_layer_conductance = 5 * std::pow(10,-9);
+                           //A.conductivity = 0.001;
+                           A.zeta_potential = -59.0 * std::pow(10,-3); //check if mv or V
 
                         }
 
@@ -282,10 +320,10 @@ public:
 
                         }
                         std::string conductivity_label = label;
-                        std::string conductivity = " conductivity";
+                        std::string conductivity = " stern layer conductance";
                         conductivity_label += conductivity;
                         const char* conductivity_label_ = conductivity_label.c_str();
-                        if(SliderScalar(conductivity_label_,ImGuiDataType_Double,&B.conductivity,&min_conductivity,&max_conductivity)){
+                        if(SliderScalar(conductivity_label_,ImGuiDataType_Double,&B.stern_layer_conductance,&min_conductivity,&max_conductivity)){
 
                         }
                         std::string dissolve_label = label;
@@ -303,6 +341,8 @@ public:
                             B.density = 2650.0;
                             B.radius = 2.0 * mscale;
                             B.conductivity = 0.0;
+                            B.mass = B.density * (4.0/3.0) * M_PI * std::pow(B.radius,3);
+                            B.stern_layer_conductance = 0.05 * std::pow(10,-9);
                         }
                         std::string PS_label = label;
                         std::string PS = " PS";
@@ -314,8 +354,12 @@ public:
                             B.permittivity = 2.5;
                             B.density = 1050;
                             B.radius = 2.0 * mscale;
-                            B.conductivity = 5 * std::pow(10,-9);
-
+                           // B.conductivity = 5 * std::pow(10,-9);
+                           //B.conductivity = 0.001;
+                     //      B.conductivity = 2.0 *  ((5 * std::pow(10,-9)) / B.radius);
+                            B.mass = B.density * (4.0/3.0) * M_PI * std::pow(B.radius,3);
+                            B.zeta_potential = -56.0 * std::pow(10,-3); //check if mv or V
+                            B.stern_layer_conductance = 5 * std::pow(10,-9);
                         }
 
                     }
@@ -342,15 +386,19 @@ public:
                                  &min_viscosity_multiplier, &max_viscosity_multiplier))
                     std::cout << simulation.viscosity_multiplier;
             }
+            if (CollapsingHeader("EHD")) {
+                if (SliderScalar("Permittivity of medium", ImGuiDataType_Double, &simulation.relative_permittivity,&min_epsilon_m, &max_epsilon_m)){}
+                if (SliderScalar("Conductivity of medium", ImGuiDataType_Double, &simulation.conductivity,&min_sigma_m, &max_sigma_m)){}
+            }
 
             if(CollapsingHeader("Experiments")){
                 if(Checkbox(" Silica - Silica Experiment", &first_experiment)){
-                    simulation.beta = 1.0;
+                    simulation.beta_ehd = 0.02;
                     simulation.lower_electrode.peak_voltage = 6.5;
                     simulation.upper_electrode.position[2] = simulation.lower_electrode.position[2] + 100.0 * mscale;
                 }
                 if(Checkbox(" PS - PS Experiment", &second_experiment)){
-                    simulation.beta = 0.02;
+                    simulation.beta_ehd = 0.04;
                     //simulation.lower_electrode.frequency = 500.0;
                     simulation.lower_electrode.peak_voltage = 6.5;
                     simulation.upper_electrode.position[2] = simulation.lower_electrode.position[2] + 100.0 * mscale;
@@ -433,7 +481,7 @@ public:
                 if(switch_view){
                     nvgBeginPath(vg);
 
-                    nvgRect(vg,rectangle.position[0] + distance[0] * scale + center_of_frame[0], rectangle.position[1]+ distance[1] * scale + center_of_frame[1], rectangle.width,rectangle.depth);
+                    nvgRect(vg,rectangle.position[0]  * scale + center_of_frame[0], rectangle.position[1] * scale + center_of_frame[1], rectangle.width,rectangle.depth);
 
                     if(is_lower_electrode){
                         nvgFillColor(vg,nvgRGBA(250,0,0,200));
@@ -448,7 +496,7 @@ public:
                 }else{
                     nvgBeginPath(vg);
 
-                    nvgRect(vg,rectangle.position[0] + distance[0] * scale + center_of_frame[0], rectangle.position[2]+ distance[2] * scale + center_of_frame[2], rectangle.width,rectangle.height);
+                    nvgRect(vg,rectangle.position[0]  * scale + center_of_frame[0], rectangle.position[2] * scale + center_of_frame[2], rectangle.width,rectangle.height);
 
                     if(is_lower_electrode){
                         nvgFillColor(vg,nvgRGBA(250,0,0,200));
@@ -477,7 +525,7 @@ public:
             auto drawCircle = [this](const Circle &circle,int tmpfortest, double scale, Vector3d distance){
                 if(switch_view){
                     nvgBeginPath(vg);
-                    nvgCircle(vg, (circle.pos[0]  + distance[0] * scale) + center_of_frame[0], (circle.pos[1] + distance[1] * scale) + center_of_frame[1], circle.radius *scale);
+                    nvgCircle(vg, (circle.pos[0]    * scale) + center_of_frame[0], (circle.pos[1]   * scale) + center_of_frame[1], circle.radius *scale);
                     if(tmpfortest ==1) {
                         nvgFillColor(vg, nvgRGBA(150, 0, 0, 100));
                     }else{
@@ -489,7 +537,7 @@ public:
                     nvgStroke(vg);
                 }else{
                     nvgBeginPath(vg);
-                    nvgCircle(vg, (circle.pos[0]  + distance[0] * scale) + center_of_frame[0], (circle.pos[2] + distance[2] * scale) + center_of_frame[2], circle.radius *scale);
+                    nvgCircle(vg, (circle.pos[0]   * scale) + center_of_frame[0], (circle.pos[2]   * scale) + center_of_frame[2], circle.radius *scale);
                     if(tmpfortest ==1) {
                         nvgFillColor(vg, nvgRGBA(150, 0, 0, 100));
                     }else{
@@ -542,12 +590,12 @@ public:
                if(!std::get<0>(pair).visited) {
                    Vector3d distance = formation_center - std::get<0>(pair).position;
                    //std::cout<<"distance = "<<distance<<std::endl;
-                   drawCircle(Circle(std::get<0>(pair).position, std::get<0>(pair).radius), 1, 2.0 *(1.0/mscale), distance);
+                   drawCircle(Circle(std::get<0>(pair).position, std::get<0>(pair).radius), 1, (1.0/mscale), distance);
                    std::get<0>(pair).visited = true;
                }
                if(!std::get<1>(pair).visited) {
                    Vector3d distance = formation_center - std::get<1>(pair).position;
-                   drawCircle(Circle(std::get<1>(pair).position, std::get<1>(pair).radius), 2, 2.0 *(1.0/mscale), distance);
+                   drawCircle(Circle(std::get<1>(pair).position, std::get<1>(pair).radius), 2, (1.0/mscale), distance);
                    std::get<1>(pair).visited = true;
                }
 
@@ -684,8 +732,16 @@ public:
     double mscale = std::pow(10,-6);
 
 
-    Particle A = Particle(50.0 *mscale ,20.0 * mscale,-1.0,{100.0 * mscale,100.0 * mscale, 100.0 * mscale});
-    Particle B = Particle(50.0 * mscale,20.0* mscale,-1.0,{240.0 * mscale,100.0 * mscale, 100.0 * mscale});
+
+
+    Particle A = Particle(1050 ,20.0 * mscale,-1.0,{144.0 * mscale,100.0 * mscale, 100.0 * mscale});
+    Particle B = Particle(1050,20.0* mscale,-1.0,{100.0 * mscale,100.0 * mscale, 100.0 * mscale});
+    Particle Up = Particle(1050,3.0* mscale,-1.0,{100.0 * mscale,105.0 * mscale, 100.0 * mscale});
+    Particle C = Particle(1050,2.0* mscale,-1.0,{108.0 * mscale,100.0 * mscale, 100.0 * mscale});
+    Particle D = Particle(1050,2.0* mscale,-1.0,{112.0 * mscale,100.0 * mscale, 100.0 * mscale});
+
+
+
     //Particle C = Particle(50.0,20.0,1.0,{150.0,0.0});
 
   /*  Particle A2 = Particle(20,20,{100,100});
@@ -747,11 +803,11 @@ public:
 
     double min_stiffnes_constant = 0.0;
     double max_stiffnes_constant = 100000.0;
-    double min_viscosity_multiplier = 0.0;
+    double min_viscosity_multiplier = 0.01;
     double max_viscosity_multiplier = 1000.0;
     double min_brownian_motion_multiplier = 0.0;
     double max_brownian_motion_multiplier = 10.0;
-    double min_time_step = 100.0* mscale;
+    double min_time_step = 0.00001;
     double max_time_step = 1.0;
     int min_max_iterations = 100;
     int max_max_iterations = 1000000;
@@ -768,6 +824,11 @@ public:
     double min_upper_electrode_charge = -10.0;
     double max_upper_electrode_charge = 10.0;
 
+    double min_sigma_m = 0.05 * std::pow(10,-8);
+    double max_sigma_m = 0.05 * std::pow(10,-3);
+    double min_epsilon_m = 1.0;
+    double max_epsilon_m = 100.0;
+
     double min_lower_electrode_voltage = 0.0;
     double max_lower_electrode_voltage = 300.0;
     double min_upper_electrode_voltage = -300.0;
@@ -779,12 +840,12 @@ public:
     double min_radius = 1.0 * mscale;
     double max_radius = 200.0 * mscale;
     double min_lower_electrode_frequency = 0.0;
-    double max_lower_electrode_frequency = 12000.0;
+    double max_lower_electrode_frequency = 22000.0;
     double min_lower_electrode_peak_voltage = 0.0;
     double max_lower_electrode_peak_voltage = 1000.0;
     double min_permittivity = 0.0;
     double max_permittivity = 200.0;
-    double min_conductivity = 0.0;
+    double min_conductivity = 1 * std::pow(10,-10);
     double max_conductivity = 1.0 * std::pow(10,-3);
 
     bool is_silica_1 = false;
@@ -876,6 +937,13 @@ int main(int, char**)
         myfile << app.simulation.total_energy[i]<<","<<app.simulation.kinetic_energy[i]<<","<<app.simulation.potential_energy[i]<<","<<app.simulation.e_vec[i]<<","<<app.simulation.spring_force_vec_over_time_x[i]/app.simulation.stiffnes_constant<<","<<app.simulation.spring_force_vec_over_time_y[i]/app.simulation.stiffnes_constant<<","<<app.simulation.A_B_DISTANCE[i]<<","<<app.simulation.spring_force_derivative_x_in_x[i]/app.simulation.stiffnes_constant<<","<<app.simulation.position_vec_over_time_in_x[i]<<","<<app.simulation.position_vec_over_time_in_y[i]<<","<<i<<std::endl;
     }
 
+    std::ofstream position;
+    position.open("../../../position.csv");
+    position<<"Position in X"<<","<<"Position in Y"<<","<<"Time Step"<<std::endl;
+    for(int i = 0; i<app.simulation.position_vec_over_time_in_x.size(); i++){
+        position<<app.simulation.position_vec_over_time_in_x[i]<<","<<app.simulation.position_vec_over_time_in_y[i]<<","<<i<<std::endl;
+    }
+
     std::ofstream v_w;
     v_w.open("../../../v_w.csv");
     v_w <<" Velocity"<<","<<"Frequency"<<std::endl;
@@ -925,6 +993,7 @@ int main(int, char**)
     best<<"x"<<","<<"y"<<","<<"z"<<std::endl;
     best<<app.simulation.best_found[0]<<","<<app.simulation.best_found[1]<<","<<app.simulation.best_found[2]<<std::endl;
     myfile.close();
+    position.close();
     v_w.close();
     v_E.close();
     myfile2.close();
