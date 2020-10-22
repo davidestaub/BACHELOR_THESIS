@@ -28,9 +28,10 @@ public:
     double six_Pi_mu_r;
     int index = -1;
     double permittivity;
-    double conductivity;
     double zeta_potential;
     double stern_layer_conductance;
+    double number_of_neighbours = 0.0;
+    double theta = 0.0;
 
 
     bool dissolve = false;
@@ -43,9 +44,13 @@ public:
     bool is_drawn = false;
     bool visited  = false;
     bool visited_ekin = false;
+    bool is_silica = false;
+    bool is_PS = false;
+    bool three_m = false;
+    bool two_m = false;
 
     //everything in micro
-    Particle(double density_ = 1000.0 ,double radius = 10.0, double charge_=0.0 ,Vector3d position = {200,200,0.0}, double permittivity_ = 2.4, double conductivity_ = std::pow(10,-14)): density(density_), radius(radius), position(position), charge(charge_), permittivity(permittivity_), conductivity(conductivity_){
+    Particle(double density_ = 1000.0 ,double radius = 10.0, double charge_=0.0 ,Vector3d position = {200,200,0.0}, double permittivity_ = 2.4, double stern_layer_conductance_ =  std::pow(10,-9), double zeta_potential_ = -57.0 * std::pow(10,-3)): density(density_), radius(radius), position(position), charge(charge_), permittivity(permittivity_), stern_layer_conductance(stern_layer_conductance_), zeta_potential(zeta_potential_){
         position = initial_position;//{350.0,300.0};
         velocity = initial_velocity;
         tmp_drag = {0,0};
@@ -53,8 +58,7 @@ public:
         tmp_update = {0,0};
         six_Pi_mu_r = ( 6.0 * M_PI * eta * (radius*std::pow(10,-6))  * std::pow(10,6) );
         mass = density * (4.0/3.0) * M_PI * std::pow(radius,3);
-        stern_layer_conductance = 1 * std::pow(10,-9);
-        zeta_potential = -57.0 * std::pow(10,-3);
+
 
         //changed initial radius to much bigger, previously 10^-6
 
@@ -65,6 +69,14 @@ public:
     void dissolve_particle(double dissolve_rate){
         this->radius = this->radius - dissolve_rate;
         this->mass = this->mass - std::pow(dissolve_rate,2);
+    }
+
+    Vector3d get_velocity(VectorXd new_positions){
+        Vector3d velocity;
+        velocity[0] = (new_positions[this->index] - this->position[0])/time_step;
+        velocity[1] = (new_positions[(this->index) +1] - this->position[1])/time_step;
+        velocity[2] = (new_positions[(this->index) +2] - this->position[2])/time_step;
+        return velocity;
     }
 
 /*
@@ -245,7 +257,7 @@ public:
 
 };
 
-double Particle::time_step =0.05* std::pow(10,-6); // seconds
+double Particle::time_step =1.0* std::pow(10,-6); // seconds
 double Particle::radius_for_spring = 10;
 double Particle::eta = 1.0 * std::pow(10,-3);
 

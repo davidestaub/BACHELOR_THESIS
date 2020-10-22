@@ -15,6 +15,7 @@
 
 #include <Eigen/Core>
 using Eigen::Vector2d;
+using Eigen::Vector2f;
 
 std::ofstream outputFile;
 std::ofstream fs;
@@ -33,93 +34,62 @@ public:
     TestApp(int w, int h, const char * title) : Application(title, w, h) {
         lastFrame = std::chrono::high_resolution_clock::now();
 
-
-       // particles.push_back(particle_1);
-       // particles.push_back(particle_2);
-       /* particles.push_back(particle_3);
-        particles.push_back(particle_4);*/
-       /* particles.push_back(particle_5);
-        particles.push_back(particle_6);
-        particles.push_back(particle_7);
-        particles.push_back(particle_8);
-        particles.push_back(particle_9);
-        particles.push_back(particle_10);*/
-       //connect_vector.push_back(A);
-       //connect_vector.push_back(B);
-      // particles.push_back(loner);
+        //flat triangle from laura
+       // simulation.connect(A,B,(A.radius+B.radius),connected_particles);
+       // simulation.connect(B,C,(B.radius + C.radius), connected_particles);
+       // simulation.connect(A,C,(A.radius + 2.0 * B.radius + C.radius), connected_particles);
 
 
-      // L shaped particle system
+        //frist triangle from laura
+        simulation.connect(A_t,B_t,(A_t.radius+B_t.radius),connected_particles);
+        simulation.connect(B_t,C_t,(B_t.radius + C_t.radius), connected_particles);
+        simulation.connect(A_t,C_t,(std::sqrt(std::pow(B_t.radius + A_t.radius,2) + std::pow(B_t.radius+C_t.radius,2))), connected_particles);
 
-       simulation.connect(A,B,(A.radius+B.radius),connected_particles);
-      //  simulation.connect(B,C,(B.radius + 2.0 *A.radius + C.radius),connected_particles);
+        //dumbel
+       // simulation.connect(A,B,(A.radius+B.radius),connected_particles);
+       // simulation.connect(A_2,B_2,(A_2.radius+B_2.radius),connected_particles);
+       // simulation.connect(A_3,B_3,(A_3.radius+B_3.radius),connected_particles);
+       // simulation.connect(A_4,B_4,(A_4.radius+B_4.radius),connected_particles);
+
+        //rotator
+       // simulation.connect(A,B,(A.radius+B.radius),connected_particles);
+      //  simulation.connect(B,C,(B.radius+C.radius),connected_particles);
+      //  simulation.connect(C,D,(C.radius+D.radius),connected_particles);
+      //  simulation.connect(A,C,(std::sqrt(std::pow((A.radius + B.radius),2) + std::pow((B.radius + C.radius),2))),connected_particles);
+      //  simulation.connect(B,D,(std::sqrt(std::pow((B.radius + C.radius),2) + std::pow((C.radius + D.radius),2))),connected_particles);
+
+        //spiral triangle that does not do spirals
+        // simulation.connect(A,B,(A.radius+B.radius),connected_particles);
+       //    double fix_rest = std::sqrt(std::pow(mscale *(100.0 - (104.0 + 5.0/std::sqrt(2))),2) + std::pow(mscale *(100.0 - (100.0 + 5.0/std::sqrt(2))),2));
+        //   simulation.connect(B,C,(fix_rest), connected_particles);
+        //  simulation.connect(A,C,A.radius + C.radius, connected_particles);
+
+
+        //spiral triangle
+       // simulation.connect(A,B,(A.radius+B.radius),connected_particles);
+       // double fix_rest_2 = std::sqrt(std::pow(mscale *(100.0 - (105.0 + 4.0/std::sqrt(2))),2) + std::pow(mscale *(100.0 - (100.0 + 4.0/std::sqrt(2))),2));
+        //simulation.connect(B,C,(fix_rest_2), connected_particles);
+        //simulation.connect(A,C,A.radius + C.radius, connected_particles);
+
+
+
+        // L shaped particle system
+       //simulation.connect(A,B,(A.radius+B.radius),connected_particles);
+       // simulation.connect(B,C,(B.radius + 2.0 *A.radius + C.radius),connected_particles);
        // simulation.connect(A,C,(A.radius+C.radius),connected_particles);
-
-       // simulation.connect(C,D,(C.radius+D.radius),connected_particles);
+       //simulation.connect(C,D,(C.radius+D.radius),connected_particles);
        // simulation.connect(Up,B,(Up.radius+B.radius),connected_particles);
        // simulation.connect(D,B,(2.0 *A.radius+B.radius + 2.0 * C.radius + D.radius),connected_particles);
        // simulation.connect(A,D,(A.radius+ 2.0 *C.radius + D.radius),connected_particles);
        // simulation.connect(Up,A,(std::sqrt(std::pow(B.radius + A.radius,2) + std::pow(B.radius+Up.radius,2))), connected_particles);
 
 
-     // simulation.connect(A,B,(A.radius + B.radius),connected_particles);
-
-
-
-        ///      simulation.connect(B,C,(C.radius+B.radius),connected_particles);
-     //  simulation.connect(A,C, (A.radius+C.radius),connected_particles);
-/*
-        simulation.connect(A2,B2,(A2.radius+B2.radius),connected_particles);
-        simulation.connect(B2,C2,(C2.radius+B2.radius),connected_particles);
-        simulation.connect(A2,C2,(A2.radius+C2.radius+2*B.radius),connected_particles);
-
-        simulation.connect(A3,B3,(A3.radius+B3.radius),connected_particles);
-        simulation.connect(B3,C3,(C3.radius+B3.radius),connected_particles);
-        simulation.connect(A3,C3,(A3.radius+C3.radius),connected_particles);
-        simulation.connect(C3,D3,C3.radius + D3.radius, connected_particles);
-        simulation.connect(A3,D3,std::sqrt(std::pow(A3.radius,2)/2 + std::pow((A3.radius/std::sqrt(2) + 2*D3.radius + C.radius), 2)), connected_particles);
-        simulation.connect(B3,D3,std::sqrt(std::pow(B3.radius,2)/2 + std::pow((B3.radius/std::sqrt(2) + 2*D3.radius + C.radius), 2)), connected_particles);
-
-
-        simulation.connect(A6,B6,A6.radius + B6.radius, connected_particles);
-        simulation.connect(A6,C6,A6.radius + C6.radius, connected_particles);
-        simulation.connect(C6,B6,C6.radius + B6.radius, connected_particles);
-        simulation.connect(D6,B6,D6.radius + B6.radius, connected_particles);
-        simulation.connect(D6,A6,D6.radius + A6.radius, connected_particles);
-
-
-        simulation.connect(A4,B4,A4.radius + B4.radius, connected_particles);
-        simulation.connect(A4,C4,A4.radius + C4.radius, connected_particles);
-       // simulation.connect(C4,B4,C4.radius + B4.radius, connected_particles);
-        simulation.connect(B4,D4,D4.radius + B4.radius, connected_particles);
-       // simulation.connect(D4,A4,D4.radius + A4.radius, connected_particles);
-       simulation.connect(D4,C4,D4.radius + C4.radius, connected_particles);
-       simulation.connect(B4,C4,std::sqrt(std::pow(B4.radius+D4.radius,2) + std::pow(C4.radius + D4.radius,2)),connected_particles);
-        simulation.connect(A4,D4,std::sqrt(std::pow(C4.radius+D4.radius,2) + std::pow(C4.radius + A4.radius,2)),connected_particles);
-
-
-        simulation.connect(BIG_A,SMALL_B,BIG_A.radius +SMALL_B.radius,connected_particles);
-
-
-
-        simulation.connect(B_blitz,C_blitz,C_blitz.radius+B_blitz.radius,connected_particles);
-        simulation.connect(A_blitz,C_blitz,std::sqrt(std::pow(A_blitz.radius,2) + std::pow(A_blitz.radius + 2 * B_blitz.radius + C_blitz.radius,2)),connected_particles);
-        simulation.connect(C_blitz,D_blitz,std::sqrt(std::pow(C_blitz.radius,2) + std::pow(C_blitz.radius  + D_blitz.radius,2)),connected_particles);
-        simulation.connect(A_blitz,B_blitz,std::sqrt(std::pow(B_blitz.radius,2) + std::pow(A_blitz.radius +   B_blitz.radius ,2)),connected_particles);
-        simulation.connect(D_blitz,B_blitz,std::sqrt(std::pow(D_blitz.radius,2) + std::pow(D_blitz.radius + 2 * C_blitz.radius + B_blitz.radius,2)),connected_particles);
-        simulation.connect(A_blitz,D_blitz,std::sqrt( std::pow(D_blitz.radius+A_blitz.radius,2) + std::pow(D_blitz.radius + 2*C_blitz.radius + 2* B_blitz.radius + A_blitz.radius,2) ), connected_particles);
-
-*/
 
         rect = Box{{simulation.Boxcenter[0], simulation.Boxcenter[1]}, Vector2d(simulation.Boxsize[0], simulation.Boxsize[1]), nvgRGBA(50, 50, 50, 0), nvgRGBA(50, 50, 50, 200)};
 
-
-
-
-
-
         simulation.assign_index(connected_particles);
         simulation.initialize_position_vector_minus_1(connected_particles);
+        simulation.count_neighbours(connected_particles);
 
     }
 
@@ -128,16 +98,55 @@ public:
 
 
     void process() override {
-        my_data.open("data.csv");
+
 
 
         if(runSim) {
+           //flat triangle from laura
+          //  simulation.connect_new(A,B,(A.radius+B.radius),connected_particles,0);
+          //  simulation.connect_new(B,C,(B.radius + C.radius), connected_particles,1);
+          //  simulation.connect_new(A,C,(A.radius + 2.0 * B.radius + C.radius), connected_particles,2);
 
-         //   simulation.connect_new(A,B,(A.radius + B.radius), connected_particles,0);
+
+            //first triangle from laura
+            simulation.connect_new(A_t,B_t,(A_t.radius+B_t.radius),connected_particles,0);
+            simulation.connect_new(B_t,C_t,(B_t.radius + C_t.radius), connected_particles,1);
+            simulation.connect_new(A_t,C_t,(std::sqrt(std::pow(B_t.radius + A_t.radius,2) + std::pow(B_t.radius+C_t.radius,2))), connected_particles,2);
+
+
+
+            //dumbel
+           // simulation.connect_new(A,B,(A.radius + B.radius), connected_particles,0);
+           // simulation.connect_new(A_2,B_2,(A_2.radius+B_2.radius),connected_particles,1);
+           // simulation.connect_new(A_3,B_3,(A_3.radius+B_3.radius),connected_particles,2);
+            //simulation.connect_new(A_4,B_4,(A_4.radius+B_4.radius),connected_particles,3);
+
+
+            //rotator
+         //   simulation.connect_new(A,B,(A.radius+B.radius),connected_particles,0);
+         //   simulation.connect_new(B,C,(B.radius+C.radius),connected_particles,1);
+          //  simulation.connect_new(C,D,(C.radius+D.radius),connected_particles,2);
+         //   simulation.connect_new(A,C,(std::sqrt(std::pow((A.radius + B.radius),2) + std::pow((B.radius + C.radius),2))),connected_particles,3);
+         //   simulation.connect_new(B,D,(std::sqrt(std::pow((B.radius + C.radius),2) + std::pow((C.radius + D.radius),2))),connected_particles,4);
+
+
+
+            //spiral triangle that does not do spirals
+          //  simulation.connect_new(A,B,(A.radius+B.radius),connected_particles,0);
+          //  double fix_rest = std::sqrt(std::pow(mscale *(100.0 - (104.0 + 5.0/std::sqrt(2))),2) + std::pow(mscale *(100.0 - (100.0 + 5.0/std::sqrt(2))),2));
+          //  simulation.connect_new(B,C,(fix_rest), connected_particles,1);
+          //  simulation.connect_new(A,C,A.radius + C.radius, connected_particles,2);
+
+            //spiral triangle
+           // simulation.connect_new(A,B,(A.radius+B.radius),connected_particles,0);
+            //double fix_rest_2 = std::sqrt(std::pow(mscale *(100.0 - (105.0 + 4.0/std::sqrt(2))),2) + std::pow(mscale *(100.0 - (100.0 + 4.0/std::sqrt(2))),2));
+            //simulation.connect_new(B,C,(fix_rest_2), connected_particles,1);
+            //simulation.connect_new(A,C,A.radius + C.radius, connected_particles,2);
+
 
             // L shaped particle system
-          /* simulation.connect_new(A,B,(A.radius+B.radius),connected_particles,0);
-            simulation.connect_new(B,C,(B.radius + 2.0 *A.radius + C.radius),connected_particles,1);
+         // simulation.connect_new(A,B,(A.radius+B.radius),connected_particles,0);
+         /*   simulation.connect_new(B,C,(B.radius + 2.0 *A.radius + C.radius),connected_particles,1);
             simulation.connect_new(A,C,(A.radius+C.radius),connected_particles,2);
 
             simulation.connect_new(C,D,(C.radius+D.radius),connected_particles,3);
@@ -175,7 +184,7 @@ public:
             simulation.time_index++;
 
         }
-        my_data.close();
+
     }
 
     void drawImGui() override {
@@ -195,6 +204,40 @@ public:
             Checkbox(" Switch view", &switch_view);
             Checkbox("Safety off",&simulation.safety);
             Checkbox("Dimers Only",&simulation.dimers_only);
+            SliderScalar("Move Camera along x-axis",ImGuiDataType_Double, &center_of_frame[0], &min_cof_x,&max_cof_x);
+            SliderScalar("Move Camera along y-axis",ImGuiDataType_Double, &center_of_frame[1], &min_cof_y,&max_cof_y);
+            SliderScalar("Move Camera along z-axis",ImGuiDataType_Double, &center_of_frame[2], &min_cof_z,&max_cof_z);
+            SliderScalar("Zoom", ImGuiDataType_Double, &mscale, &min_my_zoom, &max_my_zoom);
+            if(Checkbox("Tracer on", &simulation.tracer_on)){
+                simulation.dimer_tracers = false;
+            }
+            if(Checkbox("Dimer Tracers on", &simulation.dimer_tracers)){
+                simulation.tracer_on = false;
+            }
+            if(Checkbox("Erase Dimer Tracers", &simulation.erase_dimer_tracers)){
+                simulation.dimer_tracers = false;
+            }
+            if(Checkbox("Follow cam",&follow_cam)) {
+                Vector3d com = Eigen::VectorXd::Zero(3);
+                double count = 0.0;
+                for (auto &particle_pair : connected_particles) {
+                    if (!std::get<0>(particle_pair).visited) {
+                        com += (1.0 / mscale) * std::get<0>(particle_pair).position;
+                        std::get<0>(particle_pair).visited = true;
+                        count = count + 1.0;
+                    }
+                    if (!std::get<1>(particle_pair).visited) {
+                        com += (1.0 / mscale) * std::get<1>(particle_pair).position;
+                        std::get<1>(particle_pair).visited = true;
+                        count = count + 1.0;
+                    }
+                }
+                if (count != 0.0) {
+                    com = com / count;
+                    center_of_frame = com;
+                }
+                simulation.reset_flags(connected_particles);
+            }
             ImGui::EndMenu();
         }
         EndMainMenuBar();
@@ -232,6 +275,25 @@ public:
                         if(SliderScalar(radius_label_,ImGuiDataType_Double,&A.radius,&min_radius,&max_radius)){
 
                         }
+                        std::string set_radius2_label = label;
+                        std::string set_radius2 = " set radius to 2 micro meters";
+                        set_radius2_label += set_radius2;
+                        const char* set_radius2_label_ = set_radius2_label.c_str();
+                        if(Checkbox(set_radius2_label_, &A.two_m)){
+                            A.radius = 2.0 * std::pow(10,-6);
+                            A.mass = A.density * (4.0/3.0) * M_PI * std::pow(A.radius,3);
+                        }
+                        std::string set_radius3_label = label;
+                        std::string set_radius3 = " set radius to 3 micro meters";
+                        set_radius3_label += set_radius3;
+                        const char* set_radius3_label_ = set_radius3_label.c_str();
+                        if(Checkbox(set_radius3_label_, &A.three_m)){
+                            A.radius = 3.0 * std::pow(10,-6);
+                            A.mass = A.density * (4.0/3.0) * M_PI * std::pow(A.radius,3);
+                        }
+
+
+
                         std::string permittivity_label = label;
                         std::string permittivity = " permittivity";
                         permittivity_label += permittivity;
@@ -243,7 +305,15 @@ public:
                         std::string conductivity = " stern layer conductance";
                         conductivity_label += conductivity;
                         const char* conductivity_label_ = conductivity_label.c_str();
-                        if(SliderScalar(conductivity_label_,ImGuiDataType_Double,&A.stern_layer_conductance,&min_conductivity,&max_conductivity)){
+                        if(SliderScalar(conductivity_label_,ImGuiDataType_Double,&A.stern_layer_conductance,&min_stern_layer_conductance,&max_stern_layer_conductance)){
+
+                        }
+
+                        std::string zeta_label = label;
+                        std::string zeta = " zeta potential";
+                        zeta_label += zeta;
+                        const char* zeta_label_ = zeta_label.c_str();
+                        if(SliderScalar(zeta_label_,ImGuiDataType_Double,&A.zeta_potential,&min_zeta,&max_zeta)){
 
                         }
 
@@ -257,27 +327,25 @@ public:
                         std::string silica = " Silica";
                         silica_label+=silica;
                         const char* silica_label_ = silica_label.c_str();
-                        if(Checkbox(silica_label_,&is_silica_1)){
+                        if(Checkbox(silica_label_,&A.is_silica)){
                             A.permittivity = 3.9;
                             A.density = 2650.0;
                             A.radius = 3.0 * mscale;
                             A.mass = A.density * (4.0/3.0) * M_PI * std::pow(A.radius,3); //new
-                            A.conductivity = 0.0;
-                            A.stern_layer_conductance = 0.05 * std::pow(10,-9);
+                            A.stern_layer_conductance = 0.0 * std::pow(10,-9);
+                            A.zeta_potential = -1.0 * 43 * std::pow(10,-3);
                         }
                         std::string PS_label = label;
                         std::string PS = " PS";
                         PS_label+=PS;
                         const char* PS_label_ = PS_label.c_str();
-                        if(Checkbox(PS_label_, &is_PS_1)){
+                        if(Checkbox(PS_label_, &A.is_PS)){
                             A.permittivity = 2.5;
                             A.density = 1050;
                             A.radius = 3.0 * mscale;
                             A.mass = A.density * (4.0/3.0) * M_PI * std::pow(A.radius,3);
-                            //A.conductivity = 5 * std::pow(10,-9);
                             A.stern_layer_conductance = 5 * std::pow(10,-9);
-                           //A.conductivity = 0.001;
-                           A.zeta_potential = -59.0 * std::pow(10,-3); //check if mv or V
+                           A.zeta_potential = -56.0 * std::pow(10,-3); //check if mv or V
 
                         }
 
@@ -312,6 +380,25 @@ public:
                         if(SliderScalar(radius_label_,ImGuiDataType_Double,&B.radius,&min_radius,&max_radius)){
 
                         }
+
+                        std::string set_radius2_label = label;
+                        std::string set_radius2 = " set radius to 2 micro meters";
+                        set_radius2_label += set_radius2;
+                        const char* set_radius2_label_ = set_radius2_label.c_str();
+                        if(Checkbox(set_radius2_label_, &B.two_m)){
+                            B.radius = 2.0 * std::pow(10,-6);
+                            B.mass = B.density * (4.0/3.0) * M_PI * std::pow(B.radius,3);
+                        }
+                        std::string set_radius3_label = label;
+                        std::string set_radius3 = " set radius to 3 micro meters";
+                        set_radius3_label += set_radius3;
+                        const char* set_radius3_label_ = set_radius3_label.c_str();
+                        if(Checkbox(set_radius3_label_, &B.three_m)){
+                            B.radius = 3.0 * std::pow(10,-6);
+                            B.mass = B.density * (4.0/3.0) * M_PI * std::pow(B.radius,3);
+                        }
+
+
                         std::string permittivity_label = label;
                         std::string permittivity = " permittivity";
                         permittivity_label += permittivity;
@@ -323,9 +410,19 @@ public:
                         std::string conductivity = " stern layer conductance";
                         conductivity_label += conductivity;
                         const char* conductivity_label_ = conductivity_label.c_str();
-                        if(SliderScalar(conductivity_label_,ImGuiDataType_Double,&B.stern_layer_conductance,&min_conductivity,&max_conductivity)){
+                        if(SliderScalar(conductivity_label_,ImGuiDataType_Double,&B.stern_layer_conductance,&min_stern_layer_conductance,&max_stern_layer_conductance)){
 
                         }
+
+                        std::string zeta_label = label;
+                        std::string zeta = " zeta potential";
+                        zeta_label += zeta;
+                        const char* zeta_label_ = zeta_label.c_str();
+                        if(SliderScalar(zeta_label_,ImGuiDataType_Double,&B.zeta_potential,&min_zeta,&max_zeta)){
+
+                        }
+
+
                         std::string dissolve_label = label;
                         std::string dissolve = " dissolve";
                         dissolve_label+=dissolve;
@@ -336,13 +433,14 @@ public:
                         std::string silica = " Silica";
                         silica_label+=silica;
                         const char* silica_label_ = silica_label.c_str();
-                        if(Checkbox(silica_label_,&is_silica_2)){
+                        if(Checkbox(silica_label_,&B.is_silica)){
                             B.permittivity = 3.9;
                             B.density = 2650.0;
                             B.radius = 2.0 * mscale;
-                            B.conductivity = 0.0;
+
                             B.mass = B.density * (4.0/3.0) * M_PI * std::pow(B.radius,3);
-                            B.stern_layer_conductance = 0.05 * std::pow(10,-9);
+                            B.stern_layer_conductance = 0.00 * std::pow(10,-9);
+                            A.zeta_potential = -1.0 * 43 * std::pow(10,-3);
                         }
                         std::string PS_label = label;
                         std::string PS = " PS";
@@ -350,7 +448,7 @@ public:
                         const char* PS_label_ = PS_label.c_str();
 
 
-                        if(Checkbox(PS_label_, &is_PS_2)){
+                        if(Checkbox(PS_label_, &B.is_PS)){
                             B.permittivity = 2.5;
                             B.density = 1050;
                             B.radius = 2.0 * mscale;
@@ -373,12 +471,24 @@ public:
         }
         EndMainMenuBar();
 
+       /* while(std::abs(mouseState.lastMouseX - std::get<0>(connected_particles[0]).position[0]  ) < 0.01 && std::abs(mouseState.lastMouseY - std::get<0>(connected_particles[0]).position[1]  ) < 0.01){
+            std::string label = "Particle ";
+            int i = std::get<0>(connected_particles[0]).index/3;
+            label+= std::to_string(i);
+            const char* label_ = label.c_str();
+            Begin(label_);
+            End();
+        }*/
+
         BeginMainMenuBar();
         if(BeginMenu("Control")) {
             if (CollapsingHeader("Springs")) {
                 if (SliderScalar("Stiffnes Constant", ImGuiDataType_Double, &simulation.stiffnes_constant,
                                  &min_stiffnes_constant, &max_stiffnes_constant))
                     std::cout << simulation.stiffnes_constant;
+
+                if (SliderScalar("Damping Constant", ImGuiDataType_Double, &simulation.damping_constant,
+                                 &min_damping_constant, &max_damping_constant)){}
             }
 
             if (CollapsingHeader("Drag")) {
@@ -397,18 +507,31 @@ public:
                     simulation.lower_electrode.peak_voltage = 6.5;
                     simulation.upper_electrode.position[2] = simulation.lower_electrode.position[2] + 100.0 * mscale;
                 }
-                if(Checkbox(" PS - PS Experiment", &second_experiment)){
+                if(Checkbox(" SETUP PS - PS Experiment", &second_experiment)){
                     simulation.beta_ehd = 0.04;
                     //simulation.lower_electrode.frequency = 500.0;
                     simulation.lower_electrode.peak_voltage = 6.5;
+                    simulation.lower_electrode.frequency = 300.0;
                     simulation.upper_electrode.position[2] = simulation.lower_electrode.position[2] + 100.0 * mscale;
+
                 }
+                /*if(Checkbox(" RUN FREQUENCY EXPERIMENT", &run_w_exp)){
+                    std::cout<<" inside"<<std::endl;
+                    if (simulation.safety){
+                        std::cout<<" running"<<std::endl;
+                        for (int w = 300; w < 11000; w += 5) {
+                            simulation.lower_electrode.frequency = w;
+                        }
+                    }
+                }*/
             }
 
             if (CollapsingHeader("Brownian Motion")) {
                 if (SliderScalar("Brownian Multiplier", ImGuiDataType_Double, &simulation.brownian_motion_multiplier,
                                  &min_brownian_motion_multiplier, &max_brownian_motion_multiplier))
                     std::cout << simulation.brownian_motion_multiplier;
+                if (SliderScalar("Temperatur [K]", ImGuiDataType_Double, &simulation.T,
+                                 &min_T, &max_T)){}
             }
             if (CollapsingHeader("Simulation")) {
                 if (SliderScalar("Time Step", ImGuiDataType_Double, &simulation.time_step, &min_time_step,
@@ -522,14 +645,21 @@ public:
 
         if(drawCircles)
         {
-            auto drawCircle = [this](const Circle &circle,int tmpfortest, double scale, Vector3d distance){
+            auto drawCircle = [this](const Circle &circle,int tmpfortest, double scale, bool is_tracer){
                 if(switch_view){
                     nvgBeginPath(vg);
                     nvgCircle(vg, (circle.pos[0]    * scale) + center_of_frame[0], (circle.pos[1]   * scale) + center_of_frame[1], circle.radius *scale);
-                    if(tmpfortest ==1) {
-                        nvgFillColor(vg, nvgRGBA(150, 0, 0, 100));
-                    }else{
-                        nvgFillColor(vg, nvgRGBA(0, 0, 150, 100));
+                    if(is_tracer){
+                        std::ranlux48 gen;
+                        std::uniform_int_distribution<int>  uniform_0_255(0, 255);
+                        nvgFillColor(vg, nvgRGBA(102, 217, 239,100));
+                    }else {
+
+                        if (tmpfortest == 1) {
+                            nvgFillColor(vg, nvgRGBA(150, 0, 0, 100));
+                        } else {
+                            nvgFillColor(vg, nvgRGBA(0, 0, 150, 100));
+                        }
                     }
                     nvgFill(vg);
                     nvgStrokeColor(vg, circle.colorStroke);
@@ -538,11 +668,18 @@ public:
                 }else{
                     nvgBeginPath(vg);
                     nvgCircle(vg, (circle.pos[0]   * scale) + center_of_frame[0], (circle.pos[2]   * scale) + center_of_frame[2], circle.radius *scale);
-                    if(tmpfortest ==1) {
+                    if(is_tracer){
                         nvgFillColor(vg, nvgRGBA(150, 0, 0, 100));
-                    }else{
-                        nvgFillColor(vg, nvgRGBA(0, 0, 150, 100));
+                       // std::cout<<"true"<<std::endl;
+                    }else {
+                       // std::cout<<" false"<<std::endl;
+                        if (tmpfortest == 1) {
+                            nvgFillColor(vg, nvgRGBA(150, 0, 0, 100));
+                        } else {
+                            nvgFillColor(vg, nvgRGBA(0, 0, 150, 100));
+                        }
                     }
+
                     nvgFill(vg);
                     nvgStrokeColor(vg, circle.colorStroke);
                     nvgStrokeWidth(vg, 10.0f);
@@ -554,7 +691,7 @@ public:
             /*for(const auto &p : connect_vector) //change to particles for std sim
                 drawCircle(Circle(p.position,p.radius));*/
 
-            Vector3d formation_center;
+           /* Vector3d formation_center;
             formation_center.setZero();
             double objects_total = simulation.size/3;
 
@@ -577,30 +714,44 @@ public:
             Vector3d formation_center_2 = formation_center * 3;
             //std::cout<<" formation center 1 = "<<formation_center<<std::endl;
             //std::cout<<" formation center 2 = "<<formation_center_2<<std::endl;
-            simulation.reset_flags(connected_particles);
+            simulation.reset_flags(connected_particles);*/
 
 
 
             for(auto &pair : connected_particles) { //change to particles for std sim
 
+                Particle& A = std::get<0>(pair);
+                Particle& B = std::get<1>(pair);
 
 
 
-
-               if(!std::get<0>(pair).visited) {
-                   Vector3d distance = formation_center - std::get<0>(pair).position;
+               if(!A.visited) {
+                  // Vector3d distance = formation_center - std::get<0>(pair).position;
                    //std::cout<<"distance = "<<distance<<std::endl;
-                   drawCircle(Circle(std::get<0>(pair).position, std::get<0>(pair).radius), 1, (1.0/mscale), distance);
-                   std::get<0>(pair).visited = true;
+                   drawCircle(Circle(A.position, A.radius), 1, (1.0/mscale),false);
+                   A.visited = true;
                }
-               if(!std::get<1>(pair).visited) {
-                   Vector3d distance = formation_center - std::get<1>(pair).position;
-                   drawCircle(Circle(std::get<1>(pair).position, std::get<1>(pair).radius), 2, (1.0/mscale), distance);
-                   std::get<1>(pair).visited = true;
+               if(!B.visited) {
+                   //Vector3d distance = formation_center - std::get<1>(pair).position;
+                   drawCircle(Circle(B.position, B.radius), 2, (1.0/mscale),false);
+                   B.visited = true;
                }
 
             }
             simulation.reset_flags(connected_particles);
+
+            if(simulation.tracer_on) {
+                for (int i = 0; i < simulation.tracer.size(); i++) {
+                    drawCircle(Circle(simulation.tracer[i], mscale* 0.6), 1, (1.0 / mscale),true);
+                }
+            }
+            if(simulation.dimer_tracers){
+                for(int i = 0; i<simulation.dimer_tracers_vector.size(); i++){
+                    for(int j = 0; j<simulation.dimer_tracers_vector[i].size();j++){
+                        drawCircle(Circle(simulation.dimer_tracers_vector[i][j], mscale * 0.6), 1, (1.0/mscale), true);
+                    }
+                }
+            }
             /*for(auto &particle : particles){
                 drawCircle(Circle(particle.position, particle.radius));
             }*/ //uncomment this if you want also single particles
@@ -624,6 +775,33 @@ public:
             nvgFillColor(vg, rect.colorStrokeBox);
             nvgFill(vg);
         }
+
+       /* if(DRAW_DRAG){
+            for(auto& particle_pair: connected_particles) {
+                Particle& A = std::get<0>(particle_pair);
+                Particle& B = std::get<1>(particle_pair);
+                if(!A.visited){
+
+                    Vector3d current_drag = simulation.get_stokes_friction_force(A);
+                    //drawVelocity({A.position[0] * (1.0/mscale), A.position[1]* (1.0/mscale)}, {current_drag[0] * (1.0/mscale), current_drag[1] * (1.0/mscale)}, nvgRGB(102, 217, 239));
+                    A.visited = true;
+                    nvgBeginPath(vg);
+                    nvgMoveTo(vg,A.position[0] * (1.0/mscale),A.position[1] * (1.0/mscale));
+                    nvgLineTo(vg,current_drag[0] * (1.0/mscale) + A.position[0] * (1.0/mscale), current_drag[1] * (1.0/mscale) + A.position[1] * (1.0/mscale));
+
+                }
+                if(!B.visited){
+                    Vector3d current_drag = simulation.get_stokes_friction_force(B);
+                    //drawVelocity({B.position[0] * (1.0/mscale), B.position[1] * (1.0/mscale)}, {current_drag[0] * (1.0/mscale), current_drag[1] * (1.0/mscale)}, nvgRGB(102, 217, 239));
+                    B.visited = true;
+                    nvgBeginPath(vg);
+                    nvgMoveTo(vg,B.position[0] * (1.0/mscale),B.position[1] * (1.0/mscale));
+                    nvgLineTo(vg,current_drag[0] * (1.0/mscale), current_drag[1] * (1.0/mscale));
+
+                }
+            }
+            simulation.reset_flags(connected_particles);
+        }*/
     }
 
 protected:
@@ -662,6 +840,19 @@ protected:
             runSim =!runSim;
             simulation.reset_simulation(connected_particles);
         }
+        if(key == GLFW_KEY_LEFT){
+            center_of_frame[0] = center_of_frame[0] +50.0;
+        }
+        if(key == GLFW_KEY_RIGHT){
+            center_of_frame[0] = center_of_frame[0] -50.0;
+        }
+
+        if(key == GLFW_KEY_UP){
+            center_of_frame[1] = center_of_frame[1] -50.0;
+        }
+        if(key == GLFW_KEY_DOWN){
+            center_of_frame[1] = center_of_frame[1] +50.0;
+        }
 
     }
 
@@ -680,6 +871,9 @@ protected:
     }
 
 private:
+   // bool DRAW_THRUSTER = true;
+  //  bool DRAW_VELOCITY = false;
+   // bool DRAW_DRAG = true;
     int loadFonts(NVGcontext* vg)
     {
         int font;
@@ -696,6 +890,45 @@ private:
         return 0;
     }
 
+  //  void drawVelocity(const Vector2d &s_, const Vector2d &v_, const NVGcolor &COLOR) { drawVector(s_, .1*v_, COLOR); }
+
+  /*  double eps = .25; // * otherwise stuff doesn't show up
+    double get_L_() { return double(std::min(height, width)); }
+    double get_f_() { return get_L_() / (2. + 2 * eps); }
+    double ZOOM_ = 1.f;
+    double ZOOM_MIN_ = .1f;
+    double ZOOM_MAX_ = 2.f;
+    double ZOOM() { return 1. / ZOOM_; }
+    Vector2f _2nvg(Vector2d xy) {
+        // zoom*(-1. - eps, 1. + eps) -x-> (0, L)
+        // ""                         -y-> (L, 0)
+        xy /= ZOOM();
+        Vector2f ret = (get_f_() * (xy + (1. + eps)*Vector2d::Ones())).cast<float>();
+        ret.y() = get_L_() - ret.y();
+        return ret;
+    }
+
+    float CIRCLE_RADIUS = 4.f;
+
+    void drawVector(const Vector2d &s_, const Vector2d &F_, const NVGcolor &COLOR) {
+        Vector2f s = _2nvg(s_);
+        Vector2f t = _2nvg(s_ + F_);
+        Vector2f st = t - s;
+        Vector2f e = CIRCLE_RADIUS * Vector2f(-st.y(), st.x()).normalized();
+        Vector2f sP = s + e;
+        Vector2f sM = s - e;
+        // --
+        nvgReset(vg);
+        nvgBeginPath(vg);
+        nvgMoveTo(vg, t.x(), t.y());
+        nvgLineTo(vg, sP.x(), sP.y());
+        nvgLineTo(vg, sM.x(), sM.y());
+        nvgLineTo(vg, t.x(), t.y());
+        nvgFillColor(vg, COLOR);
+        nvgFill(vg);
+    }
+
+*/
 
 private:
     VectorXd fromScreen(int i, int j, int w, int h) const {
@@ -726,71 +959,70 @@ public:
     double zoom = 10;
     int base;
 
+    double min_my_zoom = std::pow(10,-7);
+    double max_my_zoom = std::pow(10,-3);
+
     //Particle BIG_A = Particle(100,40, {520,-100});
     //Particle SMALL_B = Particle(10,15,{500,-90});
 
     double mscale = std::pow(10,-6);
 
+    //flat triangle from laura
+   //  Particle A = Particle(1050 ,3.0 * mscale,-1.0,{100.0 * mscale,100.0 * mscale, 100.0 * mscale});
+   //  Particle B = Particle(1050,2.0* mscale,-1.0,{105.0 * mscale,100.0 * mscale, 100.0 * mscale});
+   //  Particle C = Particle(1050,3.0* mscale,-1.0,{110.0 * mscale,100.0 * mscale, 100.0 * mscale});
+
+    //first triangle from laura
+    Particle A_t = Particle(1050 ,3.0 * mscale,-1.0,{105.0 * mscale,100.0 * mscale, 100.0 * mscale});
+   Particle B_t = Particle(1050,2.0* mscale,-1.0,{100.0 * mscale,100.0 * mscale, 100.0 * mscale});
+    Particle C_t = Particle(1050,2.0* mscale,-1.0,{100.0 * mscale,104.0 * mscale, 100.0 * mscale});
 
 
 
-    Particle A = Particle(1050 ,20.0 * mscale,-1.0,{144.0 * mscale,100.0 * mscale, 100.0 * mscale});
-    Particle B = Particle(1050,20.0* mscale,-1.0,{100.0 * mscale,100.0 * mscale, 100.0 * mscale});
-    Particle Up = Particle(1050,3.0* mscale,-1.0,{100.0 * mscale,105.0 * mscale, 100.0 * mscale});
-    Particle C = Particle(1050,2.0* mscale,-1.0,{108.0 * mscale,100.0 * mscale, 100.0 * mscale});
-    Particle D = Particle(1050,2.0* mscale,-1.0,{112.0 * mscale,100.0 * mscale, 100.0 * mscale});
+    //dumbel
+  // Particle A = Particle(1050 ,3.0 * mscale,-1.0,{105.0 * mscale,100.0 * mscale, 100.0 * mscale});
+  //  Particle B = Particle(1050,2.0* mscale,-1.0,{100.0 * mscale,100.0 * mscale, 100.0 * mscale});
+
+  //  Particle A_2 = Particle(1050 ,3.0 * mscale,-1.0,{100.0 * mscale,100.0 * mscale, 100.0 * mscale});
+   // Particle B_2 = Particle(1050,2.0* mscale,-1.0,{/*(100.0 + 5/std::sqrt(2))*/ 100 * mscale,/*(100.0 + 5/std::sqrt(2))*/105 * mscale, 100.0 * mscale});
+
+    //Particle A_3 = Particle(1050 ,3.0 * mscale,-1.0,{95.0 * mscale,100.0 * mscale, 100.0 * mscale});
+   // Particle B_3 = Particle(1050,2.0* mscale,-1.0,{100.0 * mscale,100.0 * mscale, 100.0 * mscale});
+
+   // Particle A_4 = Particle(1050 ,3.0 * mscale,-1.0,{100.0 * mscale,95.0 * mscale, 100.0 * mscale});
+   // Particle B_4 = Particle(1050,2.0* mscale,-1.0,{100.0 * mscale,100.0 * mscale, 100.0 * mscale});
+
+   //spiral triangle that doesn not do spirals
+   //  Particle A = Particle(1050 ,2.0 * mscale,-1.0,{104.0 * mscale,100.0 * mscale, 100.0 * mscale});
+   //  Particle B = Particle(1050,2.0* mscale,-1.0,{100.0 * mscale,100.0 * mscale, 100.0 * mscale});
+    // Particle C = Particle(1050,3.0* mscale,-1.0,{(104.0  + 5.0/std::sqrt(2.0))* mscale,(100.0 + 5.0/std::sqrt(2.0)) * mscale, 100.0 * mscale});
+
+    //spiral triangle that doesn not do spirals
+    //Particle A = Particle(1050 ,3.0 * mscale,-1.0,{105.0 * mscale,100.0 * mscale, 100.0 * mscale});
+    //Particle B = Particle(1050,2.0* mscale,-1.0,{100.0 * mscale,100.0 * mscale, 100.0 * mscale});
+    //Particle C = Particle(1050,2.0* mscale,-1.0,{(105.0  + 4.0/std::sqrt(2.0))* mscale,(100.0 + 4.0/std::sqrt(2.0)) * mscale, 100.0 * mscale});
+
+
+    //rotator
+ // Particle A = Particle(1050 ,3.0 * mscale,-1.0,{100.0 * mscale,100.0 * mscale, 100.0 * mscale});
+ // Particle B = Particle(1050,2.0* mscale,-1.0,{105.0 * mscale,100.0 * mscale, 100.0 * mscale});
+ // Particle C = Particle(1050,2.0* mscale,-1.0,{105.0 * mscale,104.0 * mscale, 100.0 * mscale});
+ // Particle D = Particle(1050,3.0* mscale,-1.0,{110.0 * mscale,104.0 * mscale, 100.0 * mscale});
+
+
+    //l shaped
+   // Particle A = Particle(1050 ,2.0 * mscale,-1.0,{104.0 * mscale,100.0 * mscale, 100.0 * mscale});
+   // Particle B = Particle(1050,2.0* mscale,-1.0,{100.0 * mscale,100.0 * mscale, 100.0 * mscale});
+   // Particle Up = Particle(1050,3.0* mscale,-1.0,{100.0 * mscale,105.0 * mscale, 100.0 * mscale});
+   // Particle C = Particle(1050,2.0* mscale,-1.0,{108.0 * mscale,100.0 * mscale, 100.0 * mscale});
+   // Particle D = Particle(1050,2.0* mscale,-1.0,{112.0 * mscale,100.0 * mscale, 100.0 * mscale});
 
 
 
-    //Particle C = Particle(50.0,20.0,1.0,{150.0,0.0});
-
-  /*  Particle A2 = Particle(20,20,{100,100});
-    Particle B2 = Particle(20,20,{0,0});
-    Particle C2 = Particle(20,20,{-100,-100});
-
-    Particle A3 = Particle(20,20,{-200,-200});
-    Particle B3 = Particle(20,20,{-300,-300});
-    Particle C3 = Particle(20,20,{-400,-400});
-    Particle D3 = Particle(20,20,{-400,-400});
-
-
-    Particle A4 = Particle(20,20,{200,-200});
-    Particle B4 = Particle(20,20,{300,-300});
-    Particle C4 = Particle(20,20,{400,-400});
-    Particle D4 = Particle(20,20,{400,-400});
-
-
-    Particle A_blitz = Particle(20,20,{100,-200});
-    Particle B_blitz = Particle(20,20,{200,-300});
-    Particle C_blitz = Particle(20,20,{300,-400});
-    Particle D_blitz = Particle(20,20,{300,-400});
-
-
-    Particle A6 = Particle(20,20,{-200,200});
-    Particle B6 = Particle(20,20,{-300,300});
-    Particle C6 = Particle(20,20,{-400,400});
-    Particle D6 = Particle(20,20,{-400,400});
-    Particle E6 = Particle(20,20,{-500,400});
-    Particle F6 = Particle(20,20,{-400,200});*/
-
-    std::vector<Particle> connect_vector;
-
-    /*Particle particle_1;
-    Particle particle_2 = Particle(10,10,{400,-400});
-    Particle particle_3 = Particle(10,20,{-200,-200});
-    Particle particle_4 = Particle(10,10,{500,200});
-    Particle particle_5 = Particle(10,10,{200,500});
-    Particle particle_6 = Particle(10,10,{10,20});
-    Particle particle_7 = Particle(10,10,{0,-300});
-    Particle particle_8 = Particle(10,10,{50,50});
-    Particle particle_9 = Particle(10,10,{470,-100});
-    Particle particle_10 = Particle(10,10,{-600,300});
-
-    Particle loner = Particle(10,30,{-600,-600});*/
     std::vector<Particle> particles;
     std::vector<std::tuple <Particle&,Particle&,double> > connected_particles;
     Simulation simulation;
-    std::ofstream my_data;
+
 
 
 
@@ -801,13 +1033,15 @@ public:
     bool drawCircles = true;
     bool drawRectangle = true;
 
-    double min_stiffnes_constant = 0.0;
-    double max_stiffnes_constant = 100000.0;
+    double min_stiffnes_constant = 1.0;
+    double max_stiffnes_constant = 4000.0;
+    double min_damping_constant = 0.0;
+    double max_damping_constant = 100.0;
     double min_viscosity_multiplier = 0.01;
     double max_viscosity_multiplier = 1000.0;
     double min_brownian_motion_multiplier = 0.0;
     double max_brownian_motion_multiplier = 10.0;
-    double min_time_step = 0.00001;
+    double min_time_step = 0.000001;
     double max_time_step = 1.0;
     int min_max_iterations = 100;
     int max_max_iterations = 1000000;
@@ -824,29 +1058,45 @@ public:
     double min_upper_electrode_charge = -10.0;
     double max_upper_electrode_charge = 10.0;
 
-    double min_sigma_m = 0.05 * std::pow(10,-8);
-    double max_sigma_m = 0.05 * std::pow(10,-3);
+    double min_sigma_m = 0.5 * std::pow(10,-4);
+    double max_sigma_m = 1.0 * std::pow(10,-2);
     double min_epsilon_m = 1.0;
     double max_epsilon_m = 100.0;
+
+    double min_cof_x = -1000.0;
+    double max_cof_x = 2000.0;
+    double min_cof_y = -1000.0;
+    double max_cof_y = 2000.0;
+    double min_cof_z = -1000.0;
+    double max_cof_z = 2000.0;
+
+    double min_zeta = -100 * std::pow(10,-3);
+    double max_zeta = 100 * std::pow(10,-3);
+
 
     double min_lower_electrode_voltage = 0.0;
     double max_lower_electrode_voltage = 300.0;
     double min_upper_electrode_voltage = -300.0;
     double max_upper_electrode_voltage = 0.0;
-    double min_mass = 0.1 * mscale;
+    double min_mass = std::pow(10.0,-15.0);
     double max_mass = 100 * mscale;
     double min_charge = -30;
     double max_charge = 30.0;
     double min_radius = 1.0 * mscale;
     double max_radius = 200.0 * mscale;
-    double min_lower_electrode_frequency = 0.0;
-    double max_lower_electrode_frequency = 22000.0;
+    double min_lower_electrode_frequency = 1.0;
+    double max_lower_electrode_frequency = 11000.0;
     double min_lower_electrode_peak_voltage = 0.0;
     double max_lower_electrode_peak_voltage = 1000.0;
     double min_permittivity = 0.0;
     double max_permittivity = 200.0;
-    double min_conductivity = 1 * std::pow(10,-10);
-    double max_conductivity = 1.0 * std::pow(10,-3);
+    double min_conductivity = 0.05 * std::pow(10,-9);
+    double max_conductivity = 10 * std::pow(10,-9);
+    double min_T = 1.0;
+    double max_T = 373.0;
+
+    double min_stern_layer_conductance = 0.05 * std::pow(10,-9);
+    double max_stern_layer_conductance = 10 * std::pow(10,-9);
 
     bool is_silica_1 = false;
     bool is_silica_2 = false;
@@ -854,8 +1104,12 @@ public:
     bool second_experiment = false;
     bool is_PS_1 = false;
     bool is_PS_2 = false;
+    bool run_w_exp = false;
 
     bool switch_view = false;
+    bool follow_cam = false;
+
+
 
 
 
@@ -927,22 +1181,107 @@ int main(int, char**)
     TestApp app(1200, 800, "Assignment 0");
     app.run();
 
-    std::ofstream myfile;
+  /*  std::ofstream myfile;
     myfile.open ("../../../data.csv");
-    myfile << "Total Energy"<<","<<"Kinetic Energy"<<","<<"Potential Energy"<<","<<"E"<<","<<"SPRING FORCE X"<<","<<"SPRING FORCE Y"<<","<<"DISTANCE"<<","<<"DERIVATIVE"<<","<<"X"<<","<<"Y"<<","<<"time step"<<std::endl;
+    myfile << "Total Energy"<<","<<"Kinetic Energy"<<","<<"Potential Energy"<<","<<"E"<<","<<"SPRING FORCE X"<<","<<"SPRING FORCE Y"<<","<<"DERIVATIVE"<<","<<"X"<<","<<"Y"<<","<<"time step"<<std::endl;
     std::cout<<"test"<<std::endl;
     for(int i = 0; i<app.simulation.total_energy.size(); i++){
+        std::cout<<i<<std::endl;
         //std::cout<<app.simulation.spring_force_vec_over_time_x[i]<<std::endl;
         //std::cout<<app.simulation.spring_force_vec_over_time_x[i]/app.simulation.stiffnes_constant<<std::endl;
-        myfile << app.simulation.total_energy[i]<<","<<app.simulation.kinetic_energy[i]<<","<<app.simulation.potential_energy[i]<<","<<app.simulation.e_vec[i]<<","<<app.simulation.spring_force_vec_over_time_x[i]/app.simulation.stiffnes_constant<<","<<app.simulation.spring_force_vec_over_time_y[i]/app.simulation.stiffnes_constant<<","<<app.simulation.A_B_DISTANCE[i]<<","<<app.simulation.spring_force_derivative_x_in_x[i]/app.simulation.stiffnes_constant<<","<<app.simulation.position_vec_over_time_in_x[i]<<","<<app.simulation.position_vec_over_time_in_y[i]<<","<<i<<std::endl;
+        myfile << app.simulation.total_energy[i]<<","<<app.simulation.kinetic_energy[i]<<","<<app.simulation.potential_energy[i]<<","<<app.simulation.e_vec[i]<<","<<app.simulation.spring_force_vec_over_time_x[i]/app.simulation.stiffnes_constant<<","<<app.simulation.spring_force_vec_over_time_y[i]/app.simulation.stiffnes_constant<<","<<app.simulation.spring_force_derivative_x_in_x[i]/app.simulation.stiffnes_constant<<","<<app.simulation.position_vec_over_time_in_x[i]<<","<<app.simulation.position_vec_over_time_in_y[i]<<","<<i<<std::endl;
+    std::cout<<"after i"<<std::endl;
     }
+    myfile.close();*/
+
+    std::cout<<"ttest"<<std::endl;
+    std::ofstream FMA;
+    FMA.open ("../../../FMA.csv");
+    FMA <<"F-M*a"<<","<<"time step"<<std::endl;
+    std::cout<<"test"<<std::endl;
+    for(int i = 0; i<app.simulation.F_ma.size(); i++){
+        FMA<<app.simulation.F_ma[i]<<","<<i<<std::endl;
+    }
+    FMA.close();
+
+    std::ofstream brownian;
+    brownian.open("../../../brownian.csv");
+    brownian <<"Brownian Force X"<<","<<"Brownian Force Y"<<","<<"time step"<<std::endl;
+    std::cout<<"test"<<std::endl;
+    for(int i = 0; i<app.simulation.b_force_x.size(); i++){
+        brownian<<app.simulation.b_force_x[i]<<","<<app.simulation.b_force_y[i]<<","<<i<<std::endl;
+    }
+    brownian.close();
+
+    std::ofstream ehd;
+    ehd.open("../../../ehd.csv");
+    ehd <<"EHD Force X"<<","<<"EHD Force Y"<<","<<"time step"<<std::endl;
+    std::cout<<"test"<<std::endl;
+    for(int i = 0; i<app.simulation.ehd_force_x.size(); i++){
+        ehd<<app.simulation.ehd_force_x[i]<<","<<app.simulation.ehd_force_y[i]<<","<<i<<std::endl;
+    }
+    ehd.close();
+
+    std::ofstream spring;
+    spring.open("../../../spring.csv");
+    spring <<"Spring Force X"<<","<<"Spring Force Y"<<","<<"time step"<<std::endl;
+    std::cout<<"test"<<std::endl;
+    for(int i = 0; i<app.simulation.spring_force_x.size(); i++){
+        spring<<app.simulation.spring_force_x[i]<<","<<app.simulation.spring_force_y[i]<<","<<i<<std::endl;
+        std::cout<<" spring "<<app.simulation.spring_force_x[i]<<std::endl;
+    }
+    spring.close();
+
+    std::ofstream amount;
+    amount.open("../../../amount.csv");
+    amount <<"Amount X"<<","<<"Amount Y"<<","<<"Amount T"<<","<<"Norm"<<","<<"time step"<<std::endl;
+    std::cout<<"test"<<std::endl;
+    for(int i = 0; i<app.simulation.amount_x.size(); i++){
+        amount<<app.simulation.amount_x[i]<<","<<app.simulation.amount_y[i]<<","<<app.simulation.amount_z[i]<<","<<app.simulation.direction_norm[i]<<","<<i<<std::endl;
+    }
+    amount.close();
+
+    std::ofstream drag;
+    drag.open("../../../drag.csv");
+    drag <<"Drag X"<<","<<"Drag Y"<<","<<"Drag Px"<<","<<"Drag Py"<<","<<"time step"<<std::endl;
+    std::cout<<"test"<<std::endl;
+    for(int i = 0; i<app.simulation.drag_x.size(); i++){
+        drag<<app.simulation.drag_x[i]<<","<<app.simulation.drag_y[i]<<","<<app.simulation.drag_px[i]<<","<<app.simulation.drag_py[i]<<","<<i<<std::endl;
+    }
+    drag.close();
+
+    std::ofstream rotator_position;
+    rotator_position.open("../../../rotator_position.csv");
+    rotator_position<<"Position in X"<<","<<"Position in Y"<<","<<"Position in X 2"<<","<<"Position in Y 2"<<","<<"Time Step"<<std::endl;
+    /*for(int i = 0; i<app.simulation.rotator_position_vec_over_time_in_x.size(); i++){
+        rotator_position<<app.simulation.rotator_position_vec_over_time_in_x[i]<<","<<app.simulation.rotator_position_vec_over_time_in_y[i]<<","<<app.simulation.rotator_position_vec_over_time_in_x_2[i]<<","<<app.simulation.rotator_position_vec_over_time_in_y_2[i]<<","<<i<<std::endl;
+    std::cout<<"rot"<<app.simulation.rotator_position_vec_over_time_in_y_2[i]<<std::endl;
+    }*/
+    rotator_position.close();
 
     std::ofstream position;
     position.open("../../../position.csv");
-    position<<"Position in X"<<","<<"Position in Y"<<","<<"Time Step"<<std::endl;
-    for(int i = 0; i<app.simulation.position_vec_over_time_in_x.size(); i++){
-        position<<app.simulation.position_vec_over_time_in_x[i]<<","<<app.simulation.position_vec_over_time_in_y[i]<<","<<i<<std::endl;
+   position<<"Position in X"<<","<<"Position in Y"<<","<<"Position in X 2"<<","<<"Position in Y 2"<<","<<"Position in X 3"<<","<<"Position in Y 3"<<","<<"Position in X 4"<<","<<"Position in Y 4"<<","<<"Time Step"<<std::endl;
+    /*for(int i = 0; i<app.simulation.position_vec_over_time_in_x.size(); i++){
+        position<<app.simulation.position_vec_over_time_in_x[i]<<","<<app.simulation.position_vec_over_time_in_y[i]<<","<<app.simulation.position_vec_over_time_in_x_2[i]<<","<<app.simulation.position_vec_over_time_in_y_2[i]<<","<<app.simulation.position_vec_over_time_in_x_3[i]<<","<<app.simulation.position_vec_over_time_in_y_3[i]<<","<<app.simulation.position_vec_over_time_in_x_4[i]<<","<<app.simulation.position_vec_over_time_in_y_4[i]<<","<<i<<std::endl;
+        std::cout<<"pos 4"<<app.simulation.position_vec_over_time_in_x_4[i]<<","<<app.simulation.position_vec_over_time_in_y_4[i]<<std::endl;
+    }*/
+    position.close();
+
+    std::ofstream triangle_position;
+    triangle_position.open("../../../triangle_position.csv");
+    triangle_position<<"Triangle Position in X"<<","<<"Triangle Position in Y"<<","<<"Triangle Position in X 2"<<","<<"Triangle Position in Y 2"<<","<<"Triangle Position in X 3"<<","<<"Triangle Position in Y 3"<<","<<"COM Position in X 4"<<","<<"COM Position in Y 4"<<","<<"Time Step"<<std::endl;
+    for(int i = 0; i<app.simulation.triangle_position_vec_over_time_in_x.size(); i++){
+        double com_x = app.simulation.triangle_position_vec_over_time_in_x[i] + app.simulation.triangle_position_vec_over_time_in_x_2[i] +app.simulation.triangle_position_vec_over_time_in_x_3[i];
+        double com_y = app.simulation.triangle_position_vec_over_time_in_y[i] + app.simulation.triangle_position_vec_over_time_in_y_2[i] +app.simulation.triangle_position_vec_over_time_in_y_3[i];
+        com_x = com_x/3.0;
+        com_y = com_y/3.0;
+        triangle_position<<app.simulation.triangle_position_vec_over_time_in_x[i]<<","<<app.simulation.triangle_position_vec_over_time_in_y[i]<<","<<app.simulation.triangle_position_vec_over_time_in_x_2[i]<<","<<app.simulation.triangle_position_vec_over_time_in_y_2[i]<<","<<app.simulation.triangle_position_vec_over_time_in_x_3[i]<<","<<app.simulation.triangle_position_vec_over_time_in_y_3[i]<<","<<com_x<<","<<com_y<<","<<i<<std::endl;
+        std::cout<<"com x"<<com_x<<","<<com_y<<std::endl;
     }
+    triangle_position.close();
+
+
 
     std::ofstream v_w;
     v_w.open("../../../v_w.csv");
@@ -950,6 +1289,7 @@ int main(int, char**)
     for(int i = 0; i<app.simulation.frequencies.size();i++){
         v_w<<app.simulation.velocities[i]<<","<<app.simulation.frequencies[i]<<std::endl;
     }
+    v_w.close();
 
     std::ofstream v_E;
     v_E.open("../../../v_E.csv");
@@ -957,6 +1297,7 @@ int main(int, char**)
     for(int i = 0; i<app.simulation.Efields.size();i++){
         v_E<<app.simulation.velocities_2[i]<<","<<app.simulation.Efields[i]<<std::endl;
     }
+    v_E.close();
 
     std::ofstream velocities;
     velocities.open ("../../../velocities.csv");
@@ -978,6 +1319,7 @@ int main(int, char**)
        // std::cout<<app.simulation.y_values[i]<<std::endl;
         //std::cout<<app.simulation.z_values1[i]<<std::endl;
     }
+    myfile2.close();
 
     std::ofstream myfile3;
     myfile3.open("../../../data3.csv");
@@ -987,18 +1329,15 @@ int main(int, char**)
         //std::cout<<app.simulation.y_values[i]<<std::endl;
         //std::cout<<app.simulation.z_values1[i]<<std::endl;
     }
+    myfile3.close();
 
     std::ofstream best;
     best.open("../../../best.csv");
     best<<"x"<<","<<"y"<<","<<"z"<<std::endl;
     best<<app.simulation.best_found[0]<<","<<app.simulation.best_found[1]<<","<<app.simulation.best_found[2]<<std::endl;
-    myfile.close();
-    position.close();
-    v_w.close();
-    v_E.close();
-    myfile2.close();
-    myfile3.close();
     best.close();
+
+
 
     std::ofstream FD;
     FD.open("../../../FD.csv");
@@ -1006,6 +1345,7 @@ int main(int, char**)
     for(int i = 0; i<app.simulation.forces_FD.size();i++){
         FD<<app.simulation.forces_FD[i]<<","<<app.simulation.energy_FD[i]<<","<<std::abs(app.simulation.forces_FD[i] - app.simulation.energy_FD[i])<<","<<app.simulation.force_jacobian_FD[i]<<","<<app.simulation.dFx_dx_FD[i]<<","<<std::abs(app.simulation.force_jacobian_FD[i] - app.simulation.dFx_dx_FD[i])<<","<<i<<std::endl;
     }
+    FD.close();
 
     std::ofstream test_e;
     test_e.open("../../../test_e.csv");

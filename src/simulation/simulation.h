@@ -47,8 +47,14 @@ public:
     VectorXd position_vector_minus_2;
     VectorXd initial_position_vector;
     bool first_itteration = true;
-    bool dimers_only = true;
-    double micro_time_step = time_step * std::pow(10,6);
+    bool dimers_only = false;
+    bool tracer_on = false;
+    bool dimer_tracers = false;
+    bool erase_dimer_tracers = false;
+    VectorXd inverse_number_of_neighbours;
+    VectorXd drag_occlusion_factor_vector;
+
+
 
     double beta_ehd = 0.03;
     double K_plus_charge = 1.0;
@@ -69,16 +75,16 @@ public:
     double viscosity_multiplier = 1.0;
 
     double gas_constant = 8.31446261815324;
-    double faraday_constant = 9.64853321233100184 * std::pow(10,4);
+    double faraday_constant = 9.64853321233100184 * std::pow(10.0,4);
 
-    double vacuum_permittivity = 8.8541878176 * std::pow(10,-12);
+    double vacuum_permittivity = 8.8541878176 * std::pow(10.0,-12);
     double relative_permittivity = 80.2; //water at room temperatur
 
-    double conductivity = 0.05 * std::pow(10,-6);
-
+    double conductivity = 0.0015 * std::pow(10.0,-1);
+    double density = 997.0;
 
     double T = 293; //room temperatur
-    double kB = 1.38 * std::pow(10,-23); //Boltzmann constant
+    double kB = 1.38 * std::pow(10.0,-23); //Boltzmann constant
     Vector2d force_damper;
 
     double noise_damper = 4;
@@ -104,6 +110,25 @@ public:
     std::vector<double> A_B_DISTANCE;
     std::vector<double> position_vec_over_time_in_x;
     std::vector<double> position_vec_over_time_in_y;
+    std::vector<double> position_vec_over_time_in_x_2;
+    std::vector<double> position_vec_over_time_in_y_2;
+    std::vector<double> position_vec_over_time_in_x_3;
+    std::vector<double> position_vec_over_time_in_y_3;
+    std::vector<double> position_vec_over_time_in_x_4;
+    std::vector<double> position_vec_over_time_in_y_4;
+
+
+    std::vector<double> rotator_position_vec_over_time_in_x;
+    std::vector<double> rotator_position_vec_over_time_in_y;
+    std::vector<double> rotator_position_vec_over_time_in_x_2;
+    std::vector<double> rotator_position_vec_over_time_in_y_2;
+
+    std::vector<double> triangle_position_vec_over_time_in_x;
+    std::vector<double> triangle_position_vec_over_time_in_y;
+    std::vector<double> triangle_position_vec_over_time_in_x_2;
+    std::vector<double> triangle_position_vec_over_time_in_y_2;
+    std::vector<double> triangle_position_vec_over_time_in_x_3;
+    std::vector<double> triangle_position_vec_over_time_in_y_3;
 
     std::vector<double> x_values;
     std::vector<double> y_values;
@@ -115,17 +140,36 @@ public:
     std::vector<double> energy_FD;
     std::vector<double> force_jacobian_FD;
     std::vector<double> dFx_dx_FD;
+    std::vector<double> F_ma;
+    std::vector<double> b_force_x;
+    std::vector<double> b_force_y;
+    std::vector<double> b_force_z;
+    std::vector<double> ehd_force_x;
+    std::vector<double> ehd_force_y;
+    std::vector<double> spring_force_x;
+    std::vector<double> spring_force_y;
 
     std::vector<double> e_x;
     std::vector<double> e_y;
     std::vector<double> e_z;
 
+    std::vector<Vector3d> tracer;
+    std::vector<std::vector<Vector3d>> dimer_tracers_vector;
+
+
     std::vector<double> velocities;
     std::vector<double> velocities_2;
     std::vector<double> frequencies;
     std::vector<double> Efields;
+
+    std::vector<double> amount_x;
+    std::vector<double> amount_y;
+    std::vector<double> amount_z;
+    std::vector<double> direction_norm;
     double last_frequency = 0.0;
     double last_peak_voltage = 0.0;
+
+    std::vector<double> drag_x, drag_y, drag_px, drag_py;
 
     std::vector<double> friction_force_over_time_x;
 
@@ -138,10 +182,16 @@ public:
     int size = -1;
 
     VectorXd current_thermal_force;
+    VectorXd current_rotational_thermal_force;
+
+    std::random_device rd{};
+    std::mt19937 gen{rd()};
+    std::normal_distribution<> d{0.0,1.0};
 
 
 
-    Simulation() {}
+    Simulation() {
+    }
 
 
 
@@ -151,6 +201,7 @@ public:
     //INTERFACES AND NETWONS METHOD
 
     void run_simulation_for_connected_Particles(std::vector<std::tuple <Particle&,Particle&,double> > &connected_particles){
+        std::cout<<"begin ========================"<<std::endl;
         for(int i = 0; i<num_steps;i++) {
             total_energy.push_back(0.0);
             kinetic_energy.push_back(0.0);
@@ -160,45 +211,138 @@ public:
 
 
         }
+        std::cout<<"end ========================"<<std::endl;
     }
 
     void UPDATE_SYSTEM_NEW(std::vector<std::tuple <Particle&,Particle&,double> > &connected_particles){
 
-        current_thermal_force = safety * get_current_thermal_force(connected_particles); //make sure to only call it once a time step due to the random nature of the force.
+      //  std::cout<<" test 1"<<std::endl;
+
+        current_thermal_force = safety  * get_current_thermal_force(connected_particles); //make sure to only call it once a time step due to the random nature of the force.
+        //std::cout<<"current thermal force x = "<<current_thermal_force[0]<<std::endl<<"current thermal force x2 = "<<current_thermal_force[3]<<std::endl;
+        current_rotational_thermal_force = safety * get_current_rotational_thermal_force(connected_particles);
+        b_force_x.push_back(current_thermal_force[0]);
+        b_force_y.push_back(current_thermal_force[3]);
+        //std::cout<<" test 2"<<std::endl;
 
         fill_spring_force_and_derivatives_NEW(connected_particles);
+        //std::cout<<" test 3"<<std::endl;
 
         first_itteration = false;
 
         VectorXd x_t_plus_1_init = position_vector + (position_vector - position_vector_minus_1);
         VectorXd x_t_plus_1_old = x_t_plus_1_init;
 
+        //std::cout<<" test 4"<<std::endl;
+
+
         //int maxiter, double beta, double tol, VectorXd x,std::vector<std::tuple <Particle&,Particle&,double> > &connected_particles
-        THE_FINAL_NEWTON_with_drag(max_iterations,0.5,std::pow(10,(-9)), x_t_plus_1_old, connected_particles);
+        THE_FINAL_NEWTON_with_drag(max_iterations,0.5,std::pow(10,(-10)), x_t_plus_1_old, connected_particles);
+
+       // std::cout<<" test 5"<<std::endl;
 
         //Newtons_Method_NEW_with_force_update(100000,std::pow(10,(-8)), 0.25, 0.5,  x_t_plus_1_old,connected_particles);
 
 
+        ehd_force_x.push_back(get_current_EHD_force(connected_particles,x_t_plus_1_old)[0]);
+       // std::cout<<" test 6"<<std::endl;
+        ehd_force_y.push_back(get_current_EHD_force(connected_particles,x_t_plus_1_old)[1]);
+       // std::cout<<" test 7"<<std::endl;
+
+        spring_force_x.push_back(get_current_spring_force(connected_particles,x_t_plus_1_old)[0]);
+       // std::cout<<" test 8"<<std::endl;
+        spring_force_y.push_back(get_current_spring_force(connected_particles,x_t_plus_1_old)[1]);
+       // std::cout<<" test 9"<<std::endl;
+
         VectorXd tmp = position_vector_minus_1;
+        //std::cout<<" test 10"<<std::endl;
+        if(tracer_on) {
+            //std::cout<<" test 11"<<std::endl;
+            Vector3d com = Eigen::VectorXd::Zero(3);
+            for(int i = 0; i<x_t_plus_1_old.size(); i+=3){
+                Vector3d current = {x_t_plus_1_old[i], x_t_plus_1_old[i+1],x_t_plus_1_old[i+2]};
+                com = com + current;
+            }
+            com = com/(x_t_plus_1_old.size()/3);
+            tracer.push_back({com[0], com[1],com[2]});
+        }else{
+           // std::cout<<" test 12"<<std::endl;
+            tracer.erase(tracer.begin(), tracer.end());
+        }
+        //std::cout<<" test 13"<<std::endl;
+
+        if(dimer_tracers){
+           // std::cout<<" test 14"<<std::endl;
+            for(int i = 0; i<connected_particles.size(); i++){
+                //dimer_tracers_vector.push_back(sdt::vector<Vector3d>)
+                std::cout<<"test 1";
+                std::tuple<Particle&, Particle&,double> particle_pair = connected_particles[i];
+                std::cout<<"test 2";
+                Vector3d com = Eigen::VectorXd::Zero(3);
+                std::cout<<"test 3";
+                com = (std::get<0>(particle_pair).position + std::get<1>(particle_pair).position)/2.0;
+                std::cout<<"test 4";
+                dimer_tracers_vector[i].push_back(com);
+                std::cout<<"test 5";
+
+
+            }
+           // std::cout<<" test 15"<<std::endl;
+        }if(erase_dimer_tracers){
+            for(int i = 0; i<connected_particles.size(); i++){
+                //dimer_tracers_vector.erase(dimer_tracers_vector.begin(), dimer_tracers_vector.end());
+                dimer_tracers_vector[i].erase(dimer_tracers_vector[i].begin(), dimer_tracers_vector[i].end());
+            }
+        }
+       // std::cout<<" test 16"<<std::endl;
+
+
+        Vector3d current_amount_EHD = get_amount(std::get<0>(connected_particles[0]), std::get<1>(connected_particles[0]));
+        amount_x.push_back(current_amount_EHD[0] * safety);
+        amount_y.push_back(current_amount_EHD[1] * safety);
+        amount_z.push_back(current_amount_EHD[2] * safety);
+        direction_norm.push_back(current_amount_EHD.norm() * safety);
+        VectorXd current_drag = get_current_friction_force(connected_particles,x_t_plus_1_old);
+       // std::cout<<" test 17"<<std::endl;
+
+        drag_x.push_back(current_drag[0] * safety);
+        drag_y.push_back(current_drag[1] * safety);
+        drag_px.push_back(get_stokes_friction_force(std::get<0>(connected_particles[0]))[0] * safety);
+        drag_py.push_back(get_stokes_friction_force(std::get<0>(connected_particles[0]))[1] * safety);
+       // std::cout<<" test 18"<<std::endl;
+
 
        // std::cout<<" Position at t-1= \n"<<tmp<<"\n Positoin at t = \n"<<position_vector<<"\n Position at t+1 = \n"<<x_t_plus_1_old<<"\n \n \n";
-        energy_FD.push_back(get_dE_dx(connected_particles,position_vector,x_t_plus_1_old));
-        forces_FD.push_back(get_F_x_FD(connected_particles));
-        force_jacobian_FD.push_back(get_F_x_d_x(connected_particles));
+        //energy_FD.push_back(get_dE_dx(connected_particles,position_vector,x_t_plus_1_old));
+        //forces_FD.push_back(get_F_x_FD(connected_particles));
+        //force_jacobian_FD.push_back(get_F_x_d_x(connected_particles));
+        //std::cout<<" test 20"<<std::endl;
 
-        double current_epot = get_Potential_Energy(connected_particles);
-        double current_ekin = get_Kinetic_Energy(connected_particles);
-        potential_energy.push_back(current_epot);
-        kinetic_energy.push_back(current_ekin);
-        total_energy.push_back(current_epot + current_ekin);
+        //double current_epot = get_Potential_Energy(connected_particles);
+        //double current_ekin = get_Kinetic_Energy(connected_particles);
+        //potential_energy.push_back(current_epot);
+        //kinetic_energy.push_back(current_ekin);
+        //total_energy.push_back(current_epot + current_ekin);
+        //std::cout<<" test 21"<<std::endl;
+
+        VectorXd F_x = get_current_spring_force(connected_particles,x_t_plus_1_old) - safety *get_current_friction_force(connected_particles,x_t_plus_1_old) + safety *electricalfield_force_vector + safety *get_current_EHD_force(connected_particles,x_t_plus_1_old) + safety *current_thermal_force;
+        VectorXd M_a = mass_matrix * (x_t_plus_1_old  - 2.0 * position_vector + position_vector_minus_1);
+        VectorXd F_minus_M_time_a = F_x - M_a;
+        F_ma.push_back(F_minus_M_time_a.norm());
+        std::cout<<" test 22"<<std::endl;
+
+
 
         VectorXd tmp_tmp = position_vector;
         std::vector<std::tuple <Particle&,Particle&,double> > tmp_connected_particles = connected_particles;
+       // std::cout<<" test 23"<<std::endl;
        // std::cout<<"pos old"<<std::get<0>(connected_particles[0]).position<<std::endl;
         update_positions_NEW(connected_particles,x_t_plus_1_old);
+      //  std::cout<<" test 24"<<std::endl;
        // std::cout<<"pos new"<<std::get<0>(connected_particles[0]).position<<std::endl;
        // std::cout<<"time step"<<time_step<<std::endl;
         dFx_dx_FD.push_back( get_dFx_dx_FD(tmp_connected_particles, connected_particles, tmp, tmp_tmp, x_t_plus_1_old));
+       // std::cout<<" test 25"<<std::endl;
 
         double e = get_e(x_t_plus_1_old,connected_particles);
 
@@ -206,12 +350,20 @@ public:
         e_vec.push_back(e);
 
        // add_brownian_motion(connected_particles);
+      //  std::cout<<" test 26"<<std::endl;
 
         update_rest_length(connected_particles);
+       // std::cout<<" test 27"<<std::endl;
 
         generate_data_for_v_w_plot(connected_particles);
+        //std::cout<<" test 28"<<std::endl;
+
+        apply_wind_shadow(connected_particles);
+
+       // std::cout<<" test 29"<<std::endl;
 
        // dissolve(connected_particles,0.1);
+
     }
 
     void update_positions_NEW(std::vector<std::tuple <Particle&,Particle&,double> > &connected_particles,VectorXd x_t_plus_1_new){
@@ -223,18 +375,28 @@ public:
             if(!A.visited){
                 velocities_over_time1_in_x.push_back(A.velocity[0]);
                 velocities_over_time1_in_y.push_back(A.velocity[1]);
+
                 A.velocity[0] = (x_t_plus_1_new(A.index) -A.position[0])/time_step;
+               //A.velocity = A.get_velocity(x_t_plus_1_new);
+
                 A.velocity[1] = (x_t_plus_1_new(A.index+1) -A.position[1])/time_step;
+
                 A.velocity[2] = (x_t_plus_1_new(A.index+2) -A.position[2])/time_step;
+
                 A.position[0] = x_t_plus_1_new(A.index);
                 A.position[1] = x_t_plus_1_new(A.index+1);
                 A.position[2] = x_t_plus_1_new(A.index+2);
                 A.visited=true;
             }
             if(!B.visited){
+               // B.velocity = B.get_velocity(x_t_plus_1_new);
+
                 B.velocity[0] = (x_t_plus_1_new(B.index) - B.position[0])/time_step;
+
                 B.velocity[1] = (x_t_plus_1_new(B.index+1) - B.position[1])/time_step;
+
                 B.velocity[2] = (x_t_plus_1_new(B.index+2) - B.position[2])/time_step;
+
                 B.position[0] = x_t_plus_1_new(B.index);
                 B.position[1] = x_t_plus_1_new(B.index+1);
                 B.position[2] = x_t_plus_1_new(B.index+2);
@@ -399,7 +561,31 @@ public:
         position_vector = VectorXd::Zero(size);
         position_vector_minus_1 = VectorXd::Zero(size);
         electricalfield_force_vector = VectorXd::Zero(size);
+        inverse_number_of_neighbours = VectorXd::Zero(size);
+        drag_occlusion_factor_vector = VectorXd::Ones(size);
+        dimer_tracers_vector.resize(size/6);
         reset_flags(connected_particles);
+    }
+
+    void count_neighbours(std::vector<std::tuple <Particle&,Particle&,double> > &connected_particles){
+        for(auto& particle_pair : connected_particles) {
+            Particle& A = std::get<0>(particle_pair);
+            A.number_of_neighbours += 1.0;
+            Particle &B = std::get<1>(particle_pair);
+            B.number_of_neighbours += 1.0;
+        }
+        for(auto& particle_pair : connected_particles){
+            Particle& A = std::get<0>(particle_pair);
+            Particle& B = std::get<1>(particle_pair);
+            inverse_number_of_neighbours[A.index] = 1.0/A.number_of_neighbours;
+            inverse_number_of_neighbours[A.index+1] = 1.0/A.number_of_neighbours;
+            inverse_number_of_neighbours[A.index+2] = 1.0/A.number_of_neighbours;
+
+            inverse_number_of_neighbours[B.index] = 1.0/B.number_of_neighbours;
+            inverse_number_of_neighbours[B.index+1] = 1.0/B.number_of_neighbours;
+            inverse_number_of_neighbours[B.index+2] = 1.0/B.number_of_neighbours;
+
+        }
     }
 
     void connect(Particle &A, Particle &B, double restlength, std::vector<std::tuple <Particle&,Particle&,double> > &connected_particles){
@@ -429,6 +615,7 @@ public:
         friction_matrix_dv.setZero();
         velocity_vector.setZero();
         position_vector.setZero();
+        tracer.erase(tracer.begin(),tracer.end());
         for(auto particle_pair : connected_particles) {
             Particle& A = std::get<0>(particle_pair);
             Particle& B = std::get<1>(particle_pair);
@@ -467,7 +654,7 @@ public:
         Particle& A = std::get<0>(pair);
         double velocity = A.velocity[0];
 
-        if(!(last_frequency == lower_electrode.frequency) && lower_electrode.peak_voltage>= 0.0001){
+        if(!(last_frequency == lower_electrode.frequency) && lower_electrode.peak_voltage>= 0.0001 && safety){
             velocities.push_back(velocity);
             frequencies.push_back(lower_electrode.frequency);
         }
@@ -493,7 +680,7 @@ public:
         int n = spring_force_matrix_dx.rows();
         int  m = spring_force_matrix_dx.cols();
 
-        MatrixXd spring_force_jacobian(n,m);
+        MatrixXd spring_force_jacobian(size,size);
         spring_force_jacobian.setZero();
 
         for(auto& particle_pair : connected_particles) {
@@ -512,12 +699,19 @@ public:
 
             std::tuple<Particle&,Particle&,double> particle_pair_tmp(A_tmp,B_tmp,std::get<2>(particle_pair));
 
-            Matrix3d current_spring_force_dx = NEW_get_damped_spring_force_dXA_without_damping(particle_pair_tmp);
+            Matrix3d current_spring_forceA_dx = NEW_get_damped_spring_force_dXA_without_damping(A_tmp,B_tmp,std::get<2>(particle_pair));
+           /* Matrix3d current_spring_forceB_dx = NEW_get_damped_spring_force_dXA_without_damping(B_tmp,A_tmp,std::get<2>(particle_pair));
 
-            spring_force_jacobian.block<3,3>(A.index,A.index) += current_spring_force_dx;
-            spring_force_jacobian.block<3,3>(B.index,B.index) += current_spring_force_dx;
-            spring_force_jacobian.block<3,3>(A.index,B.index) += -1.0 *current_spring_force_dx;
-            spring_force_jacobian.block<3,3>(B.index,A.index) += -1.0 *current_spring_force_dx;
+            spring_force_jacobian.block<3,3>(A.index,A.index) += current_spring_forceA_dx;
+            spring_force_jacobian.block<3,3>(B.index,B.index) += current_spring_forceB_dx;
+            spring_force_jacobian.block<3,3>(A.index,B.index) += -1.0 *current_spring_forceA_dx;
+            spring_force_jacobian.block<3,3>(B.index,A.index) += -1.0 *current_spring_forceB_dx;*/
+
+            spring_force_jacobian.block<3,3>(A.index,A.index) += current_spring_forceA_dx;
+            spring_force_jacobian.block<3,3>(B.index,B.index) += current_spring_forceA_dx;
+            spring_force_jacobian.block<3,3>(A.index,B.index) += (-1.0 * current_spring_forceA_dx);
+            spring_force_jacobian.block<3,3>(B.index,A.index) += (-1.0 * current_spring_forceA_dx);
+
 
         }
 
@@ -553,12 +747,12 @@ public:
            Vector3d current_spring_force_tmp = NEW_get_damped_spring_force_without_damping(particle_pair_tmp);
            //std::cout<<"current spring force  tmp = "<<std::endl<<current_spring_force_tmp<<std::endl;
 
-            current_spring_force[A_tmp.index] += current_spring_force_tmp[0];
-            current_spring_force[A_tmp.index + 1] += current_spring_force_tmp[1];
-            current_spring_force[A_tmp.index + 2] += current_spring_force_tmp[2];
-            current_spring_force[B_tmp.index] += -1.0 * current_spring_force_tmp[0];
-            current_spring_force[B_tmp.index + 1] += -1.0 *current_spring_force_tmp[1];
-            current_spring_force[B_tmp.index + 2] += -1.0 *current_spring_force_tmp[2];
+            current_spring_force[A.index] += current_spring_force_tmp[0];
+            current_spring_force[A.index + 1] += current_spring_force_tmp[1];
+            current_spring_force[A.index + 2] += current_spring_force_tmp[2];
+            current_spring_force[B.index] += (-1.0 * current_spring_force_tmp[0]);
+            current_spring_force[B.index + 1] += (-1.0 *current_spring_force_tmp[1]);
+            current_spring_force[B.index + 2] += (-1.0 *current_spring_force_tmp[2]);
 
 
 
@@ -569,78 +763,77 @@ public:
     }
 
     VectorXd get_current_friction_force(std::vector<std::tuple <Particle&,Particle&,double> > &connected_particles, VectorXd current_positions){
-        int n = friction_vector.size();
-        // std::cout<<" current positions = "<<std::endl<<current_positions<<std::endl;
-
-
+        int n = spring_force_vector.size();
         VectorXd current_friction_force(n);
         current_friction_force.setZero();
-
         for(auto& particle_pair : connected_particles) {
-
-
             Particle& A = std::get<0>(particle_pair);
             Particle& B = std::get<1>(particle_pair);
-          //  std::cout<<"A.index = "<<A.index<<" B.index = "<<B.index<<std::endl;
+            if(!A.visited){
+                Particle A_tmp = A;
+                A_tmp.position[0] = current_positions[A.index];
+                A_tmp.position[1] = current_positions[A.index+1];
+                A_tmp.position[2] = current_positions[A.index+2];
+                A_tmp.radius = A.radius;
+                Vector3d pos_at_A;
+                pos_at_A[0] = position_vector[A.index];
+                pos_at_A[1] = position_vector[A.index+1];
+                pos_at_A[2] = position_vector[A.index+2];
+                A_tmp.velocity = ( A_tmp.position - pos_at_A )/time_step;
+                Vector3d current_friction_at_A = get_stokes_friction_force(A_tmp);
+                current_friction_force[A.index] = current_friction_at_A[0];
+                current_friction_force[A.index + 1] = current_friction_at_A[1];
+                current_friction_force[A.index + 2] = current_friction_at_A[2];
+                A.visited=true;
+            }
 
-            Particle A_tmp = A;
-            Particle B_tmp = B;
-          //  std::cout<<"Atmp.index = "<<A_tmp.index<<" Btmp.index = "<< B_tmp.index<<std::endl;
-            A_tmp.position[0] = current_positions[A.index];
-            A_tmp.position[1] = current_positions[A.index+1];
-            A_tmp.position[2] = current_positions[A.index+2];
-            B_tmp.position[0] = current_positions[B.index];
-            B_tmp.position[1] = current_positions[B.index+1];
-            B_tmp.position[2] = current_positions[B.index+2];
-
-            Vector3d pos_at_A;
-            pos_at_A[0] = position_vector[A.index];
-            pos_at_A[1] = position_vector[A.index+1];
-            pos_at_A[2] = position_vector[A.index+2];
-
-            Vector3d pos_at_B;
-            pos_at_B[0] = position_vector[B.index];
-            pos_at_B[1] = position_vector[B.index+1];
-            pos_at_B[2] = position_vector[B.index+2];
-
-            A_tmp.velocity = ( A_tmp.position - pos_at_A )/time_step;
-            B_tmp.velocity = ( B_tmp.position -pos_at_B )/time_step;
-          //  std::cout<<" A tmp velocity = "<<A_tmp.velocity<<std::endl;
-          //  std::cout<<" B tmp velocity = "<<B_tmp.velocity<<std::endl;
-
-            Vector3d current_friction_at_A = get_stokes_friction_force(A_tmp);
-            Vector3d current_friction_at_B = get_stokes_friction_force(B_tmp);
-
-            current_friction_force[A_tmp.index] = current_friction_at_A[0];
-            current_friction_force[A_tmp.index + 1] = current_friction_at_A[1];
-            current_friction_force[A_tmp.index + 2] = current_friction_at_A[2];
-            current_friction_force[B_tmp.index] = current_friction_at_B[0];
-            current_friction_force[B_tmp.index + 1] =current_friction_at_B[1];
-            current_friction_force[B_tmp.index + 2] =current_friction_at_B[2];
-
+            if(!B.visited){
+                Particle B_tmp = B;
+                B_tmp.position[0] = current_positions[B.index];
+                B_tmp.position[1] = current_positions[B.index+1];
+                B_tmp.position[2] = current_positions[B.index+2];
+                Vector3d pos_at_B;
+                B_tmp.radius = B.radius;
+                pos_at_B[0] = position_vector[B.index];
+                pos_at_B[1] = position_vector[B.index+1];
+                pos_at_B[2] = position_vector[B.index+2];
+                B_tmp.velocity = ( B_tmp.position -pos_at_B )/time_step;
+                Vector3d current_friction_at_B = get_stokes_friction_force(B_tmp);
+                current_friction_force[B.index] = current_friction_at_B[0];
+                current_friction_force[B.index + 1] =current_friction_at_B[1];
+                current_friction_force[B.index + 2] =current_friction_at_B[2];
+                B.visited=true;
+            }
         }
-       // std::cout<<" current friction force = "<<current_friction_force<<" with time step = "<<time_step<<std::endl;
-        return current_friction_force;
+        reset_flags(connected_particles);
+        return current_friction_force/*.cwiseProduct(drag_occlusion_factor_vector)*/;
     }
 
     MatrixXd get_current_friction_force_jacobian(std::vector<std::tuple <Particle&,Particle&,double> > &connected_particles, VectorXd current_positions){
         MatrixXd result(friction_matrix_dv.rows(),friction_matrix_dv.cols());
         result.setZero();
-        double constant = 6.0 * M_PI * dynamic_viscosity * viscosity_multiplier;
+        double constant = (6.0 * M_PI * dynamic_viscosity * viscosity_multiplier)/time_step;
         for(auto& particle_pair : connected_particles) {
 
             Particle &A = std::get<0>(particle_pair);
             Particle &B = std::get<1>(particle_pair);
 
-            result(A.index,A.index) = constant * A.radius;
-            result(A.index+1,A.index+1) = constant * A.radius;
-            result(A.index+2,A.index+2) = constant * A.radius;
-            result(B.index,B.index) = constant * B.radius;
-            result(B.index+1,B.index+1) = constant * B.radius;
-            result(B.index+2,B.index+2) = constant * B.radius;
+            if(!A.visited){
+                result(A.index,A.index) = constant * A.radius;
+                result(A.index+1,A.index+1) = constant * A.radius;
+                result(A.index+2,A.index+2) = constant * A.radius;
+                A.visited=true;
+            }
+            if(!B.visited){
+                result(B.index,B.index) = constant * B.radius;
+                result(B.index+1,B.index+1) = constant * B.radius;
+                result(B.index+2,B.index+2) = constant * B.radius;
+                B.visited = true;
+            }
 
         }
-        return result;
+        reset_flags(connected_particles);
+        return result /** drag_occlusion_factor_vector.asDiagonal()*/;
     }
 
     MatrixXd get_current_electrical_force_jacobian(std::vector<std::tuple <Particle&,Particle&,double> > &connected_particles, VectorXd current_positions){
@@ -671,9 +864,12 @@ public:
             Particle& B = std::get<1>(particle_pair);
           //  std::cout<<" Velocity  of particle"<<B.index<<"= "<<B.velocity[0]  << " micrometer/s"<<" and frequency is = "<<lower_electrode.frequency<<std::endl<<" time step = "<<time_step<<std::endl;
 
-            Vector3d current_spring_force = NEW_get_damped_spring_force_without_damping(particle_pair);
-            Matrix3d current_spring_force_dx = NEW_get_damped_spring_force_dXA_without_damping(particle_pair);
+         // std::cout<<"A.index = "<<A.index<<"A.radius = "<<A.radius<<std::endl;
+         // std::cout<<" B index = "<<B.index<<"B.radius = "<<B.radius<<std::endl;
 
+            Vector3d current_spring_force = NEW_get_damped_spring_force_without_damping(particle_pair);
+            Matrix3d current_spring_forceA_dx = NEW_get_damped_spring_force_dXA_without_damping(A,B,std::get<2>(particle_pair));
+            Matrix3d current_spring_forceB_dx = NEW_get_damped_spring_force_dXA_without_damping(B,A,std::get<2>(particle_pair));
            // std::cout<<"Spring Force Vector Before Filling \n"<<spring_force_vector<<"\n";
             spring_force_vector[A.index] += current_spring_force[0];
             spring_force_vector[A.index + 1] += current_spring_force[1];
@@ -686,19 +882,19 @@ public:
            // std::cout<<spring_force_vec_over_time_x[0]<<std::endl;
             spring_force_vec_over_time_y.push_back(spring_force_vector[A.index+1]);
            // std::cout<<"Spring Force DX Before Filling \n"<<spring_force_matrix_dx<<"\n";
-            spring_force_matrix_dx.block<3,3>(A.index,A.index) += current_spring_force_dx;
-            spring_force_matrix_dx.block<3,3>(B.index,B.index) += current_spring_force_dx;
-            spring_force_matrix_dx.block<3,3>(A.index,B.index) += -1.0 * current_spring_force_dx;
-            spring_force_matrix_dx.block<3,3>(B.index,A.index) += -1.0 * current_spring_force_dx;
+            spring_force_matrix_dx.block<3,3>(A.index,A.index) += current_spring_forceA_dx;
+            spring_force_matrix_dx.block<3,3>(B.index,B.index) += current_spring_forceB_dx;
+            spring_force_matrix_dx.block<3,3>(A.index,B.index) += -1.0 * current_spring_forceA_dx;
+            spring_force_matrix_dx.block<3,3>(B.index,A.index) += -1.0 * current_spring_forceB_dx;
 
-            friction_vector[A.index] = get_stokes_friction_force(A)[0];
-            friction_vector[A.index+1] = get_stokes_friction_force(A)[1];
-            friction_vector[A.index+2] = get_stokes_friction_force(A)[2];
-            friction_vector[B.index] = get_stokes_friction_force(B)[0];
-            friction_vector[B.index+1] = get_stokes_friction_force(B)[1];
-            friction_vector[B.index+2] = get_stokes_friction_force(B)[2];
+            //friction_vector[A.index] = get_stokes_friction_force(A)[0];
+            //friction_vector[A.index+1] = get_stokes_friction_force(A)[1];
+            //friction_vector[A.index+2] = get_stokes_friction_force(A)[2];
+            //friction_vector[B.index] = get_stokes_friction_force(B)[0];
+            //friction_vector[B.index+1] = get_stokes_friction_force(B)[1];
+            //friction_vector[B.index+2] = get_stokes_friction_force(B)[2];
 
-            friction_force_over_time_x.push_back(friction_vector[A.index]);
+            //friction_force_over_time_x.push_back(friction_vector[A.index]);
 
             friction_matrix_dv.block<3,3>(A.index,A.index) = get_friction_force_dv(A);
             friction_matrix_dv.block<3,3>(B.index,B.index) = get_friction_force_dv(B);
@@ -740,10 +936,66 @@ public:
                 initial_position_vector = position_vector;
             }
            // std::cout<<"Position Vector After filling \n"<<position_vector<<"\n";
-           if(A.index == 0) {
+           if(A.index == 0 && !A.visited) {
+           //    std::cout<<" true 0";
+
                position_vec_over_time_in_x.push_back(A.position[0]);
                position_vec_over_time_in_y.push_back(A.position[1]);
+
+               rotator_position_vec_over_time_in_x.push_back(A.position[0]);
+               rotator_position_vec_over_time_in_y.push_back(A.position[1]);
+
+               triangle_position_vec_over_time_in_x.push_back(A.position[0]);
+               triangle_position_vec_over_time_in_y.push_back(A.position[1]);
+               A.visited = true;
            }
+           if(B.index == 3 && !B.visited){
+               triangle_position_vec_over_time_in_x_2.push_back(B.position[0]);
+               triangle_position_vec_over_time_in_y_2.push_back(B.position[1]);
+               B.visited = true;
+           }
+
+            if(B.index == 6 && !B.visited){
+                triangle_position_vec_over_time_in_x_3.push_back(B.position[0]);
+                triangle_position_vec_over_time_in_y_3.push_back(B.position[1]);
+                B.visited = true;
+            }
+
+
+            if(A.index == 6 && !A.visited) {
+           //     std::cout<<" true 6";
+
+                position_vec_over_time_in_x_2.push_back(A.position[0]);
+                position_vec_over_time_in_y_2.push_back(A.position[1]);
+                A.visited = true;
+            }
+
+
+            if(A.index == 12 && !A.visited) {
+            //    std::cout<<"true 12";
+
+                position_vec_over_time_in_x_3.push_back(A.position[0]);
+                position_vec_over_time_in_y_3.push_back(A.position[1]);
+                A.visited = true;
+            }
+
+            if(B.index == 9 && !B.visited) {
+             //   std::cout<<"true 9";
+
+                rotator_position_vec_over_time_in_x_2.push_back(B.position[0]);
+                rotator_position_vec_over_time_in_y_2.push_back(B.position[1]);
+                B.visited = true;
+            }
+
+
+            if(A.index == 18 && !A.visited) {
+            //    std::cout<<"true 18"<<std::endl;
+                position_vec_over_time_in_x_4.push_back(A.position[0]);
+                position_vec_over_time_in_y_4.push_back(A.position[1]);
+
+
+                A.visited = true;
+            }
 
 
             velocity_vector(A.index) = A.velocity[0];
@@ -754,6 +1006,7 @@ public:
             velocity_vector(B.index+2) = B.velocity[2];
 
         }
+        reset_flags(connected_particles);
 
 
     }
@@ -766,20 +1019,34 @@ public:
         for(auto& particle_pair : connected_particles){
             Particle& A = std::get<0>(particle_pair);
             Particle& B = std::get<1>(particle_pair);
-            Vector3d local_EHD_force = get_my_EHD_force(particle_pair);
-            current_EHD_force[A.index] = local_EHD_force[0];
-            current_EHD_force[A.index+1] = local_EHD_force[1];
-            current_EHD_force[A.index+2] = local_EHD_force[2];
-            current_EHD_force[B.index] = local_EHD_force[0];
-            current_EHD_force[B.index+1] = local_EHD_force[1];
-            current_EHD_force[B.index+2] = local_EHD_force[2];
+
+            Particle A_tmp = A;
+            Particle B_tmp = B;
+            A_tmp.position[0] = current_positions[A.index];
+            A_tmp.position[1] = current_positions[A.index+1];
+            A_tmp.position[2] = current_positions[A.index+2];
+            B_tmp.position[0] = current_positions[B.index];
+            B_tmp.position[1] = current_positions[B.index+1];
+            B_tmp.position[2] = current_positions[B.index+2];
+
+            // std::cout<< "in here the positions are:"<<std::endl<<A_tmp.position[0]<<std::endl<<A_tmp.position[1]<<std::endl<<B_tmp.position[0]<<std::endl<<B_tmp.position[1]<<std::endl;
+
+            std::tuple<Particle&,Particle&,double> particle_pair_tmp(A_tmp,B_tmp,std::get<2>(particle_pair));
+
+            Vector3d local_EHD_force = get_my_EHD_force(particle_pair_tmp);
+            current_EHD_force[A.index] += local_EHD_force[0];
+            current_EHD_force[A.index+1] += local_EHD_force[1];
+            current_EHD_force[A.index+2] += local_EHD_force[2];
+            current_EHD_force[B.index] += local_EHD_force[0];
+            current_EHD_force[B.index+1] += local_EHD_force[1];
+            current_EHD_force[B.index+2] += local_EHD_force[2];
 
         }
       //  std::cout<<" current full ehd force = "<< current_EHD_force<<std::endl;
-        return current_EHD_force;
+        return current_EHD_force/*.cwiseProduct(inverse_number_of_neighbours)*/;
     }
 
-    VectorXd get_current_brownian_motion(std::vector<std::tuple <Particle&,Particle&,double> > &connected_particles){
+  /*  VectorXd get_current_brownian_motion(std::vector<std::tuple <Particle&,Particle&,double> > &connected_particles){
         int n = spring_force_vector.size();
         VectorXd current_Bm(n);
         current_Bm.setZero();
@@ -798,46 +1065,255 @@ public:
         }
         return current_Bm;
     }
-
+*/
     //from thermal noise paper
     VectorXd get_current_thermal_force(std::vector<std::tuple <Particle&,Particle&,double> > &connected_particles){
         int n = spring_force_vector.size();
         VectorXd current_thermal_force(n);
         current_thermal_force.setZero();
         for(auto& particle_pair : connected_particles){
-            std::random_device rd{};
-            std::mt19937 gen{rd()};
-            std::normal_distribution<> d{0.0,1.0};
-
-            double x_rand = d(gen);
-           // std::cout<<" x rand  = "<<x_rand<<std::endl;
-            double y_rand = d(gen);
-
             Particle& A = std::get<0>(particle_pair);
-
             Particle& B = std::get<1>(particle_pair);
-            Vector3d local_tf_A = thermal_force(std::get<0>(particle_pair),x_rand,y_rand);
 
-            std::random_device rd_2{};
-            std::mt19937 gen_2{rd_2()};
-            std::normal_distribution<> d_2{0.0,1.0};
+            if(!A.visited){
 
-            double x_rand_2 = d_2(gen_2);
-            double y_rand_2 = d_2(gen_2);
-           // std::cout<<" x rand 2 = "<<x_rand_2<<std::endl;
+                double x_rand = d(gen);
+                double y_rand = d(gen);
+                if(x_rand == y_rand){
 
+                    std::cout<<"error occured, random number generator failed!"<<std::endl;
+                }
+                Vector3d local_tf_A = thermal_force(A,x_rand,y_rand);
+                current_thermal_force[A.index] = local_tf_A[0];
+                current_thermal_force[A.index+1] = local_tf_A[1];
+                current_thermal_force[A.index+2] = local_tf_A[2];
+                A.visited=true;
+            }
+            if(!B.visited){
 
-            Vector3d local_tf_B = thermal_force(std::get<1>(particle_pair),x_rand_2,y_rand_2);
-            current_thermal_force[A.index] = local_tf_A[0];
-            current_thermal_force[A.index+1] = local_tf_A[1];
-            current_thermal_force[A.index+2] = local_tf_A[2];
-            current_thermal_force[B.index] = local_tf_B[0];
-            current_thermal_force[B.index+1] = local_tf_B[1];
-            current_thermal_force[B.index+2] = local_tf_B[2];
-
+                double x_rand_2 = d(gen);
+                double y_rand_2 = d(gen);
+                if(x_rand_2 == y_rand_2){
+                    std::cout<<"error occured, random number generator failed!"<<std::endl;
+                }
+                Vector3d local_tf_B = thermal_force(B,x_rand_2,y_rand_2);
+                current_thermal_force[B.index] = local_tf_B[0];
+                current_thermal_force[B.index+1] = local_tf_B[1];
+                current_thermal_force[B.index+2] = local_tf_B[2];
+                B.visited=true;
+            }
         }
+        reset_flags(connected_particles);
         return current_thermal_force;
     }
+
+    VectorXd get_current_rotational_thermal_force(std::vector<std::tuple <Particle&,Particle&,double> > &connected_particles){
+        int n = spring_force_vector.size();
+        VectorXd current_rotational_thermal_force(n);
+        current_rotational_thermal_force.setZero();
+        for(auto& particle_pair : connected_particles){
+            Particle& A = std::get<0>(particle_pair);
+            Particle& B = std::get<1>(particle_pair);
+
+            if(!A.visited){
+                std::random_device rd{};
+                std::mt19937 gen{rd()};
+                std::normal_distribution<> d{0.0,1.0};
+                double x_rand = d(gen);
+                apply_rotational_noise(A,x_rand);
+                A.visited=true;
+            }
+            if(!B.visited){
+                std::random_device rd_2{};
+                std::mt19937 gen_2{rd_2()};
+                std::normal_distribution<> d_2{0.0,1.0};
+                double x_rand_2 = d_2(gen_2);
+                apply_rotational_noise(B,x_rand_2);
+                B.visited=true;
+            }
+
+            std::vector<Vector3d> local_rotational_thermal_force = rotational_thermal_force(particle_pair);
+            current_rotational_thermal_force[A.index] += local_rotational_thermal_force[0][0];
+            current_rotational_thermal_force[A.index+1] += local_rotational_thermal_force[0][1];
+            current_rotational_thermal_force[A.index+2] += local_rotational_thermal_force[0][2];
+            current_rotational_thermal_force[B.index] += local_rotational_thermal_force[1][0];
+            current_rotational_thermal_force[B.index+1] += local_rotational_thermal_force[1][1];
+            current_rotational_thermal_force[B.index+2] += local_rotational_thermal_force[1][2];
+
+        }
+        reset_flags(connected_particles);
+        return current_rotational_thermal_force;
+    }
+
+    MatrixXd get_current_EHD_jacobian(std::vector<std::tuple <Particle&,Particle&,double> > &connected_particles, VectorXd current_positions){
+        int n = spring_force_matrix_dx.rows();
+        int  m = spring_force_matrix_dx.cols();
+
+        MatrixXd EHD_force_jacobian(n,m);
+        EHD_force_jacobian.setZero();
+
+        for(auto& particle_pair : connected_particles) {
+
+            Particle& A = std::get<0>(particle_pair);
+            Particle& B = std::get<1>(particle_pair);
+
+            Particle A_tmp = A;
+            Particle B_tmp = B;
+            A_tmp.position[0] = current_positions[A.index];
+            A_tmp.position[1] = current_positions[A.index+1];
+            A_tmp.position[2] = current_positions[A.index+2];
+            B_tmp.position[0] = current_positions[B.index];
+            B_tmp.position[1] = current_positions[B.index+1];
+            B_tmp.position[2] = current_positions[B.index+2];
+
+            //std::tuple<Particle&,Particle&,double> particle_pair_tmp(A_tmp,B_tmp,std::get<2>(particle_pair));
+
+            //Matrix3d current_spring_force_dx = NEW_get_damped_spring_force_dXA_without_damping(particle_pair_tmp);
+            Matrix3d current_EHD_force_A_dx = get_EHD_force_dx(A_tmp,B_tmp);
+            //Matrix3d current_EHD_force_B_dx = get_EHD_force_dx(B_tmp,A_tmp);
+          /*  Matrix3d current_EHD_force_B_dx = -1.0 * current_EHD_force_A_dx;
+
+            EHD_force_jacobian.block<3,3>(A.index,A.index) += current_EHD_force_A_dx;
+            EHD_force_jacobian.block<3,3>(B.index,B.index) += current_EHD_force_B_dx;
+            EHD_force_jacobian.block<3,3>(A.index,B.index) += -1.0 *current_EHD_force_A_dx;
+            EHD_force_jacobian.block<3,3>(B.index,A.index) += -1.0 *current_EHD_force_B_dx;*/
+
+            EHD_force_jacobian.block<3,3>(A.index,A.index) += current_EHD_force_A_dx;
+            EHD_force_jacobian.block<3,3>(B.index,B.index) += (-1.0 *current_EHD_force_A_dx);
+            EHD_force_jacobian.block<3,3>(A.index,B.index) += (-1.0 *current_EHD_force_A_dx);
+            EHD_force_jacobian.block<3,3>(B.index,A.index) += current_EHD_force_A_dx;
+
+        }
+       // std::cout<<" EHD JAcobian = "<<EHD_force_jacobian<<std::endl;
+        return EHD_force_jacobian;
+    }
+
+    void apply_wind_shadow(std::vector<std::tuple <Particle&,Particle&,double> > &connected_particles){
+        drag_occlusion_factor_vector = Eigen::VectorXd::Ones(size);
+
+        for(auto& particle_pair : connected_particles){
+            Particle& A = std::get<0>(particle_pair);
+            Particle& B = std::get<1>(particle_pair);
+            if(!((A.velocity[0] == 0.0) && (A.velocity[1] ==0.0))) {
+
+                //A ocluded by B
+
+                Vector2d vel_A_from_xa = {A.velocity[0] + A.position[0], A.velocity[1] + A.position[1]};
+               // std::cout << "vel_A_from_xa " << vel_A_from_xa << std::endl;
+
+                Vector2d line_vector;
+                if(A.velocity[0] == 0.0){
+                    line_vector = {1.0,0.0};
+                }
+                else if(A.velocity[1] == 0.0){
+                    line_vector = {0.0,1.0};
+                }
+                else {
+                    double orthogonal_y = 1.0;
+                    double orthogonal_x = (-1.0 * A.velocity[1] * orthogonal_y) / A.velocity[0];
+                    line_vector = {orthogonal_x, orthogonal_y};
+                }
+
+
+              //  std::cout << "line_vector" << line_vector << std::endl;
+                Vector2d point_on_line_1 = {line_vector[0] + A.position[0], line_vector[1] + A.position[1]};
+              //  std::cout << "point_on_line_1" << point_on_line_1 << std::endl;
+                Vector2d point_on_line_2 = {A.position[0], A.position[1]};
+              //  std::cout << "point_on_line_2" << point_on_line_2 << std::endl;
+                double value_of_known_point =
+                        (vel_A_from_xa[0] - point_on_line_1[0]) * (point_on_line_2[1] - point_on_line_1[1]) -
+                        (vel_A_from_xa[1] - point_on_line_1[1]) * (point_on_line_2[0] - point_on_line_1[0]);
+              //  std::cout << "value_of_known_point" << value_of_known_point << std::endl;
+                int sign_of_known_point = std::copysign(1.0, value_of_known_point);
+               // std::cout << "sign_of_known_point" << sign_of_known_point << std::endl;
+
+                double value_of_other_center =
+                        (B.position[0] - point_on_line_1[0]) * (point_on_line_2[1] - point_on_line_1[1]) -
+                        (B.position[1] - point_on_line_1[1]) * (point_on_line_2[0] - point_on_line_1[0]);
+               // std::cout << "value_of_other_center" << value_of_other_center << std::endl;
+                int sign_of_other_center = std::copysign(1.0, value_of_other_center);
+               // std::cout << "sign_of_other_center" << sign_of_other_center << std::endl;
+
+                if (sign_of_known_point == sign_of_other_center) {
+                  //  std::cout << "true" << std::endl;
+                    Vector2d A_to_B = {B.position[0] - A.position[0], B.position[1] - A.position[1]};
+                    //A_to_B.normalize();
+                 //   std::cout << "A_to_B" << A_to_B << std::endl;
+                    //line_vector.normalize();
+                 //   std::cout<<"line vector = "<<line_vector<<std::endl;
+                    double norm_prod = A_to_B.norm() * line_vector.norm();
+                  //  std::cout << "norm_prod" << norm_prod << std::endl;
+                  //  std::cout<<"thing inside acos = "<<(line_vector.dot(A_to_B)) / norm_prod<<std::endl;
+                    double angle = std::acos((line_vector.dot(A_to_B)) / norm_prod); //should be bewteen 0 and pi
+                  //  std::cout << "angle" << angle << std::endl;
+                    double factor = std::sin(angle); //between 0 and 1
+                  //  std::cout << "factor" << factor << std::endl;
+                    double reduce_by = (1.0 - ((2.0 * B.radius * factor) / (2.0 * A.radius)));
+                  //  std::cout << "reduce_by" << reduce_by << std::endl;
+                    drag_occlusion_factor_vector[A.index] *= reduce_by;
+                    drag_occlusion_factor_vector[A.index + 1] *= reduce_by;
+                    drag_occlusion_factor_vector[A.index + 2] *= reduce_by;
+
+                    /*Vector2d reflected_vector = A_to_B - 2.0 * (A_to_B.dot(line_vector.normalized())) * line_vector.normalized();
+                    double alpha = std::pow(std::sin(2.0 * angle),2);
+                    reflected_vector.normalize();
+                    reflected_vector *= 6.0 * M_PI * dynamic_viscosity * viscosity_multiplier * A.radius * A.velocity.norm();
+                    drag_occlusion_factor_vector[A.index] *= (1.0 - alpha);
+                    drag_occlusion_factor_vector[A.index+1] *= (1.0 - alpha);
+                    drag_occlusion_factor_vector[A.index+2] *= (1.0 - alpha);*/
+
+                    //drag_occlusion_direction_change_vector[A.index]
+                }
+            }
+            if(!((B.velocity[0] == 0.0) && (B.velocity[1] == 0.0))) {
+
+                Vector2d vel_B_from_xb = {B.velocity[0] + B.position[0], B.velocity[1] + B.position[1]};
+
+
+                Vector2d line_vector_B;
+                if(B.velocity[0] == 0.0){
+                    line_vector_B = {1.0,0.0};
+                }
+                else if(B.velocity[1] == 0.0){
+                    line_vector_B = {0.0,1.0};
+                }
+                else{
+                    double orthogonal_y_B = 1.0;
+                    double orthogonal_x_B = (-1.0 * B.velocity[1] * orthogonal_y_B) / B.velocity[0];
+                    line_vector_B = {orthogonal_x_B, orthogonal_y_B};
+                }
+
+                Vector2d point_on_line_1_B = {line_vector_B[0] + B.position[0], line_vector_B[1] + B.position[1]};
+                Vector2d point_on_line_2_B = {B.position[0], B.position[1]};
+                double value_of_known_point_B =
+                        (vel_B_from_xb[0] - point_on_line_1_B[0]) * (point_on_line_2_B[1] - point_on_line_1_B[1]) -
+                        (vel_B_from_xb[1] - point_on_line_1_B[1]) * (point_on_line_2_B[0] - point_on_line_1_B[0]);
+                int sign_of_known_point_B = std::copysign(1.0, value_of_known_point_B);
+
+                double value_of_other_center_B =
+                        (A.position[0] - point_on_line_1_B[0]) * (point_on_line_2_B[1] - point_on_line_1_B[1]) -
+                        (A.position[1] - point_on_line_1_B[1]) * (point_on_line_2_B[0] - point_on_line_1_B[0]);
+                int sign_of_other_center_B = std::copysign(1.0, value_of_other_center_B);
+
+                if (sign_of_known_point_B == sign_of_other_center_B) {
+                    Vector2d B_to_A = {A.position[0] - B.position[0], A.position[1] - B.position[1]};
+                    B_to_A.normalize();
+                    line_vector_B.normalize();
+                    double norm_prod_B = B_to_A.norm() * line_vector_B.norm();
+                    double angle_B = std::acos((line_vector_B.dot(B_to_A)) / norm_prod_B); //should be bewteen 0 and pi
+                    double factor_B = std::sin(angle_B); //between 0 and 1
+                    double reduce_by_B = (1.0 - ((2.0 * A.radius * factor_B) / (2.0 * B.radius)));
+                    drag_occlusion_factor_vector[B.index] *= reduce_by_B;
+                    drag_occlusion_factor_vector[B.index + 1] *= reduce_by_B;
+                    drag_occlusion_factor_vector[B.index + 2] *= reduce_by_B;
+                }
+
+            }
+        }
+       // std::cout<<"drag_occlusion_factor_vector"<<drag_occlusion_factor_vector<<std::endl<<std::endl;
+
+    }
+
 
 
 
@@ -847,20 +1323,21 @@ public:
         VectorXd a = (x - 2.0 * position_vector + position_vector_minus_1);
         double x_t_M_x = 0.5 * a.transpose() * mass_matrix * a;
 
-        double E_x =  get_current_potential_energy(x,connected_particles)+  safety *get_E_drag_indefinit_integral(x,connected_particles)+ safety * get_E_electrical(x) + safety *get_E_EHD(x,connected_particles);
+        double E_x =  get_current_potential_energy(x,connected_particles)+  safety *get_E_drag_indefinit_integral(x,connected_particles)+ safety * get_E_electrical(x) + safety *get_E_EHD(x,connected_particles) + safety * current_thermal_force.transpose() * x;
 
         return   x_t_M_x +  std::pow(time_step,2) * E_x; //check again
     }
 
     VectorXd get_g_with_drag(VectorXd x, std::vector<std::tuple <Particle&,Particle&,double> > &connected_particles){
-        VectorXd current_ehd_force=get_current_EHD_force(connected_particles,x);
-        VectorXd F_x = get_current_spring_force(connected_particles,x) - safety *get_current_friction_force(connected_particles,x) + safety *electricalfield_force_vector + safety *get_current_EHD_force(connected_particles,x) + safety *current_thermal_force;
-      // std::cout<<" current ehd force inside g = "<<current_ehd_force<<std::endl;
-      //   std::cout<<" current thermal force = "<<current_thermal_force<<std::endl;
-       //  VectorXd tmp = 100*get_current_friction_force(connected_particles,x);
-      //   std::cout<<" new current fd ="<<get_current_friction_force(connected_particles,x)<<std::endl;
-      //  std::cout<<"FS = \n"<<get_current_spring_force(connected_particles,x)<<"Fd = \n"<<"a"<<tmp<<" Fel = \n "<<electricalfield_force_vector;
-      //    std::cout<<" F = "<<std::endl<<F_x<<std::endl;
+
+        VectorXd F_x = get_current_spring_force(connected_particles,x) - safety *get_current_friction_force(connected_particles,x)/* + safety *electricalfield_force_vector */+ safety *get_current_EHD_force(connected_particles,x) + safety *current_thermal_force /*+ safety * current_rotational_thermal_force*/;
+
+
+
+      //  std::cout<<"FS = \n"<<get_current_spring_force(connected_particles,x)<<" \n Fd ="<<get_current_friction_force(connected_particles,x)<<"\n Fel = "<<electricalfield_force_vector;
+
+      //  std::cout<<"EHD FORCE ="<<get_current_EHD_force(connected_particles,x)<<std::endl;
+        //  std::cout<<" F = "<<std::endl<<F_x<<std::endl;
       //   std::cout<<"mass matrix = "<<std::endl<<mass_matrix<<std::endl;
       //  std::cout<<" M * (x-y) = \n"<<mass_matrix * (x - 2.0 * position_vector + position_vector_minus_1)<<std::endl;
 
@@ -870,9 +1347,10 @@ public:
     }
 
     MatrixXd get_g_dx(VectorXd x, std::vector<std::tuple <Particle&,Particle&,double> > &connected_particles){
-        MatrixXd dF_dx = get_current_spring_force_jacobian(connected_particles,x) - safety  *get_current_friction_force_jacobian(connected_particles,x) + safety *get_current_electrical_force_jacobian(connected_particles,x);
+        MatrixXd dF_dx = get_current_spring_force_jacobian(connected_particles,x) + safety  * -1.0 *get_current_friction_force_jacobian(connected_particles,x) + safety *get_current_electrical_force_jacobian(connected_particles,x) + safety * get_current_EHD_jacobian(connected_particles,x);
       //  std::cout<<" cuurent spring force jacobian = "<<std::endl<<dF_dx<<std::endl;
       //std::cout<<"dfdx = \n"<<dF_dx;
+
         MatrixXd result = mass_matrix - (std::pow(time_step,2) * dF_dx);
       //  std::cout<<"get g dx returns \n"<<result<<std::endl;
         return result;
@@ -927,7 +1405,8 @@ public:
                 double t2 = old_pos.dot(new_pos);
 
 
-                E += (6.0 * M_PI * dynamic_viscosity * viscosity_multiplier * A.radius)/time_step * (t1/2.0 - t2);
+                E += (-6.0 * M_PI * dynamic_viscosity * viscosity_multiplier * A.radius)/time_step * (t1/2.0 - t2);
+
                 A.visited = true;
             }
             if(!B.visited){
@@ -947,6 +1426,7 @@ public:
 
 
                 E += (6.0 * M_PI * dynamic_viscosity * viscosity_multiplier * B.radius)/time_step * (t1/2.0 - t2);
+
                 B.visited = true;
             }
         }
@@ -973,84 +1453,73 @@ public:
     //CALCULATION FOR SINGLE PARTICLE OR PAIR
 
     Vector3d NEW_get_damped_spring_force_without_damping(std::tuple<Particle,Particle,double> particle_pair){
-       // std::cout<<" ======= inside =========="<<std::endl;
         double rest_length = std::get<2>(particle_pair);
-      //  std::cout<<"rest length = "<<rest_length<<std::endl;
-        Matrix3d Identity = MatrixXd::Identity(3,3);
-        Particle A = std::get<0>(particle_pair);
-        Particle B = std::get<1>(particle_pair);
-       // std::cout<<" positions are = "<<std::endl<<A.position[0]<<std::endl<<A.position[1]<<std::endl<<B.position[0]<<std::endl<<B.position[1]<<std::endl;
-        //changed plus form damping to minus
-        A_B_DISTANCE.push_back((A.position - B.position).norm());
-        Vector3d direction = (A.position - B.position)/(A.position - B.position).norm();
-      //  std::cout<<"direction = "<<direction<<std::endl;
-        long double norm_ = (A.position - B.position).norm();
-        long double radi_ = A.radius + B.radius;
-        long double rest_length_ = rest_length;
-        long double test = (norm_ - radi_) - rest_length_;
-        //std::cout << std::fixed;
-        //std::cout << std::setprecision(15);
-      //  std::cout<<" norm = "<<norm_<<"radi = "<<radi_<<" rest_length = "<<rest_length_<<"sum = "<<test<<std::endl;
-      //  std::cout<<" magnitude = "<<((A.position - B.position).norm()- (A.radius + B.radius)) - rest_length<<" = "<<(A.position - B.position).norm()<<" - "<<(A.radius + B.radius) <<" - "<<rest_length<<std::endl;
-        Vector3d result_ = -1.0 *(stiffnes_constant * ( ((A.position - B.position).norm()) - rest_length) ) * (direction);
-       // std::cout<<std::endl<<"FORCE = "<<std::endl<<result<<std::endl;
-      //  std::cout<<" results = "<<std::endl<<result_<<std::endl;
-      //  std::cout<<" ======= exit =========="<<std::endl;
-       return result_;
-
-    }
-
-    Matrix3d NEW_get_damped_spring_force_dXA_without_damping(std::tuple<Particle,Particle,double> particle_pair){
-        double rest_length = std::get<2>(particle_pair);
-        Matrix3d Identity = MatrixXd::Identity(3,3);
         Particle A = std::get<0>(particle_pair);
         Particle B = std::get<1>(particle_pair);
         Vector3d xa = A.position;
         Vector3d xb = B.position;
-        Vector3d va = A.velocity;
-        Vector3d vb = B.velocity;
+        Vector3d xat = {position_vector[A.index], position_vector[A.index +1], position_vector[A.index +2]};
+        Vector3d xbt = {position_vector[B.index], position_vector[B.index +1], position_vector[B.index +2]};
+        Vector3d va = (xa - xat)/time_step;
+        Vector3d vb = (xb - xbt)/time_step;
+
+        Vector3d direction = (A.position - B.position)/(A.position - B.position).norm();
+
+        double damping_term = damping_constant * (va -vb).dot(direction);
+        double spring_term = stiffnes_constant * ( (A.position - B.position).norm() - rest_length);
+        Vector3d result_ = -1.0 *(spring_term /*+ damping_term*/) * (direction);
+
+       return result_;
+
+    }
+
+
+    Matrix3d NEW_get_damped_spring_force_dXA_without_damping(Particle myself, Particle other, double rest_length){
+
+        Matrix3d Identity = MatrixXd::Identity(3,3);
+        Particle A = myself;
+        Particle B = other;
+        Vector3d xa = A.position;
+        Vector3d xb = B.position;
+        Vector3d xat = {position_vector[A.index], position_vector[A.index +1], position_vector[A.index +2]};
+        Vector3d xbt = {position_vector[B.index], position_vector[B.index +1], position_vector[B.index +2]};
+        Vector3d va = (xa - xat)/time_step;
+        Vector3d vb = (xb - xbt)/time_step;
 
         Vector3d t0 = xa - xb;
-      //  std::cout<<" t0 = \n"<<t0<<"\n;";
+
         double t1 = t0.norm();
-       // std::cout<<" t1 = \n"<<t1<<"\n";
+
         Matrix3d T2 = t0 * t0.transpose();
-        //std::cout<<std::endl<<"T2="<<std::endl<<T2<<std::endl;
 
-       // std::cout<<" T2 = \n"<<T2<<"\n";
-       //double t3 = stiffnes_constant * (t1 - rest_length);
        double t3 = stiffnes_constant * (t1 - rest_length);
-       // std::cout<<" t3 = \n"<<t3<<"\n";
-       // std::cout<<"SPRING FORCE DX = \n"<<-1.0<<" * "<< stiffnes_constant<<" / "<<std::pow(t1,2)<<" * "<<T2<<" - "<<t3<<" / "<<std::pow(t1,3)<<" * "<<T2<<" + "<<t3<<" / "<<t1<<" * "<<Identity<<"\n";
-       // std::cout<<"Spring force Dx = \n"<<-1.0<<" * "<<(stiffnes_constant/std::pow(t1,2)) * T2<<" - "<<(t3/std::pow(t1,3)) * T2<<" + "<<(t3/t1) * Identity<<"\n";
-      //  std::cout<<std::endl<<"term 1 = "<<(stiffnes_constant/std::pow(t1,2)) * T2<<std::endl<<"Term 2"<<(t3/std::pow(t1,3)) * T2<<std::endl<<" 1 - 2"<<std::endl<<(stiffnes_constant/std::pow(t1,2)) * T2 - (t3/std::pow(t1,3)) * T2<<std::endl<<"Term 3"<<std::endl<<(t3/t1) * Identity<<std::endl;
-        Matrix3d result = -1.0 * ((stiffnes_constant/std::pow(t1,2)) * T2 - (t3/std::pow(t1,3)) * T2 + (t3/t1) * Identity);
+
+       double t2 = 1.0/time_step;
+       Matrix3d T3 = T2;
+       double t4 = std::pow(t1,2);
+       Vector3d t5 = t2 * (xa - xat) - t2 * (xb - xbt);
+       double t6 = damping_constant/t4;
+       double t7 = t5.transpose() * t0;
+
+         Matrix3d result = -1.0 * ((stiffnes_constant/std::pow(t1,2)) * T2 - (t3/std::pow(t1,3)) * T2 + (t3/t1) * Identity);
+
+         Matrix3d damping_gradient = -1.0 * (damping_constant/(time_step * t4) * T3 - (2.0 * damping_constant * t7)/std::pow(t1,4) * T3 + t6 * t0 * t5.transpose() + t6 * t7 * Identity );
 
 
-        //OG
-
-        //Vector2d dir = (xa - xb)/(xa -xb).norm();
-        //double length = (xa-xb).norm();
-        //return ((Identity - dir * dir.transpose() ) * std::min(1.0,length/rest_length) - Identity) * (-1.0 * stiffnes_constant);
-        //TRYING TO AVOID SINGULARITY
-
-        //NEWONE
-       /* Matrix2d result = -stiffnes_constant * (
-                (1.0 - rest_length/(xa-xb).norm()) * (Identity - (t0/t1) * (t0/t1).transpose())
-                + (t0/t1) * (t0/t1).transpose()
-                );
-                */
-       // std::cout<<std::endl<<std::endl<<result(0,0)<<std::endl<<std::endl;
-       // std::cout<<result<<std::endl;
-        //double x = result(0,0);
-        //double y = result(1,1);
-        //result(0,0) = y;
-        //result(1,1)=x;
-        return result;
+        return (result /*+ damping_gradient*/);
     }
 
     Vector3d get_stokes_friction_force(Particle particle){
-        return 6.0 * M_PI * viscosity_multiplier*dynamic_viscosity * particle.radius * particle.velocity;
+        double Area = 4.0/3.0 * M_PI * std::pow(particle.radius,3);
+        //prev
+      //  std::cout<<" particle.velocity from particle "<<particle.index<<" = "<<particle.velocity<<std::endl;
+         return 6.0 * M_PI * viscosity_multiplier*dynamic_viscosity * particle.radius * particle.velocity;
+
+
+        //new
+        //Vector3d squared_velocity = particle.velocity.array().square;
+        //return 0.5 * density * squared_velocity * Area * drag_coefficient
+
     }
 
     Matrix3d get_friction_force_dv(Particle particle){ //should it be minus
@@ -1089,7 +1558,9 @@ public:
         //from active brownian particles paper
 
         long double D = (kB * T* brownian_motion_multiplier)/(6 * M_PI * dynamic_viscosity * (particle.radius) ); //not sure
+
         long double k = std::sqrt(2 * D * time_step);
+
 
         double dx = x_rand * k;
         double dy = y_rand * k;
@@ -1102,21 +1573,82 @@ public:
     }
 
     Vector3d thermal_force(Particle &particle,double x_rand, double y_rand){
-        unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+       /* unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
         std::default_random_engine generator(seed);
         std::normal_distribution<double> distribution (0.0,1.0);
 
         std::default_random_engine generator2;
-        std::normal_distribution<double> distribution2(0.0,1.0);
+        std::normal_distribution<double> distribution2(0.0,1.0);*/
 
 
 
         //from active brownian particles paper
 
         double constant = std::sqrt(2 * kB * T * 6.0 * M_PI * dynamic_viscosity * viscosity_multiplier * particle.radius) * brownian_motion_multiplier;
-        Vector3d thermal_force = {constant * x_rand, constant * y_rand, 0.0};
 
+        double alpha = 3.0 * M_PI * dynamic_viscosity * viscosity_multiplier * particle.radius* 2.0;
+        //std::cout<<"alpha = "<<alpha<<std::endl;
+        //std::cout<<"particle.mass = "<<particle.mass;
+        double new_beta = alpha/particle.mass;
+        //std::cout<<"new_beta = "<<new_beta<<std::endl;
+        //double R_s = (std::pow(new_beta,2) * std::pow(time_step,2) + 2.0 * std::exp(-new_beta * time_step) - std::exp(-2.0*new_beta * time_step) -1)/(2.0 * new_beta * time_step + 4.0 * std::exp(-new_beta * time_step) - std::exp(-2.0 * new_beta * time_step) - 3.0);
+        //std::cout<<"Rs = "<<R_s<<std::endl;
+        double R_s = 1.5;
+        double effective_mass = particle.mass + 0.5 * density * (M_PI * std::pow(particle.radius,3));
+        //std::cout<<"effective_mass = "<<effective_mass<<std::endl;
+        double intensity = R_s * (2.0 * kB * T * new_beta)/(effective_mass);
+        //std::cout<<"intensity = "<<intensity<<std::endl;
+       // double beta_newnew = 3.0 * M_PI * dynamic_viscosity * viscosity_multiplier * particle.radius * 2.0 /(particle.mass);
+        //double intensity_2 = 2.0 * kB * T * beta_newnew / (M_PI * particle.mass);
+
+       // double newest_constant = std::sqrt(M_PI * intensity_2/time_step);
+
+        double new_constant = std::sqrt(M_PI * intensity/time_step) * brownian_motion_multiplier;
+        //std::cout<<"new_constant = "<<new_constant<<std::endl;
+
+        double new_force = new_constant * x_rand * particle.mass;
+       // std::cout<<"new_force = "<<new_force<<std::endl;
+       // std::cout<<" new force = "<<new_force<<std::endl;
+       // std::cout<<" new constant = "<<new_constant<<std::endl;
+       // std::cout<<" newest constant = "<<newest_constant<<std::endl;
+       // std::cout<<" constant = "<<constant<<std::endl;
+        Vector3d thermal_force = {new_constant * x_rand * particle.mass, new_constant * y_rand * particle.mass , 0.0};
+        //std::cout<<" thermal force = "<<thermal_force<<std::endl;
+        //std::cout<<"x rand inside  = "<<x_rand<<std::endl<<"y rand inside = "<<y_rand<<std::endl;
         return thermal_force;
+    }
+
+    std::vector<Vector3d> rotational_thermal_force(std::tuple <Particle&,Particle&,double> particle_pair){
+        Particle& A = std::get<0>(particle_pair);
+        Particle& B = std::get<1>(particle_pair);
+        double radi_sum = std::get<2>(particle_pair);
+        Vector3d trig_angle_A = {std::cos(B.theta), std::sin(B.theta), 0.0};
+        Vector3d F_rot_A = radi_sum * trig_angle_A * A.mass/std::pow(time_step,2);
+        Vector3d trig_angle_B = {std::cos(A.theta), std::sin(A.theta), 0.0};
+        Vector3d F_rot_B = radi_sum * trig_angle_B * B.mass/std::pow(time_step,2);
+        std::vector<Vector3d> rot_result(2);
+        rot_result[0] = F_rot_A;
+        rot_result[1] = F_rot_B;
+        return rot_result;
+    }
+
+    void apply_rotational_noise(Particle& A ,double theta_rand_1){
+        double rotational_diffusion_constant_A = (kB * T)/(8.0 * M_PI * dynamic_viscosity * viscosity_multiplier * std::pow(A.radius,3));
+       // std::cout<<" Dr = "<<rotational_diffusion_constant_A<<std::endl;
+       // std::cout<<"A theta before = "<<A.theta<<std::endl;
+        A.theta += std::sqrt(2.0 * rotational_diffusion_constant_A * time_step) * theta_rand_1;
+       // std::cout<<" A theta middle = "<<A.theta<<std::endl;
+        A.theta = fmod(A.theta,(2.0 * M_PI));
+       // std::cout<<" A theta test = "<<A.theta<<std::endl;
+        if(A.theta <0){
+            A.theta += 2.0 * M_PI;
+        }
+       // std::cout<<" A theta after = "<<A.theta<<std::endl;
+
+
+
+
+
     }
 
     void add_brownian_motion(std::vector<std::tuple <Particle&,Particle&,double> > &connected_particles){
@@ -1135,9 +1667,7 @@ public:
         reset_flags(connected_particles);
     }
 
-
-
-    Vector3d get_my_EHD_force(std::tuple <Particle&,Particle&,double> particle_pair){
+    Vector3d get_my_EHD_force_old(std::tuple <Particle&,Particle&,double> particle_pair){
         Particle& A = std::get<0>(particle_pair);
         Particle& B = std::get<1>(particle_pair);
 
@@ -1146,70 +1676,283 @@ public:
         double r_A_y;
         double r_B_y;
 
-        Vector3d direction = A.position - B.position;
-        for(int i = 0; i<direction.size();i++){
-            direction[i] = std::abs(direction[i]);
-        }
-        double norm = direction.norm();
-        for(int i = 0; i<direction.size();i++){
-            direction[i] = direction[i]/norm;
-        }
+        Vector3d direction = get_amount(A,B);
 
-        double dprod = direction.dot(ex);
-        double theta_angle = std::acos(dprod);
-      //  std::cout<<"theta = "<<theta_angle<<std::endl;
-        //double theta_in_grad = theta_angle * 180.0 / M_PI;
-        double x_amount = std::cos(theta_angle);
-        double y_amount = 1- x_amount;
+        double x_amount = direction[0];
+        double y_amount = direction[1];
+
+        Vector3d displacement = A.position - B.position;
+        r_B   = displacement[0];
+        r_B_y = displacement[1];
+        r_A   = -1.0 * displacement[0];
+        r_A_y = -1.0 * displacement[1];
 
 
-
-
-
-
-
-
-        if(A.position[0] > B.position[0]){
-            r_A =   - (A.radius + B.radius);
-            r_B = (B.radius + A.radius);
-        }else{
-            r_A = (A.radius + B.radius);
-            r_B =  -(B.radius + A.radius);
-        }
-
-        if(A.position[1] > B.position[1]){
-            r_A_y =   - A.radius + B.radius;
-            r_B_y = (B.radius + A.radius);
-        }else{
-            r_A_y = (A.radius + B.radius);
-            r_B_y =  -(B.radius + A.radius);
-        }
-        std::cout<<" x amount = "<<x_amount<<std::endl;
-        std::cout<<" y amount = "<<y_amount<<std::endl;
         double U_EHD_A = get_U_EHD(A,r_A) * x_amount;
         double U_EHD_A_y = get_U_EHD(A,r_A_y) * y_amount;
-        std::cout<<" U A x="<<U_EHD_A<<" with RA = "<<A.radius<<std::endl;
-        std::cout<<" U A y="<<U_EHD_A_y<<" with RA = "<<A.radius<<std::endl;
-       // std::cout<<" U ehd in force = "<<U_EHD_A<<std::endl;
         double U_EHD_B = get_U_EHD(B,r_B) * x_amount;
-        double U_EHD_B_y= get_U_EHD(B,r_B_y) * y_amount;
-        std::cout<<" U B ="<<U_EHD_B<<" with RB = "<<B.radius<<std::endl;
-       // std::cout<<" A velocity inside f ehd ="<<A.velocity<<std::endl;
-        double U_test = (U_EHD_A * A.radius + U_EHD_B * B.radius) / (A.radius + B.radius);
-        std::cout<<std::endl<<" U ="<<U_test<<std::endl<<std::endl;
+        double U_EHD_B_y = get_U_EHD(B,r_B_y) * y_amount;
+        Vector3d U_EHD_A_vec = {U_EHD_A, U_EHD_A_y,0.0};
+        Vector3d U_EHD_B_vec = {U_EHD_B,U_EHD_B_y,0.0};
+
+        //double U_test = (U_EHD_A * x_amount * A.radius + U_EHD_B * x_amount* B.radius) / (A.radius + B.radius);
+        //double U_test_Y = (U_EHD_A_y * y_amount * A.radius + U_EHD_B_y * y_amount* B.radius) / (A.radius + B.radius);
 
         Vector3d F_EHD_A = {6.0 * M_PI * dynamic_viscosity * viscosity_multiplier * A.radius * U_EHD_A,6.0 * M_PI * dynamic_viscosity * viscosity_multiplier * A.radius * U_EHD_A_y, 0.0};
-       // std::cout<<" F EHD a = "<<F_EHD_A<<std::endl;
-        Vector3d F_EHD_B = {6.0 * M_PI * dynamic_viscosity * viscosity_multiplier * B.radius * U_EHD_B,6.0 * M_PI * dynamic_viscosity * viscosity_multiplier * B.radius * U_EHD_B_y,0.0};
-       // std::cout<<" EHD force for particle A with radius = "<<A.radius<<" = "<<F_EHD_A[0]<<std::endl;
-       // std::cout<<" EHD force for particle B with radius = "<<B.radius<<" = "<<F_EHD_B[0]<<std::endl;
+        Vector3d F_EHD_B = {6.0 * M_PI * dynamic_viscosity * viscosity_multiplier * B.radius * U_EHD_B,6.0 * M_PI * dynamic_viscosity * viscosity_multiplier * B.radius * U_EHD_B_y, 0.0};
 
-       // std::cout<<"FA = "<<F_EHD_A<<std::endl<<"FB = "<<F_EHD_B<<std::endl<<"FTOT = "<<F_EHD_A + F_EHD_B<<std::endl;
-       // std::cout<<" F Total= "<<F_EHD_A + F_EHD_B<<std::endl;
+        double radius_of_imaginary_sphere = A.radius + B.radius;
+        double viscosity_constant = 6.0 * M_PI * dynamic_viscosity * viscosity_multiplier * radius_of_imaginary_sphere;
+        //return (U_EHD_A_vec + U_EHD_B_vec) * viscosity_constant;
+
+        return (F_EHD_A + F_EHD_B);
+    }
+
+    Vector3d get_amount(Particle myself, Particle other){
+        /* Vector3d direction = myself.position - other.position;
+         for(int i = 0; i<direction.size();i++){
+             direction[i] = std::abs(direction[i]);
+         }
+         double norm = direction.norm();
+         for(int i = 0; i<direction.size();i++){
+             direction[i] = direction[i]/norm;
+         }
+         double dprod = direction.dot(ex);
+         double theta_angle = std::acos(dprod);
+         double x_amount = (-2.0/M_PI) * theta_angle + 1.0;
+         double y_amount = 1- x_amount;
+         Vector3d amount = {x_amount, y_amount, 0.0};
+         return amount;*/
+
+        Vector3d direction = myself.position - other.position;
+        double norm = direction.norm();
+        Vector3d abs_direction = direction.array().abs();
+        Vector3d norm_dir = abs_direction/norm;
+        return norm_dir;
+    }
+
+    Vector3d get_my_EHD_force(std::tuple <Particle&,Particle&,double> particle_pair){
+        Particle& A = std::get<0>(particle_pair);
+        Particle& B = std::get<1>(particle_pair);
+
+        Vector3d direction_ = A.position - B.position;
+        double norm = direction_.norm();
+        Vector3d abs_direction = direction_.array().abs();
+        Vector3d norm_dir = abs_direction/norm;
+
+        Vector3d direction = norm_dir;
+
+        // a value from 0 to 1 to determine the x -y force split
+        double x_amount = direction[0];
+        double y_amount = direction[1];
+
+        double magnitude_A = get_U_EHD(A, A.radius + B.radius);
+        double magnitude_B = get_U_EHD(B, A.radius + B.radius);
+
+        Vector3d displacement = A.position - B.position;
+        double sign_A_x = -1.0 * std::copysign(1.0,displacement[0]);
+        double sign_A_y = -1.0 * std::copysign(1.0, displacement[1]);
+        double sign_B_x = -1.0 * sign_A_x;
+        double sign_B_y = -1.0 * sign_A_y;
+
+        double U_EHD_A_x = magnitude_A * sign_A_x * x_amount;
+        double U_EHD_A_y = magnitude_A * sign_A_y * y_amount;
+        double U_EHD_B_x = magnitude_B * sign_B_x * x_amount;
+        double U_EHD_B_y = magnitude_B * sign_B_y * y_amount;
+
+
+        Vector3d F_EHD_A = {6.0 * M_PI * dynamic_viscosity * viscosity_multiplier * A.radius * U_EHD_A_x,6.0 * M_PI * dynamic_viscosity * viscosity_multiplier * A.radius * U_EHD_A_y, 0.0};
+        Vector3d F_EHD_B = {6.0 * M_PI * dynamic_viscosity * viscosity_multiplier * B.radius * U_EHD_B_x,6.0 * M_PI * dynamic_viscosity * viscosity_multiplier * B.radius * U_EHD_B_y, 0.0};
+
         return F_EHD_A + F_EHD_B;
     }
 
-    //WRONG
+
+    Matrix3d get_EHD_force_dx(Particle& myself, Particle& other){
+        Vector3d xa = myself.position;
+        Vector3d xb = other.position;
+        double magnitude_A = get_U_EHD(myself, myself.radius + other.radius);
+        double magnitude_B = get_U_EHD(other, myself.radius + other.radius);
+        Vector3d magB = {magnitude_B,magnitude_B,0.0};
+        Vector3d magA = {magnitude_A,magnitude_A,0.0};
+        double rB = other.radius;
+        double rA = myself.radius;
+       /* double c1 = 6.0 * M_PI * dynamic_viscosity * viscosity_multiplier * myself.radius;
+        double c2 = ((beta_ehd * get_c(myself))/(dynamic_viscosity * viscosity_multiplier));
+        Matrix3d amount_matrix;
+        Vector3d amount = get_amount(myself,other);
+        amount_matrix.col(0) = amount;
+        amount_matrix.col(1) = amount;
+        amount_matrix.col(2) = Eigen::VectorXd::Zero(3);
+      //  std::cout<<" amount matrix = "<<amount_matrix<<std::endl;
+
+        Matrix3d f_r_matrix;
+        Vector3d f_r = get_f_r(myself,other);
+        f_r_matrix.col(0) = f_r;
+        f_r_matrix.col(1) = f_r;
+        f_r_matrix.col(2) = Eigen::VectorXd::Zero(3);
+       // std::cout<<" fr matrix = "<<f_r_matrix<<std::endl;
+       // std::cout<<" c1 = "<<c1<<std::endl;
+       // std::cout<<" c2 = "<<c2<<std::endl;
+       // std::cout<<" fr dx = "<<get_f_rA_dxA(myself,other)<<std::endl;
+       // std::cout<<" d amount dx = "<<get_amount_dx(myself,other)<<std::endl;
+
+
+            return c1 * (c2 * amount_matrix.cwiseProduct(get_f_rA_dxA(myself,other))  + c2  * f_r_matrix.cwiseProduct(get_amount_dx(myself,other)));*/
+
+
+       Vector3d t0 = xa -xb;
+       Vector3d t1 = t0.array().sign();
+       double t2 = t0.norm();
+       Vector3d t3 = magB.cwiseProduct(t0);
+       double t4 = 6.0 * M_PI * dynamic_viscosity * viscosity_multiplier;
+       double t5 = std::pow(t2,3);
+       Vector3d t6 = magA.cwiseProduct(t1);
+       Vector3d t7 = t0.array().abs();
+       Matrix3d mat1 = (t3.cwiseProduct(t1)).asDiagonal();
+       Matrix3d mat2 = (t6.cwiseProduct(t1)).asDiagonal();
+
+       Matrix3d dF_A_B_dA;
+        dF_A_B_dA =   ((rB * t4)/t2) * mat1
+                    - ((rB * t4)/t5) * (t3.cwiseProduct(t7)) * t0.transpose()
+                    - ((rA * t4)/t2) * mat2
+                    + ((rA * t4)/t5) * (t6.cwiseProduct(t7)) * t0.transpose();
+
+        return dF_A_B_dA;
+
+
+    }
+
+    Matrix3d get_f_rA_dxA(Particle myself, Particle other){
+       /* Matrix3d d_fr_rA_d_xA;
+        Vector3d xa = myself.position;
+        std::cout<<" xa = "<<xa<<std::endl;
+        Vector3d xb = other.position;
+        std::cout<<" xb = "<<xb<<std::endl;
+        Vector3d t0 = xb - xa;
+        std::cout<<" t0 = "<<t0<<std::endl;
+        Vector3d o_o_z = {1.0,1.0,0.0};
+        std::cout<<" ooz = "<<o_o_z<<std::endl;
+        Vector3d t1 = o_o_z + 1.0/myself.radius  * t0;
+        std::cout<<" t1 = "<<t1<<std::endl;
+        Vector3d t2 = t1.array().square();
+        std::cout<<" t2 = "<<t2<<std::endl;
+        std::cout<<" middle term = "<<t0.cwiseProduct(t2)<<std::endl;
+        std::cout<<" after. array()"<<(t0.cwiseProduct(t2)).array()<<std::endl;
+        std::cout<<" after pow = "<<(t0.cwiseProduct(t2)).array().pow(-(1.0 + 5.0/2.0))<<std::endl;
+        Vector3d t3 = (t0.cwiseProduct(t2)).array().pow(-(1.0 + 5.0/2.0));
+        Vector3d alternative_t3 = {std::pow((t0.cwiseProduct(t2)).array()[0], -(1.0 + 5.0/2.0)), std::pow((t0.cwiseProduct(t2)).array()[1], -(1.0 + 5.0/2.0)), 0.0};
+        std::cout<<" alt t3 = "<<alternative_t3<<std::endl;
+        std::cout<<" t3 = "<<t3<<std::endl;
+        Vector3d term1 = t3.cwiseProduct(t2);
+        std::cout<<" term1 = "<<term1<<std::endl;
+        Vector3d term2 = (t3.cwiseProduct(t0)).cwiseProduct(t1);
+        std::cout<<" term2 = "<<term2<<std::endl;
+        Matrix3d mat1 = term1.asDiagonal();
+        std::cout<<" mat1 = "<<mat1<<std::endl;
+        Matrix3d mat2 = term2.asDiagonal();
+        std::cout<<" mat2 = "<<mat2<<std::endl;
+        Matrix3d result = ((15.0/(4.0 * myself.radius)) * mat1) + ((30.0/(std::pow(myself.radius,2) * 4.0)) * mat2);
+        std::cout<<" result = "<<result<<std::endl;
+        return result;*/
+
+        Matrix3d d_fr_rA_d_xA;
+        Vector3d xa = myself.position;
+      //  std::cout<<" xa = "<<xa<<std::endl;
+        Vector3d xb = other.position;
+      //  std::cout<<" xb = "<<xb<<std::endl;
+        Vector3d t0 = xb - xa;
+     //   std::cout<<" t0 = "<<t0<<std::endl;
+        Vector3d o_o_z = {1.0,1.0,0.0};
+     //   std::cout<<" ooz = "<<o_o_z<<std::endl;
+        Vector3d rhs = (1.0/myself.radius  * t0).array().square();
+        Vector3d t1 = o_o_z + rhs;
+      //  std::cout<<" t1 = "<<t1<<std::endl;
+
+        Vector3d  middle_term = {std::pow(t1[0], -(1.0 + 5.0/2.0)),std::pow(t1[1], -(1.0 + 5.0/2.0)),0.0};;
+     //   std::cout<<"middl term = "<<middle_term<<std::endl;
+
+        Matrix3d mat1 = ( (t0.cwiseProduct(middle_term)).cwiseProduct(t0) ).asDiagonal();
+     //   std::cout<<"mat1 = "<<mat1<<std::endl;
+        Vector3d term =  {std::pow(t1[0], -(5.0/2.0)),std::pow(t1[1], -(5.0/2.0)),0.0};
+     //   std::cout<<"term = "<<term<<std::endl;
+        Matrix3d mat2 = term.asDiagonal();
+      //  std::cout<<"mat2= "<<mat2<<std::endl;
+        Matrix3d result = 30.0/(std::pow(myself.radius,3) * 4) * mat1 - (3.0/(2.0 * myself.radius)) * mat2;
+
+      //  std::cout<<" result = "<<result<<std::endl;
+        return result;
+    }
+
+    //dfr_A_dxb = - dfr_A_dxA = - get_f_r_A_dxA(A,B)
+    //dfr_B_dxb = get_f_r_A_dxA(B,A)
+    //dfr_B_dxA = - dfr_B_dxb
+
+
+
+    Matrix3d get_amount_dx(Particle myself, Particle other){
+        Vector3d e_x = {1.0,0.0,0.0};
+        Vector3d xa = myself.position;
+        Vector3d xb = other.position;
+        Vector3d t0 = xa - xb;
+        double t1 = t0.norm();
+     //   std::cout<<" t1= "<<t1<<std::endl;
+       /* Vector3d t2 = {std::abs(t0[0]), std::abs(t0[1]),0.0};
+        std::cout<<"t2 = "<<t2<<std::endl;
+        double tmp = t2[0];
+        double t3 = ex.transpose() * t2;
+        std::cout<<" t3= "<<t3<<std::endl;
+        double t4 = -0.5;
+        double test2 = (t2.dot(ex))/t1;
+        std::cout<<"test2="<<test2<<std::endl;
+        Vector3d sign_of_t0 = {std::copysign(1.0,t0[0]), std::copysign(1.0,t0[1]), 0.0};
+        std::cout<<" sign of t0="<<sign_of_t0<<std::endl;
+        Vector3d d_amount_x_d_xA = (-2.0 * std::pow((1.0 - std::pow(t3/t1,2)),t4) * t3)/(std::pow(t1,3) * M_PI) * t0
+                + (( std::pow( 1.0 - std::pow( (( t2.dot(e_x))/t1) ,2.0) ,t4 ) ) * 2.0 )/(M_PI * t1) * e_x.cwiseProduct(sign_of_t0);
+        std::cout<<"damount = "<<d_amount_x_d_xA<<std::endl;
+        std::cout<<" t3/t1 = "<<t3/t1<<std::endl;
+        std::cout<<" first term="<<(-2.0 * std::pow((1.0 - std::pow(t3/t1,2)),t4) * t3)/(std::pow(t1,3)* M_PI)<<std::endl;
+        std::cout<<" second term = "<<(( std::pow( 1.0 - std::pow( (( t2.dot(e_x))/t1) ,2.0) ,t4 ) ) * 2.0 )/(M_PI * t1) * e_x.cwiseProduct(sign_of_t0)<<std::endl;
+        std::cout<<" first power = "<<std::pow((1.0 - std::pow(t3/t1,2)),t4)<<std::endl;
+        std::cout<<" second power ="<<std::pow(t1,3)<<std::endl;
+        std::cout<<" third power = "<<std::pow( 1.0 - std::pow( (( t2.dot(e_x))/t1) ,2.0) ,t4 )<<std::endl;
+        std::cout<<" cwise = "<<e_x.cwiseProduct(sign_of_t0)<<std::endl;
+        */
+
+
+       /* Matrix3d amount_dx;
+        amount_dx.row(0) = d_amount_x_d_xA;
+        amount_dx.row(1) = -1.0 *d_amount_x_d_xA;
+        amount_dx.row(2) = Eigen::VectorXd::Zero(3);
+        return amount_dx;*/
+        Vector3d sign_t0 = {std::copysign(1.0,t0[0]), std::copysign(1.0,t0[1]), 0.0};
+        Matrix3d mat1 = sign_t0.asDiagonal();
+        Vector3d abs_t0 = {std::abs(t0[0]),std::abs(t0[1]),0.0};
+       return (1.0/t1) * mat1 - (1.0/std::pow(t1,3)) * abs_t0 * t0.transpose();
+    }
+    //amountdxA = get_amount_dx(A,B)
+    //amount dXb = - amountdXA = get_amount_dx(B,A)
+
+
+
+
+
+    double get_c(Particle particle){
+        double w_bar = (lower_electrode.frequency * get_H()) /( (1.0 /get_debye_length()) * get_ion_diffusivity());
+        // std::cout<<"W bar = "<<w_bar<<std::endl;
+
+        double w_bar_2 = std::pow(w_bar,2);
+        return  relative_permittivity * vacuum_permittivity *(1.0/get_debye_length()) * get_H() * std::pow((lower_electrode.peak_voltage/(2.0 * get_H())),2)
+                    * ((get_K1(particle) + w_bar * get_K2(particle))/(1.0 + w_bar_2) );
+    }
+
+    Vector3d get_f_r(Particle myself, Particle other){
+        Vector3d ones = Eigen::VectorXd::Ones(3);
+        Vector3d term = ((other.position - myself.position)/(myself.radius)).array().square();
+        Vector3d term2 = (ones + term).array().pow(-5.0/2.0);
+        return (3.0/(2.0 * myself.radius)) * (other.position - myself.position).cwiseProduct(term2);
+    }
+
     double get_U_EHD(Particle particle,double r){ //deleted vacuum permittivity
 
         //physrevlet paper
@@ -1250,7 +1993,7 @@ public:
         return (lower_electrode.frequency * get_H()) /(get_debye_length() * get_ion_diffusivity());
     }
 
-    //WRONG
+
     double get_ion_diffusivity(){
       //  std::cout<<" D = "<<(kB * T)/( 6.0 * M_PI * (dynamic_viscosity * viscosity_multiplier) * particle.radius)<<std::endl;
         //return (kB * T)/( 6.0 * M_PI * (dynamic_viscosity * viscosity_multiplier) * particle.radius);
@@ -1261,7 +2004,7 @@ public:
         return 0.5 * (molarity * std::pow(K_plus_charge,2) + molarity * std::pow(CL_minus_charge,2));
     }
 
-    //WRONG
+
     double get_debye_length(){
         // std::cout<<" debye length = "<<2.0 * particle.charge * std::sqrt((M_PI * particle.density)/(kB * T))<<std::endl;
         //  return 2.0 * particle.charge * std::sqrt((M_PI * particle.density)/(kB * T));
@@ -1272,21 +2015,32 @@ public:
         // return 150 * std::pow(10,-9);
     }
 
+    //from conductivity paper
     double get_diffuse_layer_conductance(Particle particle){
-        double m = std::pow((gas_constant * T) / faraday_constant, 2) * (2.0 * relative_permittivity)/(3.0 * dynamic_viscosity * get_ion_diffusivity());
-       // std::cout<<"m= "<<m<<std::endl;
-        double t1 = (4.0 * std::pow(faraday_constant ,2)* molarity * (1.0 + 3.0 * m))/(gas_constant * T * (1.0/get_debye_length()));
-       // std::cout<<"t1= "<<t1<<std::endl;
-       // std::cout<<" cosh = "<<cosh((elementary_charge * particle.zeta_potential * std::pow(10,-3))/(2.0 * kB * T))<<std::endl;
+        double m = std::pow((gas_constant * T) / faraday_constant, 2) * (2.0 * relative_permittivity * vacuum_permittivity)/(3.0 * dynamic_viscosity * get_ion_diffusivity());
+      //  std::cout<<"m= "<<m<<std::endl;
+        double t1 = (4.0 * std::pow(faraday_constant ,2)* molarity * get_ion_diffusivity() * (1.0 + 3.0 * m))/(gas_constant * T * (1.0/get_debye_length()));
+      //  std::cout<<"t1= "<<t1<<std::endl;
+      //  std::cout<<" cosh = "<<cosh((elementary_charge * particle.zeta_potential * std::pow(10,-3))/(2.0 * kB * T))<<std::endl;
         double t2 = cosh((elementary_charge * particle.zeta_potential* std::pow(10,-3))/(2.0 * kB * T)) - 1.0;
-       // std::cout<<"t2= "<<t2<<std::endl;
+       // std::cout<<" zeta = "<<particle.zeta_potential<<std::endl;
+      //  std::cout<<"t2= "<<t2<<std::endl;
+
         return t1 * t2;
 
     }
 
     double get_conductivity(Particle particle){
      //   std::cout<<" get conductivity = "<<(particle.stern_layer_conductance / particle.radius) + 2.0 * (get_diffuse_layer_conductance(particle)/particle.radius)<<std::endl;
-        return 2.0 *  (particle.stern_layer_conductance / particle.radius) /*+ 2.0 * (get_diffuse_layer_conductance(particle)/particle.radius)*/;
+     double diffusive_layer_conductance = get_diffuse_layer_conductance(particle);
+     double stern_layer_conductance = particle.stern_layer_conductance;
+     double particle_radius = particle.radius;
+    // std::cout<<" diffuse layer conductance = "<<diffusive_layer_conductance<<std::endl;
+   //  std::cout<<" stern layer conductance = "<<stern_layer_conductance<<std::endl;
+   //  std::cout<<" mass = "<<particle.mass<<std::endl;
+   //  std::cout<<" conductivity w d = "<<2.0 *  (particle.stern_layer_conductance / particle.radius) + 2.0 * (get_diffuse_layer_conductance(particle)/particle.radius)<<std::endl;
+   //  std::cout<<" conductivity w.o d = "<<2.0 *  (particle.stern_layer_conductance / particle.radius)<<std::endl;
+        return 2.0 *  (particle.stern_layer_conductance / particle.radius) + 2.0 * (get_diffuse_layer_conductance(particle)/particle.radius);
     }
 
     double get_Eo(){
@@ -1309,7 +2063,7 @@ public:
         double epsilon_m = relative_permittivity* vacuum_permittivity;
         double up = w_2 * (epsilon_p - epsilon_m) * (epsilon_p + 2.0 * epsilon_m) + (sigma_p - sigma_m) * (sigma_p + 2.0 * sigma_m);
         double down = w_2 * std::pow((epsilon_p + 2.0 * epsilon_m),2) + std::pow((sigma_p+ 2.0 * sigma_m),2);
-        std::cout<<" K1 = "<<up/down<<std::endl;
+    //    std::cout<<" K1 = "<<up/down<<std::endl;
         return up/down;
 
 
@@ -1332,7 +2086,7 @@ public:
         double up = w * (sigma_m - sigma_p) * (epsilon_p + 2.0*epsilon_m) - (epsilon_p - epsilon_m) * (sigma_p + 2.0 * sigma_m);
         double down = w_2 * std::pow((epsilon_p + 2.0 * epsilon_m),2) + std::pow((sigma_p + 2.0 * sigma_m),2);
         //return ( w * (sigma_m - sigma_p)*(epsilon_p + 2.0 * epsilon_m) - (epsilon_p - epsilon_m)*(sigma_p + 2.0 * sigma_m)   )/(w_2 * std::pow((epsilon_p + 2.0 * epsilon_m),2) + std::pow((sigma_p + 2.0 * sigma_m),2));
-        std::cout<<" K2 = "<<up/down<<std::endl;
+     //   std::cout<<" K2 = "<<up/down<<std::endl;
         return up/down;
     }
 
@@ -1347,7 +2101,7 @@ public:
 
     //EXPERIMENTAL STUFF FOR LATER
 
-    void check_Boundaries(Particle &particle){
+  /*  void check_Boundaries(Particle &particle){
 
             if(particle.position[0] + particle.radius >= Boxcenter[0] + Boxsize[0]/2 - xbuffer){
                 particle.velocity[0] = -1 *particle.velocity[0];
@@ -1362,7 +2116,8 @@ public:
             }
 
             if(particle.position[1]- particle.radius <= Boxcenter[1] - Boxsize[1]/2 + ybuffer){
-                particle.velocity[1] = -1 *particle.velocity[1];
+                particle.velocity[1] = -1 *particle.
+                [1];
             }
 
     }
@@ -1403,7 +2158,7 @@ public:
         reset_flags(connected_particles);
     }
 
-
+*/
 
 
 
