@@ -60,7 +60,7 @@ public:
     double K_plus_charge = 1.0;
     double CL_minus_charge = -1.0;
     double elementary_charge = 1.60217662 * std::pow(10,-19);
-    double molarity = std::pow(10,-5) * std::pow(10,-3); // convert from mol/L to mol/m^3
+    double molarity = std::pow(10,-5) * std::pow(10,3); // should be 10^3 //WORK IN PROGRESS
     double NA = 6.02214076  * std::pow(10,23);
     double D_K_plus = 1.960 * std::pow(10,-9);
     double D_Cl_minus = 2.030 * std::pow(10,-9);
@@ -77,14 +77,14 @@ public:
     double gas_constant = 8.31446261815324;
     double faraday_constant = 9.64853321233100184 * std::pow(10.0,4);
 
-    double vacuum_permittivity = 8.8541878176 * std::pow(10.0,-12);
-    double relative_permittivity = 80.2; //water at room temperatur
+    double vacuum_permittivity = 8.8541878176 * std::pow(10.0,-12.0);
+    double relative_permittivity = 78.0; //water at room temperatur
 
-    double conductivity = 0.0015 * std::pow(10.0,-1);
+    double conductivity =  2.0 * std::pow(10.0,-4.0);// 0.0015 * std::pow(10.0,-1); //WORK IN PROGRESS //15 * std::pow(10.0,-4.0)
     double density = 997.0;
 
     double T = 293; //room temperatur
-    double kB = 1.38 * std::pow(10.0,-23); //Boltzmann constant
+    double kB = 1.38064852 * std::pow(10.0,-23); //Boltzmann constant
     Vector2d force_damper;
 
     double noise_damper = 4;
@@ -96,9 +96,9 @@ public:
     double xbuffer, ybuffer, zbuffer = 5.0;
 
     //SPRING STUFF//
-    double stiffnes_constant = 4000.0;
+    double stiffnes_constant = 100.0;
     //double rest_length = 2 * Particle::radius_for_spring;
-    double damping_constant = 50.0;
+    double damping_constant = 0.0;
 
 
     std::vector<double> velocities_over_time1_in_x;
@@ -116,6 +116,12 @@ public:
     std::vector<double> position_vec_over_time_in_y_3;
     std::vector<double> position_vec_over_time_in_x_4;
     std::vector<double> position_vec_over_time_in_y_4;
+
+    std::vector<double> com_x_vector;
+    std::vector<double> com_y_vector;
+    std::vector<double> dumbbell_index_vector;
+    std::vector<double> time_passed_vector;
+    double total_time_passed = 0.0;
 
 
     std::vector<double> rotator_position_vec_over_time_in_x;
@@ -161,11 +167,35 @@ public:
     std::vector<double> velocities_2;
     std::vector<double> frequencies;
     std::vector<double> Efields;
+    std::vector<double> sigma_m;
+    std::vector<double> sigma_p;
+    std::vector<double> epsilon_m;
+    std::vector<double> epsilon_p;
+    std::vector<double> R_A;
+    double last_sigma_m = -1.0;
+    double last_sigma_p = -1.0;
+    double last_epsilon_m = -1.0;
+    double last_epsilon_p = -1.0;
+    double last_R_A = -1.0;
+    std::vector<double> U_sm;
+    std::vector<double> U_sp;
+    std::vector<double> U_em;
+    std::vector<double> U_ep;
+    std::vector<double> U_ra;
+
 
     std::vector<double> amount_x;
     std::vector<double> amount_y;
     std::vector<double> amount_z;
     std::vector<double> direction_norm;
+
+    std::vector<double> U_vec;
+    std::vector<double> UA_vec;
+    std::vector<double> UB_vec;
+    std::vector<double> frequencies2;
+
+    std::vector<double> Im_CM;
+    std::vector<double> Re_CM;
     double last_frequency = 0.0;
     double last_peak_voltage = 0.0;
 
@@ -217,6 +247,10 @@ public:
     void UPDATE_SYSTEM_NEW(std::vector<std::tuple <Particle&,Particle&,double> > &connected_particles){
 
       //  std::cout<<" test 1"<<std::endl;
+      std::cout<<" total time passed = "<<total_time_passed<<std::endl;
+      if(total_time_passed >= 50 ){
+          std::cout<<std::endl<<" =========================== "<<std::endl<<std::endl<<" Time has reached experimental duration of 50 second"<<std::endl<<std::endl<<"==========================="<<std::endl;
+      }
 
         current_thermal_force = safety  * get_current_thermal_force(connected_particles); //make sure to only call it once a time step due to the random nature of the force.
         //std::cout<<"current thermal force x = "<<current_thermal_force[0]<<std::endl<<"current thermal force x2 = "<<current_thermal_force[3]<<std::endl;
@@ -275,15 +309,15 @@ public:
            // std::cout<<" test 14"<<std::endl;
             for(int i = 0; i<connected_particles.size(); i++){
                 //dimer_tracers_vector.push_back(sdt::vector<Vector3d>)
-                std::cout<<"test 1";
+
                 std::tuple<Particle&, Particle&,double> particle_pair = connected_particles[i];
-                std::cout<<"test 2";
+
                 Vector3d com = Eigen::VectorXd::Zero(3);
-                std::cout<<"test 3";
+
                 com = (std::get<0>(particle_pair).position + std::get<1>(particle_pair).position)/2.0;
-                std::cout<<"test 4";
+
                 dimer_tracers_vector[i].push_back(com);
-                std::cout<<"test 5";
+
 
 
             }
@@ -329,7 +363,7 @@ public:
         VectorXd M_a = mass_matrix * (x_t_plus_1_old  - 2.0 * position_vector + position_vector_minus_1);
         VectorXd F_minus_M_time_a = F_x - M_a;
         F_ma.push_back(F_minus_M_time_a.norm());
-        std::cout<<" test 22"<<std::endl;
+
 
 
 
@@ -356,6 +390,7 @@ public:
        // std::cout<<" test 27"<<std::endl;
 
         generate_data_for_v_w_plot(connected_particles);
+        generate_dielectric_data(connected_particles);
         //std::cout<<" test 28"<<std::endl;
 
         apply_wind_shadow(connected_particles);
@@ -363,6 +398,13 @@ public:
        // std::cout<<" test 29"<<std::endl;
 
        // dissolve(connected_particles,0.1);
+
+       generate_curvature_data(connected_particles);
+
+        if(safety){
+           total_time_passed += time_step;
+        }
+
 
     }
 
@@ -654,9 +696,54 @@ public:
         Particle& A = std::get<0>(pair);
         double velocity = A.velocity[0];
 
+        Particle& B = std::get<1>(connected_particles[0]);
+
+        double magnitude_A = get_U_EHD(A, std::get<2>(pair));
+        double magnitude_B = get_U_EHD(B, std::get<2>(pair));
+
+        Vector3d displacement_for_B = (A.position - B.position).normalized();
+        Vector3d displacement_for_A = (B.position - A.position).normalized();
+        Vector3d F_A = magnitude_B * displacement_for_B * 6 * M_PI *  dynamic_viscosity * viscosity_multiplier * A.radius;
+        Vector3d F_B = magnitude_A * displacement_for_A * 6 * M_PI *  dynamic_viscosity * viscosity_multiplier * B.radius;
+
+        Vector3d U_A = magnitude_A * displacement_for_A;
+        Vector3d U_B = magnitude_B * displacement_for_B;
+       /* Vector3d direction_ = A.position - B.position;
+        double norm = direction_.norm();
+        Vector3d abs_direction = direction_.array().abs();
+        Vector3d norm_dir = abs_direction/norm;
+        Vector3d direction = norm_dir;
+        // a value from 0 to 1 to determine the x -y force split
+        double x_amount = direction[0];
+        double y_amount = direction[1];
+        double magnitude_A = get_U_EHD(A, A.radius + B.radius);
+        double magnitude_B = get_U_EHD(B, A.radius + B.radius);
+        Vector3d displacement = A.position - B.position;
+        double sign_A_x = -1.0 * std::copysign(1.0,displacement[0]);
+        double sign_A_y = -1.0 * std::copysign(1.0, displacement[1]);
+        double sign_B_x = -1.0 * sign_A_x;
+        double sign_B_y = -1.0 * sign_A_y;
+        double U_EHD_A_x = magnitude_A * sign_A_x * x_amount;
+        double U_EHD_A_y = magnitude_A * sign_A_y * y_amount;
+        double U_EHD_B_x = magnitude_B * sign_B_x * x_amount;
+        double U_EHD_B_y = magnitude_B * sign_B_y * y_amount;
+        Vector3d U_A = {U_EHD_A_x, U_EHD_A_y,0.0};
+        Vector3d U_B = {U_EHD_B_x,U_EHD_B_y,0.0};*/
+        Vector3d U = (U_B * A.radius + U_A * B.radius)/(A.radius + B.radius);
+        std::cout<<" U according to eq. 2 = "<<U<<std::endl;
+        double RE_CM = get_K1(A);
+        double IM_CM = get_K2(A);
+
+
         if(!(last_frequency == lower_electrode.frequency) && lower_electrode.peak_voltage>= 0.0001 && safety){
             velocities.push_back(velocity);
             frequencies.push_back(lower_electrode.frequency);
+            U_vec.push_back(U[0]);
+            UA_vec.push_back(U_A[0]);
+            UB_vec.push_back(U_B[0]);
+            frequencies2.push_back(lower_electrode.frequency);
+            Re_CM.push_back(RE_CM);
+            Im_CM.push_back(IM_CM);
         }
         last_frequency = lower_electrode.frequency;
 
@@ -667,8 +754,64 @@ public:
         last_peak_voltage = lower_electrode.peak_voltage;
     }
 
+    void generate_curvature_data(std::vector<std::tuple <Particle&,Particle&,double> > &connected_particles){
+        for(int i = 0; i<connected_particles.size(); i++){
+            std::tuple <Particle&,Particle&,double> particle_pair = connected_particles[i];
+            Particle A = std::get<0>(particle_pair);
+            Particle B = std::get<1>(particle_pair);
+            double com_x;
+            double com_y;
+            if( A.radius > B.radius){
+                 com_x = (A.position[0] /*+ B.position[0]*/) /** 0.5*/;
+                 com_y = (A.position[1] /*+ B.position[1]*/) /** 0.5*/;
+            }else{
+                com_x = (B.position[0] /*+ B.position[0]*/) /** 0.5*/;
+                com_y = (B.position[1] /*+ B.position[1]*/) /** 0.5*/;
+            }
 
+            int pair_index = i;
+            com_x_vector.push_back(com_x);
+            com_y_vector.push_back(com_y);
+            dumbbell_index_vector.push_back(pair_index);
+            time_passed_vector.push_back(total_time_passed);
+        }
 
+    }
+
+    void generate_dielectric_data(std::vector<std::tuple <Particle&,Particle&,double> > &connected_particles){
+        Particle A = std::get<0>(connected_particles[0]);
+        double U_A = get_U_EHD(A, std::get<2>(connected_particles[0]));
+        double current_sigma_p = get_conductivity(A);
+        if(!(last_sigma_m == conductivity)){
+            sigma_m.push_back(conductivity);
+            U_sm.push_back(U_A);
+        }
+        last_sigma_m = conductivity;
+
+        if(!(last_sigma_p == current_sigma_p)){
+            sigma_p.push_back(current_sigma_p);
+            U_sp.push_back(U_A);
+        }
+        last_sigma_p = current_sigma_p;
+
+        if(!(last_epsilon_m == relative_permittivity)){
+            epsilon_m.push_back(relative_permittivity);
+            U_em.push_back(U_A);
+        }
+        last_epsilon_m = relative_permittivity;
+
+        if(!(last_epsilon_p == A.permittivity)){
+            epsilon_p.push_back(A.permittivity);
+            U_ep.push_back(U_A);
+        }
+        last_epsilon_p = A.permittivity;
+
+        if(!(last_R_A == A.radius)){
+            R_A.push_back(A.radius);
+            U_ra.push_back(U_A);
+        }
+        last_R_A = A.radius;
+    }
 
 
 
@@ -806,6 +949,7 @@ public:
             }
         }
         reset_flags(connected_particles);
+        //std::cout<<" drag occlusoin factor vector"<<std::endl<<drag_occlusion_factor_vector<<std::endl;
         return current_friction_force/*.cwiseProduct(drag_occlusion_factor_vector)*/;
     }
 
@@ -1169,7 +1313,7 @@ public:
             //std::tuple<Particle&,Particle&,double> particle_pair_tmp(A_tmp,B_tmp,std::get<2>(particle_pair));
 
             //Matrix3d current_spring_force_dx = NEW_get_damped_spring_force_dXA_without_damping(particle_pair_tmp);
-            Matrix3d current_EHD_force_A_dx = get_EHD_force_dx(A_tmp,B_tmp);
+            Matrix3d current_EHD_force_A_dx = get_EHD_force_dx(A_tmp,B_tmp,std::get<2>(particle_pair));
             //Matrix3d current_EHD_force_B_dx = get_EHD_force_dx(B_tmp,A_tmp);
           /*  Matrix3d current_EHD_force_B_dx = -1.0 * current_EHD_force_A_dx;
 
@@ -1234,7 +1378,7 @@ public:
                 int sign_of_other_center = std::copysign(1.0, value_of_other_center);
                // std::cout << "sign_of_other_center" << sign_of_other_center << std::endl;
 
-                if (sign_of_known_point == sign_of_other_center) {
+                if (std::copysign(1.0,A.velocity.dot((B.position - A.position))) > 0.0) {
                   //  std::cout << "true" << std::endl;
                     Vector2d A_to_B = {B.position[0] - A.position[0], B.position[1] - A.position[1]};
                     //A_to_B.normalize();
@@ -1248,7 +1392,7 @@ public:
                   //  std::cout << "angle" << angle << std::endl;
                     double factor = std::sin(angle); //between 0 and 1
                   //  std::cout << "factor" << factor << std::endl;
-                    double reduce_by = (1.0 - ((2.0 * B.radius * factor) / (2.0 * A.radius)));
+                    double reduce_by = (1.0 - ((2.0 * std::min(B.radius,A.radius) * factor) / (2.0 * A.radius)));
                   //  std::cout << "reduce_by" << reduce_by << std::endl;
                     drag_occlusion_factor_vector[A.index] *= reduce_by;
                     drag_occlusion_factor_vector[A.index + 1] *= reduce_by;
@@ -1295,14 +1439,14 @@ public:
                         (A.position[1] - point_on_line_1_B[1]) * (point_on_line_2_B[0] - point_on_line_1_B[0]);
                 int sign_of_other_center_B = std::copysign(1.0, value_of_other_center_B);
 
-                if (sign_of_known_point_B == sign_of_other_center_B) {
+                if (/*sign_of_known_point_B == sign_of_other_center_B*/ std::copysign(1.0,B.velocity.dot((A.position - B.position))) > 0.0) {
                     Vector2d B_to_A = {A.position[0] - B.position[0], A.position[1] - B.position[1]};
                     B_to_A.normalize();
                     line_vector_B.normalize();
                     double norm_prod_B = B_to_A.norm() * line_vector_B.norm();
                     double angle_B = std::acos((line_vector_B.dot(B_to_A)) / norm_prod_B); //should be bewteen 0 and pi
                     double factor_B = std::sin(angle_B); //between 0 and 1
-                    double reduce_by_B = (1.0 - ((2.0 * A.radius * factor_B) / (2.0 * B.radius)));
+                    double reduce_by_B = (1.0 - ((2.0 * std::min(A.radius,B.radius) * factor_B) / (2.0 * B.radius)));
                     drag_occlusion_factor_vector[B.index] *= reduce_by_B;
                     drag_occlusion_factor_vector[B.index + 1] *= reduce_by_B;
                     drag_occlusion_factor_vector[B.index + 2] *= reduce_by_B;
@@ -1330,7 +1474,7 @@ public:
 
     VectorXd get_g_with_drag(VectorXd x, std::vector<std::tuple <Particle&,Particle&,double> > &connected_particles){
 
-        VectorXd F_x = get_current_spring_force(connected_particles,x) - safety *get_current_friction_force(connected_particles,x)/* + safety *electricalfield_force_vector */+ safety *get_current_EHD_force(connected_particles,x) + safety *current_thermal_force /*+ safety * current_rotational_thermal_force*/;
+        VectorXd F_x = get_current_spring_force(connected_particles,x) + safety *(-1.0 *get_current_friction_force(connected_particles,x))/* + safety *electricalfield_force_vector */+ safety *get_current_EHD_force(connected_particles,x) + safety *current_thermal_force /*+ safety * current_rotational_thermal_force*/;
 
 
 
@@ -1745,30 +1889,81 @@ public:
         // a value from 0 to 1 to determine the x -y force split
         double x_amount = direction[0];
         double y_amount = direction[1];
+        double distance = (A.position - B.position).norm();
 
-        double magnitude_A = get_U_EHD(A, A.radius + B.radius);
-        double magnitude_B = get_U_EHD(B, A.radius + B.radius);
+        double magnitude_A = get_U_EHD(A, std::get<2>(particle_pair));
+       // magnitude_A = 10 * std::pow(10,-6.0); //hardcoded
+        std::cout<<" U A = "<<magnitude_A<<" A has radius "<<A.radius<<std::endl;
+        double magnitude_B = get_U_EHD(B, std::get<2>(particle_pair));
+       // magnitude_B = 1.0 * std::pow(10,-6); //hardcoded
+        std::cout<<" U B = "<<magnitude_B<<" B has radius "<<B.radius<<std::endl;
 
-        Vector3d displacement = A.position - B.position;
+        Vector3d displacement_for_B = (A.position - B.position).normalized();
+        Vector3d displacement_for_A = (B.position - A.position).normalized();
+
+        std::cout<<" UB with direction  = "<<magnitude_B * displacement_for_B<<std::endl;
+        std::cout<<" UA with direction  = "<<magnitude_A * displacement_for_A<<std::endl;
+
+
+        Vector3d F_A = magnitude_B * displacement_for_B * 6 * M_PI *  dynamic_viscosity * viscosity_multiplier * A.radius;
+        Vector3d F_B = magnitude_A * displacement_for_A * 6 * M_PI *  dynamic_viscosity * viscosity_multiplier * B.radius;
+        return F_A + F_B;
+
+      /* Vector3d displacement = A.position - B.position;
+       double x_amount = get_amount(A,B)[0];
+       double y_amount = get_amount(A,B)[1];
+
+       double magnitude_A = get_U_EHD(A,A.radius + B.radius);
+       double magnitude_B = get_U_EHD(B,A.radius + B.radius);
+
         double sign_A_x = -1.0 * std::copysign(1.0,displacement[0]);
         double sign_A_y = -1.0 * std::copysign(1.0, displacement[1]);
         double sign_B_x = -1.0 * sign_A_x;
         double sign_B_y = -1.0 * sign_A_y;
+
+
 
         double U_EHD_A_x = magnitude_A * sign_A_x * x_amount;
         double U_EHD_A_y = magnitude_A * sign_A_y * y_amount;
         double U_EHD_B_x = magnitude_B * sign_B_x * x_amount;
         double U_EHD_B_y = magnitude_B * sign_B_y * y_amount;
 
+        double Ux = (U_EHD_A_x * B.radius + U_EHD_B_x * A.radius)/(A.radius + B.radius);
+        double Uy = (U_EHD_A_y * B.radius + U_EHD_B_y * A.radius)/(A.radius + B.radius);
 
-        Vector3d F_EHD_A = {6.0 * M_PI * dynamic_viscosity * viscosity_multiplier * A.radius * U_EHD_A_x,6.0 * M_PI * dynamic_viscosity * viscosity_multiplier * A.radius * U_EHD_A_y, 0.0};
-        Vector3d F_EHD_B = {6.0 * M_PI * dynamic_viscosity * viscosity_multiplier * B.radius * U_EHD_B_x,6.0 * M_PI * dynamic_viscosity * viscosity_multiplier * B.radius * U_EHD_B_y, 0.0};
+        Vector3d F_EHD_A = {6.0 * M_PI * dynamic_viscosity * viscosity_multiplier * B.radius * U_EHD_B_x,6.0 * M_PI * dynamic_viscosity * viscosity_multiplier * B.radius * U_EHD_B_y, 0.0};
+        Vector3d F_EHD_B = {6.0 * M_PI * dynamic_viscosity * viscosity_multiplier * A.radius * U_EHD_A_x,6.0 * M_PI * dynamic_viscosity * viscosity_multiplier * A.radius * U_EHD_A_y, 0.0};
 
-        return F_EHD_A + F_EHD_B;
+        return F_EHD_A + F_EHD_B;*/
+
+    }
+
+    Matrix3d get_EHD_force_dx(Particle& myself, Particle& other, double r){
+        Vector3d xa = myself.position;
+        double RA = myself.radius;
+        Vector3d xb = other.position;
+        double RB = other.radius;
+        double UA = get_U_EHD(myself, r) * -1.0;
+        double UB = get_U_EHD(other, r) * -1.0;
+        Vector3d t0 = xb -xa;
+        double t1 = t0.norm();
+        Vector3d t2 = xa-xb;
+        double t3 = t2.norm();
+        Matrix3d Identity = Eigen::MatrixXd::Identity(3,3);
+        Identity.row(2).setZero();
+        Identity.col(2).setZero();
+        double constant = 6.0 * M_PI * dynamic_viscosity * viscosity_multiplier;
+        Matrix3d result = ((RA * UB * constant)/(std::pow(t1,3.0))) * t0 * t0.transpose()
+                - ((RA * UB * constant)/t1) * Identity
+                - ((RB * UA * constant)/(std::pow(t3,3.0))) * t2 * t2.transpose()
+                + ((RB * UA * constant)/t3) * Identity;
+
+        return result;
+
     }
 
 
-    Matrix3d get_EHD_force_dx(Particle& myself, Particle& other){
+    Matrix3d get_EHD_force_dx_old_old(Particle& myself, Particle& other){
         Vector3d xa = myself.position;
         Vector3d xb = other.position;
         double magnitude_A = get_U_EHD(myself, myself.radius + other.radius);
@@ -1821,6 +2016,52 @@ public:
         return dF_A_B_dA;
 
 
+    }
+
+    Matrix3d get_EHD_force_old(Particle& myself, Particle& other){
+       Matrix3d result;
+       double constant = -1.0 * 6.0 * M_PI * beta_ehd;
+       Matrix3d dT1_dxa;
+       Matrix3d dT2_dxa;
+       Vector3d xa = myself.position;
+       Vector3d xb = other.position;
+       double RA = myself.radius;
+
+       double RB = other.radius;
+       double CA = get_c(myself);
+       std::cout<<" CA = "<<CA<<std::endl;
+       double CB = get_c(other);
+        std::cout<<" CB = "<<CB<<std::endl;
+       Vector3d t0 = xa -xb;
+        std::cout<<" t0 = "<<t0<<std::endl;
+       double t1 = t0.norm();
+        std::cout<<" t1 = "<<t1<<std::endl;
+       Vector3d t2 = xb -xa;
+        std::cout<<" t2 = "<<t2<<std::endl;
+       double t3 = 1.0 + std::pow(t1,2)/std::pow(RB,2);
+        std::cout<<" t3 = "<<t3<<std::endl;
+       double t5 = t2.norm();
+        std::cout<<" t5 = "<<t5<<std::endl;
+       double t7 = std::pow(t3, -5.0/2.0);
+        std::cout<<" t7 = "<<t7<<std::endl;
+        dT1_dxa = ((3.0 * CB * t7)/(2.0 * RB * t5 * t1)) * (t2 * t0.transpose())
+                - ((15.0 * CB * t1 * std::pow(t3,(-1.0 * (1.0 + (5.0/2.0)))))/(2.0 * std::pow(RB,3) * t5)) * (t2 * t0.transpose())
+                + (3.0 * CB * t1 * t7)/(2.0 * RB * std::pow(t5,3.0)) * (t2 * t2.transpose())
+                - ((3.0 * CB * t1 * t7 )/(2.0 * RB * t5)) * Eigen::MatrixXd::Identity(3,3);
+
+        std::cout<<" dT1_dxa  = "<<dT1_dxa <<std::endl;
+        double t1_ = (1.0 + t0.squaredNorm())/(std::pow(RA,2.0));
+        std::cout<<" t1_  = "<<t1_<<std::endl;
+        dT2_dxa = (3.0 * CA * std::pow(t1_,(-5.0/2.0)))/(2.0 * RA) * Eigen::MatrixXd::Identity(3,3)
+                - (15.0 * CA * std::pow(t1_, -1.0 * (1.0 + (5.0/2.0))))/(2.0 * std::pow(RA,3.0)) * (t0 * t0.transpose());
+
+        std::cout<<" dT2_dxa = "<<dT2_dxa<<std::endl;
+
+        result = constant * (dT1_dxa + dT2_dxa);
+        result.row(2).setZero();
+        result.col(2).setZero();
+        std::cout<<" result = "<<result<<std::endl;
+        return result;
     }
 
     Matrix3d get_f_rA_dxA(Particle myself, Particle other){
@@ -1888,8 +2129,6 @@ public:
     //dfr_B_dxb = get_f_r_A_dxA(B,A)
     //dfr_B_dxA = - dfr_B_dxb
 
-
-
     Matrix3d get_amount_dx(Particle myself, Particle other){
         Vector3d e_x = {1.0,0.0,0.0};
         Vector3d xa = myself.position;
@@ -1933,16 +2172,12 @@ public:
     //amountdxA = get_amount_dx(A,B)
     //amount dXb = - amountdXA = get_amount_dx(B,A)
 
-
-
-
-
     double get_c(Particle particle){
-        double w_bar = (lower_electrode.frequency * get_H()) /( (1.0 /get_debye_length()) * get_ion_diffusivity());
+        double w_bar = ((lower_electrode.frequency * 2.0 * M_PI) * get_H()) /( (1.0 /get_debye_length()) * get_ion_diffusivity());
         // std::cout<<"W bar = "<<w_bar<<std::endl;
 
         double w_bar_2 = std::pow(w_bar,2);
-        return  relative_permittivity * vacuum_permittivity *(1.0/get_debye_length()) * get_H() * std::pow((lower_electrode.peak_voltage/(2.0 * get_H())),2)
+        return  relative_permittivity * vacuum_permittivity * get_H() * std::pow((lower_electrode.peak_voltage/(2.0 * get_H())),2)
                     * ((get_K1(particle) + w_bar * get_K2(particle))/(1.0 + w_bar_2) );
     }
 
@@ -1955,61 +2190,47 @@ public:
 
     double get_U_EHD(Particle particle,double r){ //deleted vacuum permittivity
 
-        //physrevlet paper
-         double w_bar = (lower_electrode.frequency * get_H()) /( (1.0 /get_debye_length()) * get_ion_diffusivity());
-        // std::cout<<"W bar = "<<w_bar<<std::endl;
+         double w_bar = (((lower_electrode.frequency * 2.0 * M_PI) ) * get_H()) /( (1.0 /get_debye_length()) * get_ion_diffusivity());
 
          double w_bar_2 = std::pow(w_bar,2);
-         double C =  relative_permittivity * vacuum_permittivity *(1.0/get_debye_length()) * get_H() * std::pow((lower_electrode.peak_voltage/(2.0 * get_H())),2)
+
+         double C =  relative_permittivity * vacuum_permittivity * get_H() * std::pow(( (lower_electrode.peak_voltage)/(2.0 * get_H())),2)
                  * ((get_K1(particle) + w_bar * get_K2(particle))/(1.0 + w_bar_2) );
-        // std::cout<<" C = "<<C<<std::endl;
+
          double f_r = (3.0 * (r/particle.radius))
                  / (  2.0 * std::pow((1.0 + std::pow((r/particle.radius),2) ),(5.0/2.0))   );
-        // std::cout<<" U EHD for particle "<<particle.index<<" with radius "<<particle.radius<<" = "<<beta * (C / (dynamic_viscosity* viscosity_multiplier)) * f_r<<std::endl;
-       // std::cout<<"fr ="<<f_r<<std::endl;
-       // std::cout<<" beta ehd  ="<<beta_ehd<<std::endl;
-      //  std::cout<<" U ehd = "<<beta_ehd * (C / (dynamic_viscosity* viscosity_multiplier)) * f_r<<std::endl;
-         return  beta_ehd * (C / (dynamic_viscosity* viscosity_multiplier)) * f_r;
 
-        /* double alpha = (lower_electrode.frequency * get_H()) /( (1.0 /get_debye_length()) * get_ion_diffusivity());
-         double alpha_2 = std::pow(alpha,2);
-         double Vp = lower_electrode.peak_voltage;
-         double H = get_H();
-         double C = relative_permittivity * vacuum_permittivity * std::pow( (Vp/(2.0 * H)) ,2) *
-                 (alpha_2/(1.0 + alpha_2)) *
-                 (1.0/get_debye_length()) * get_ion_diffusivity() /lower_electrode.frequency;
-         double up = 3.0 * (r/particle.radius);
-         double down = 2.0 * std::pow(1.0 + std::pow((r/particle.radius),2),(5.0/2.0));
-         double f_r = up/down;
-         return (C * get_K2(particle) / (dynamic_viscosity * viscosity_multiplier) ) * f_r; */
+         return  beta_ehd * (C  / (dynamic_viscosity* viscosity_multiplier)) * f_r;
+
     }
 
     double get_H(){
-       // std::cout<<"H = "<<0.5 * std::abs(lower_electrode.position[2] - upper_electrode.position[2])<<std::endl;
+      //  std::cout<<"H = "<<0.5 * std::abs(lower_electrode.position[2] - upper_electrode.position[2])<<std::endl;
         return 0.5 * std::abs(lower_electrode.position[2] - upper_electrode.position[2]);
    }
 
     double get_omega_bar(Particle particle){
-        return (lower_electrode.frequency * get_H()) /(get_debye_length() * get_ion_diffusivity());
+        return ((lower_electrode.frequency ) * get_H()) /(get_debye_length() * get_ion_diffusivity());
     }
-
-
     double get_ion_diffusivity(){
       //  std::cout<<" D = "<<(kB * T)/( 6.0 * M_PI * (dynamic_viscosity * viscosity_multiplier) * particle.radius)<<std::endl;
         //return (kB * T)/( 6.0 * M_PI * (dynamic_viscosity * viscosity_multiplier) * particle.radius);
        // return 1.47 * std::pow(10,-9);
+     //  std::cout<<" D = "<<0.5 * (D_K_plus + D_Cl_minus);
        return 0.5 * (D_K_plus + D_Cl_minus);
+       //return 2.96 * std::pow(10.0,-19.0);
     }
     double get_ionic_strength(){
+
         return 0.5 * (molarity * std::pow(K_plus_charge,2) + molarity * std::pow(CL_minus_charge,2));
     }
-
-
     double get_debye_length(){
         // std::cout<<" debye length = "<<2.0 * particle.charge * std::sqrt((M_PI * particle.density)/(kB * T))<<std::endl;
         //  return 2.0 * particle.charge * std::sqrt((M_PI * particle.density)/(kB * T));
-      //  std::cout<<" debye length = "<< std::sqrt((vacuum_permittivity * relative_permittivity * kB * T)/(2.0 * NA * std::pow(elementary_charge,2) * get_ionic_strength()))<<std::endl;
+     //  std::cout<<" debye length = "<< std::sqrt((vacuum_permittivity * relative_permittivity * kB * T)/(2.0 * NA * std::pow(elementary_charge,2) * get_ionic_strength()))<<std::endl;
       //  std::cout<<" new debye length with higher concentration = "<< std::sqrt((vacuum_permittivity * relative_permittivity * kB * T)/(2.0 * NA * std::pow(elementary_charge,2) * get_ionic_strength())) * std::pow(10,5)<<std::endl;
+      //  std::cout<<" I = "<<get_ionic_strength()<<std::endl;
+
         return std::sqrt((vacuum_permittivity * relative_permittivity * kB * T)/(2.0 * NA * std::pow(elementary_charge,2) * get_ionic_strength()));
        // return 0.6 * std::pow(10,-9);
         // return 150 * std::pow(10,-9);
@@ -2017,12 +2238,12 @@ public:
 
     //from conductivity paper
     double get_diffuse_layer_conductance(Particle particle){
-        double m = std::pow((gas_constant * T) / faraday_constant, 2) * (2.0 * relative_permittivity * vacuum_permittivity)/(3.0 * dynamic_viscosity * get_ion_diffusivity());
+        double m = std::pow((gas_constant * T) / faraday_constant, 2) * (2.0 * relative_permittivity * vacuum_permittivity)/(3.0 * dynamic_viscosity *viscosity_multiplier* get_ion_diffusivity());
       //  std::cout<<"m= "<<m<<std::endl;
         double t1 = (4.0 * std::pow(faraday_constant ,2)* molarity * get_ion_diffusivity() * (1.0 + 3.0 * m))/(gas_constant * T * (1.0/get_debye_length()));
       //  std::cout<<"t1= "<<t1<<std::endl;
       //  std::cout<<" cosh = "<<cosh((elementary_charge * particle.zeta_potential * std::pow(10,-3))/(2.0 * kB * T))<<std::endl;
-        double t2 = cosh((elementary_charge * particle.zeta_potential* std::pow(10,-3))/(2.0 * kB * T)) - 1.0;
+        double t2 = cosh((elementary_charge * particle.zeta_potential)/(2.0 * kB * T)) - 1.0;
        // std::cout<<" zeta = "<<particle.zeta_potential<<std::endl;
       //  std::cout<<"t2= "<<t2<<std::endl;
 
@@ -2035,36 +2256,62 @@ public:
      double diffusive_layer_conductance = get_diffuse_layer_conductance(particle);
      double stern_layer_conductance = particle.stern_layer_conductance;
      double particle_radius = particle.radius;
-    // std::cout<<" diffuse layer conductance = "<<diffusive_layer_conductance<<std::endl;
+   //  std::cout<<" diffuse layer conductance = "<<diffusive_layer_conductance<<std::endl;
    //  std::cout<<" stern layer conductance = "<<stern_layer_conductance<<std::endl;
    //  std::cout<<" mass = "<<particle.mass<<std::endl;
    //  std::cout<<" conductivity w d = "<<2.0 *  (particle.stern_layer_conductance / particle.radius) + 2.0 * (get_diffuse_layer_conductance(particle)/particle.radius)<<std::endl;
    //  std::cout<<" conductivity w.o d = "<<2.0 *  (particle.stern_layer_conductance / particle.radius)<<std::endl;
-        return 2.0 *  (particle.stern_layer_conductance / particle.radius) + 2.0 * (get_diffuse_layer_conductance(particle)/particle.radius);
+   //std::cout
+    double result;
+        if(particle.is_PNiPAM_microgel){
+            result =  4.0 * std::pow(10.0,-5.0);
+
+        }else {
+            result =  2.0 * (particle.stern_layer_conductance / particle.radius) +
+                   2.0 * (get_diffuse_layer_conductance(particle) / particle.radius);
+
+        }//return 2.0 * 2.5 * std::pow(10.0,-9) /particle.radius;
+        return result;
     }
 
     double get_Eo(){
         return (lower_electrode.peak_voltage/std::sqrt(2.0))/(2.0 * get_H());
     }
 
-
-
-
     // bith from clausius mossotti paper
     double get_K1(Particle particle){
-        //double w_bar = (lower_electrode.frequency * get_H()) /( (1.0 /get_debye_length()) * get_ion_diffusivity());
+       //double w_bar = (lower_electrode.frequency * get_H()) /( (1.0 /get_debye_length()) * get_ion_diffusivity());
       //  std::cout<<"W bar = "<<w_bar<<std::endl;
-        double  w = lower_electrode.frequency;
-        double w_2 = std::pow(w,2);
+        double  w = (lower_electrode.frequency * 2.0 * M_PI);
+        double w_2 = std::pow(w,2.0);
        // double w_2 = w_bar_2;
         double sigma_m = conductivity;
+     //   std::cout<<" sigma m = "<<sigma_m<<std::endl;
         double sigma_p = get_conductivity(particle);
+      //  std::cout<<" sigma p = "<<sigma_p<<std::endl;
         double epsilon_p = particle.permittivity * vacuum_permittivity;
-        double epsilon_m = relative_permittivity* vacuum_permittivity;
-        double up = w_2 * (epsilon_p - epsilon_m) * (epsilon_p + 2.0 * epsilon_m) + (sigma_p - sigma_m) * (sigma_p + 2.0 * sigma_m);
+      //  std::cout<<" epsilom p = "<<epsilon_p<<std::endl;
+        double epsilon_m = relative_permittivity * vacuum_permittivity;
+      //  std::cout<<" epsilon m= "<<epsilon_m<<std::endl;
+      /*  double up = w_2 * (epsilon_p - epsilon_m) * (epsilon_p + 2.0 * epsilon_m) + (sigma_p - sigma_m) * (sigma_p + 2.0 * sigma_m);
         double down = w_2 * std::pow((epsilon_p + 2.0 * epsilon_m),2) + std::pow((sigma_p+ 2.0 * sigma_m),2);
     //    std::cout<<" K1 = "<<up/down<<std::endl;
-        return up/down;
+        return up/down;*/
+
+     //form new CM paper
+     double tau = (epsilon_p + 2.0 * epsilon_m)/(sigma_p + 2.0 * sigma_m);
+     double t1 = ((w_2 * std::pow(tau,2.0))/(1.0 + w_2 * std::pow(tau,2.0)))
+                * ((epsilon_p - epsilon_m)/(epsilon_p + 2.0 * epsilon_m));
+     double t2 = ((1.0)/(1.0 + w_2 * std::pow(tau,2.0))) * ((sigma_p - sigma_m)/(sigma_p + 2.0 * sigma_m));
+     return t1 + t2;
+        //double down = w_2 * std::pow((epsilon_p + 2.0 * epsilon_m),2.0) + 2.0 *std::pow((sigma_p + 2.0 * sigma_m),2.0);
+        //double up = w_2 * (epsilon_p - epsilon_m) * (epsilon_p + 2.0 * epsilon_m) + (sigma_p + 2.0 * sigma_m) * (sigma_p - sigma_m);
+        //std::cout<<" K1 = "<<up/down<<std::endl;
+       //return up/down;
+
+
+       //again first paper
+       //double k = (epsilon_p + epsilon_m)/(epsilon_p + 2.0 *epsilon_m) - (sigma_p + sigma_m)/(sigma_p + 2.0 * sigma_m);
 
 
     }
@@ -2076,18 +2323,25 @@ public:
        // double w_bar_2 = std::pow(w_bar,2);
        // double w_2 = w_bar_2;
        // double w = w_bar; // ?????;
-       double w = lower_electrode.frequency;
-       double w_2 = std::pow(w,2);
+       double w = (lower_electrode.frequency * 2.0 * M_PI); //change
+       double w_2 = std::pow(w,2.0);
 
         double sigma_m = conductivity;
         double sigma_p = get_conductivity(particle);
-        double epsilon_p = particle.permittivity* vacuum_permittivity;
-        double epsilon_m = relative_permittivity* vacuum_permittivity;
-        double up = w * (sigma_m - sigma_p) * (epsilon_p + 2.0*epsilon_m) - (epsilon_p - epsilon_m) * (sigma_p + 2.0 * sigma_m);
+        double epsilon_p = particle.permittivity * vacuum_permittivity;
+        double epsilon_m = relative_permittivity * vacuum_permittivity;
+       /* double up = w * (sigma_m - sigma_p) * (epsilon_p + 2.0*epsilon_m) - (epsilon_p - epsilon_m) * (sigma_p + 2.0 * sigma_m);
         double down = w_2 * std::pow((epsilon_p + 2.0 * epsilon_m),2) + std::pow((sigma_p + 2.0 * sigma_m),2);
         //return ( w * (sigma_m - sigma_p)*(epsilon_p + 2.0 * epsilon_m) - (epsilon_p - epsilon_m)*(sigma_p + 2.0 * sigma_m)   )/(w_2 * std::pow((epsilon_p + 2.0 * epsilon_m),2) + std::pow((sigma_p + 2.0 * sigma_m),2));
      //   std::cout<<" K2 = "<<up/down<<std::endl;
-        return up/down;
+        return up/down;*/
+
+       //from new CM paper
+       double up = 3.0 * w * (epsilon_p* sigma_m - epsilon_m * sigma_p);
+       double down = w_2 * std::pow((epsilon_p + 2.0 * epsilon_m),2.0) +  std::pow((sigma_p + 2.0 * sigma_m),2.0);
+       //double up = w * (epsilon_p - epsilon_m) * (sigma_p + 2.0 * sigma_m) - (epsilon_p + 2.0 * epsilon_m) * (sigma_p - sigma_m);
+     //  std::cout<<"K2 ="<<up/down<<std::endl;
+       return up/down;
     }
 
 

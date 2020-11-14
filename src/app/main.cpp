@@ -41,15 +41,21 @@ public:
 
 
         //frist triangle from laura
-        simulation.connect(A_t,B_t,(A_t.radius+B_t.radius),connected_particles);
-        simulation.connect(B_t,C_t,(B_t.radius + C_t.radius), connected_particles);
-        simulation.connect(A_t,C_t,(std::sqrt(std::pow(B_t.radius + A_t.radius,2) + std::pow(B_t.radius+C_t.radius,2))), connected_particles);
+       // simulation.connect(A_t,B_t,(A_t.radius+B_t.radius),connected_particles);
+       // simulation.connect(B_t,C_t,(B_t.radius + C_t.radius), connected_particles);
+       // simulation.connect(A_t,C_t,(std::sqrt(std::pow(B_t.radius + A_t.radius,2) + std::pow(B_t.radius+C_t.radius,2))), connected_particles);
 
         //dumbel
-       // simulation.connect(A,B,(A.radius+B.radius),connected_particles);
-       // simulation.connect(A_2,B_2,(A_2.radius+B_2.radius),connected_particles);
-       // simulation.connect(A_3,B_3,(A_3.radius+B_3.radius),connected_particles);
-       // simulation.connect(A_4,B_4,(A_4.radius+B_4.radius),connected_particles);
+        simulation.connect(A,B,(A.radius+B.radius),connected_particles);
+        simulation.connect(A_2,B_2,(A_2.radius+B_2.radius),connected_particles);
+        simulation.connect(A_3,B_3,(A_3.radius+B_3.radius),connected_particles);
+        /*simulation.connect(A_4,B_4,(A_4.radius+B_4.radius),connected_particles);
+        simulation.connect(A_5,B_5,(A_5.radius+B_5.radius),connected_particles);
+        simulation.connect(A_6,B_6,(A_6.radius+B_6.radius),connected_particles);
+        simulation.connect(A_7,B_7,(A_7.radius+B_7.radius),connected_particles);
+        simulation.connect(A_8,B_8,(A_8.radius+B_8.radius),connected_particles);
+        simulation.connect(A_9,B_9,(A_9.radius+B_9.radius),connected_particles);
+        simulation.connect(A_10,B_10,(A_10.radius+B_10.radius),connected_particles);*/
 
         //rotator
        // simulation.connect(A,B,(A.radius+B.radius),connected_particles);
@@ -109,17 +115,23 @@ public:
 
 
             //first triangle from laura
-            simulation.connect_new(A_t,B_t,(A_t.radius+B_t.radius),connected_particles,0);
-            simulation.connect_new(B_t,C_t,(B_t.radius + C_t.radius), connected_particles,1);
-            simulation.connect_new(A_t,C_t,(std::sqrt(std::pow(B_t.radius + A_t.radius,2) + std::pow(B_t.radius+C_t.radius,2))), connected_particles,2);
+          //  simulation.connect_new(A_t,B_t,(A_t.radius+B_t.radius),connected_particles,0);
+          //  simulation.connect_new(B_t,C_t,(B_t.radius + C_t.radius), connected_particles,1);
+         //   simulation.connect_new(A_t,C_t,(std::sqrt(std::pow(B_t.radius + A_t.radius,2) + std::pow(B_t.radius+C_t.radius,2))), connected_particles,2);
 
 
 
             //dumbel
-           // simulation.connect_new(A,B,(A.radius + B.radius), connected_particles,0);
-           // simulation.connect_new(A_2,B_2,(A_2.radius+B_2.radius),connected_particles,1);
-           // simulation.connect_new(A_3,B_3,(A_3.radius+B_3.radius),connected_particles,2);
-            //simulation.connect_new(A_4,B_4,(A_4.radius+B_4.radius),connected_particles,3);
+            simulation.connect_new(A,B,(A.radius + B.radius), connected_particles,0);
+            simulation.connect_new(A_2,B_2,(A_2.radius+B_2.radius),connected_particles,1);
+            simulation.connect_new(A_3,B_3,(A_3.radius+B_3.radius),connected_particles,2);
+           /* simulation.connect_new(A_4,B_4,(A_4.radius+B_4.radius),connected_particles,3);
+            simulation.connect_new(A_5,B_5,(A_5.radius+B_5.radius),connected_particles,4);
+            simulation.connect_new(A_6,B_6,(A_6.radius+B_6.radius),connected_particles,5);
+            simulation.connect_new(A_7,B_7,(A_7.radius+B_7.radius),connected_particles,6);
+            simulation.connect_new(A_8,B_8,(A_8.radius+B_8.radius),connected_particles,7);
+            simulation.connect_new(A_9,B_9,(A_9.radius+B_9.radius),connected_particles,8);
+            simulation.connect_new(A_10,B_10,(A_10.radius+B_10.radius),connected_particles,9);*/
 
 
             //rotator
@@ -208,6 +220,21 @@ public:
             SliderScalar("Move Camera along y-axis",ImGuiDataType_Double, &center_of_frame[1], &min_cof_y,&max_cof_y);
             SliderScalar("Move Camera along z-axis",ImGuiDataType_Double, &center_of_frame[2], &min_cof_z,&max_cof_z);
             SliderScalar("Zoom", ImGuiDataType_Double, &mscale, &min_my_zoom, &max_my_zoom);
+            if(Checkbox("increase frequency by 100",&hundred_step)){
+                simulation.lower_electrode.frequency +=100;
+            }
+            if(Checkbox("increase frequency by 500",&five_hundred_step)){
+                simulation.lower_electrode.frequency +=500;
+            }
+            if(Checkbox("increase frequency by 1000",&thousand_step)){
+                simulation.lower_electrode.frequency +=1000;
+            }
+            if(Checkbox("increase frequency by 10000",&ten_thousand_step)){
+                simulation.lower_electrode.frequency +=10000;
+            }
+            if(Checkbox("increase frequency by 100000",&hundred_thousand_step)){
+                simulation.lower_electrode.frequency +=100000;
+            }
             if(Checkbox("Tracer on", &simulation.tracer_on)){
                 simulation.dimer_tracers = false;
             }
@@ -292,6 +319,24 @@ public:
                             A.mass = A.density * (4.0/3.0) * M_PI * std::pow(A.radius,3);
                         }
 
+                        std::string set_radius0_7_label = label;
+                        std::string set_radius0_7 = " set radius to 0.7 micro meters";
+                        set_radius0_7_label += set_radius0_7;
+                        const char* set_radius0_7_label_ = set_radius0_7_label.c_str();
+                        if(Checkbox(set_radius0_7_label_, &A.zero_seven_m)){
+                            A.radius = 0.7 * std::pow(10,-6);
+                            A.mass = A.density * (4.0/3.0) * M_PI * std::pow(A.radius,3);
+                        }
+
+                        std::string set_radius1_label = label;
+                        std::string set_radius1 = " set radius to 1.0 micro meters";
+                        set_radius1_label += set_radius1;
+                        const char* set_radius1_label_ = set_radius1_label.c_str();
+                        if(Checkbox(set_radius1_label_, &A.one_m)){
+                            A.radius = 1.0 * std::pow(10,-6);
+                            A.mass = A.density * (4.0/3.0) * M_PI * std::pow(A.radius,3);
+                        }
+
 
 
                         std::string permittivity_label = label;
@@ -330,9 +375,8 @@ public:
                         if(Checkbox(silica_label_,&A.is_silica)){
                             A.permittivity = 3.9;
                             A.density = 2650.0;
-                            A.radius = 3.0 * mscale;
                             A.mass = A.density * (4.0/3.0) * M_PI * std::pow(A.radius,3); //new
-                            A.stern_layer_conductance = 0.0 * std::pow(10,-9);
+                            A.stern_layer_conductance = 0.05 * std::pow(10,-9);
                             A.zeta_potential = -1.0 * 43 * std::pow(10,-3);
                         }
                         std::string PS_label = label;
@@ -342,10 +386,22 @@ public:
                         if(Checkbox(PS_label_, &A.is_PS)){
                             A.permittivity = 2.5;
                             A.density = 1050;
-                            A.radius = 3.0 * mscale;
                             A.mass = A.density * (4.0/3.0) * M_PI * std::pow(A.radius,3);
                             A.stern_layer_conductance = 5 * std::pow(10,-9);
                            A.zeta_potential = -56.0 * std::pow(10,-3); //check if mv or V
+
+                        }
+
+                        std::string PNiPAM_microgel_label = label;
+                        std::string PNiPAM_microgel = " PNiPAM microgel";
+                        PNiPAM_microgel_label+=PNiPAM_microgel;
+                        const char* PNiPAM_microgel_label_ = PNiPAM_microgel_label.c_str();
+                        if(Checkbox(PNiPAM_microgel_label_, &A.is_PNiPAM_microgel)){
+                            A.permittivity = 2000;
+                            A.density = 1100;
+                            A.mass = A.density * (4.0/3.0) * M_PI * std::pow(A.radius,3);
+                            A.stern_layer_conductance = 5 * std::pow(10,-9);
+                            A.zeta_potential = -10.0 * std::pow(10,-3); //check if mv or V
 
                         }
 
@@ -398,6 +454,24 @@ public:
                             B.mass = B.density * (4.0/3.0) * M_PI * std::pow(B.radius,3);
                         }
 
+                        std::string set_radius0_7_label = label;
+                        std::string set_radius0_7 = " set radius to 0.7 micro meters";
+                        set_radius0_7_label += set_radius0_7;
+                        const char* set_radius0_7_label_ = set_radius0_7_label.c_str();
+                        if(Checkbox(set_radius0_7_label_, &B.zero_seven_m)){
+                            B.radius = 0.7 * std::pow(10,-6);
+                            B.mass = B.density * (4.0/3.0) * M_PI * std::pow(B.radius,3);
+                        }
+
+                        std::string set_radius1_label = label;
+                        std::string set_radius1 = " set radius to 1.0 micro meters";
+                        set_radius1_label += set_radius1;
+                        const char* set_radius1_label_ = set_radius1_label.c_str();
+                        if(Checkbox(set_radius1_label_, &B.one_m)){
+                            B.radius = 1.0 * std::pow(10,-6);
+                            B.mass = B.density * (4.0/3.0) * M_PI * std::pow(B.radius,3);
+                        }
+
 
                         std::string permittivity_label = label;
                         std::string permittivity = " permittivity";
@@ -436,10 +510,9 @@ public:
                         if(Checkbox(silica_label_,&B.is_silica)){
                             B.permittivity = 3.9;
                             B.density = 2650.0;
-                            B.radius = 2.0 * mscale;
 
                             B.mass = B.density * (4.0/3.0) * M_PI * std::pow(B.radius,3);
-                            B.stern_layer_conductance = 0.00 * std::pow(10,-9);
+                            B.stern_layer_conductance = 0.05 * std::pow(10,-9);
                             A.zeta_potential = -1.0 * 43 * std::pow(10,-3);
                         }
                         std::string PS_label = label;
@@ -451,7 +524,6 @@ public:
                         if(Checkbox(PS_label_, &B.is_PS)){
                             B.permittivity = 2.5;
                             B.density = 1050;
-                            B.radius = 2.0 * mscale;
                            // B.conductivity = 5 * std::pow(10,-9);
                            //B.conductivity = 0.001;
                      //      B.conductivity = 2.0 *  ((5 * std::pow(10,-9)) / B.radius);
@@ -460,7 +532,22 @@ public:
                             B.stern_layer_conductance = 5 * std::pow(10,-9);
                         }
 
+                        std::string PNiPAM_microgel_label = label;
+                        std::string PNiPAM_microgel = " PNiPAM microgel";
+                        PNiPAM_microgel_label+=PNiPAM_microgel;
+                        const char* PNiPAM_microgel_label_ = PNiPAM_microgel_label.c_str();
+                        if(Checkbox(PNiPAM_microgel_label_, &B.is_PNiPAM_microgel)){
+                            B.permittivity = 2000;
+                            B.density = 1100;
+                            B.mass = A.density * (4.0/3.0) * M_PI * std::pow(A.radius,3);
+                            B.stern_layer_conductance = 5 * std::pow(10,-9);
+                            B.zeta_potential = -10.0 * std::pow(10,-3); //check if mv or V
+
+                        }
+
                     }
+
+
                     B.visited=true;
                     i++;
                 }
@@ -508,9 +595,17 @@ public:
                     simulation.upper_electrode.position[2] = simulation.lower_electrode.position[2] + 100.0 * mscale;
                 }
                 if(Checkbox(" SETUP PS - PS Experiment", &second_experiment)){
-                    simulation.beta_ehd = 0.04;
+                    simulation.beta_ehd = 0.08;
                     //simulation.lower_electrode.frequency = 500.0;
                     simulation.lower_electrode.peak_voltage = 6.5;
+                    simulation.lower_electrode.frequency = 300.0;
+                    simulation.upper_electrode.position[2] = simulation.lower_electrode.position[2] + 100.0 * mscale;
+
+                }
+                if(Checkbox(" SETUP Microgel - PS Experiment", &second_experiment)){
+                    simulation.beta_ehd = 0.1478;
+                    //simulation.lower_electrode.frequency = 500.0;
+                    simulation.lower_electrode.peak_voltage = 5.0;
                     simulation.lower_electrode.frequency = 300.0;
                     simulation.upper_electrode.position[2] = simulation.lower_electrode.position[2] + 100.0 * mscale;
 
@@ -537,6 +632,21 @@ public:
                 if (SliderScalar("Time Step", ImGuiDataType_Double, &simulation.time_step, &min_time_step,
                                  &max_time_step)) {
                     std::cout << simulation.time_step;
+                }
+                if(Checkbox("Set Time Step to 1ms",&set_t_to_1ms)){
+                    simulation.time_step = 1.0 * std::pow(10.0,-3.0);
+                }
+                if(Checkbox("Set Time Step to 2ms",&set_t_to_2ms)){
+                    simulation.time_step = 2.0 * std::pow(10.0,-3.0);
+                }
+                if(Checkbox("Set Time Step to 5ms",&set_t_to_5ms)){
+                    simulation.time_step = 5.0 * std::pow(10.0,-3.0);
+                }
+                if(Checkbox("Set Time Step to 10ms",&set_t_to_10ms)){
+                    simulation.time_step = 10.0 * std::pow(10.0,-3.0);
+                }
+                if(Checkbox("Set Time Step to 20ms",&set_t_to_20ms)){
+                    simulation.time_step = 20.0 * std::pow(10.0,-3.0);
                 }
                 if (SliderScalar("Max itteration", ImGuiDataType_S32, &simulation.max_iterations, &min_max_iterations,
                                  &max_max_iterations)) {
@@ -959,8 +1069,8 @@ public:
     double zoom = 10;
     int base;
 
-    double min_my_zoom = std::pow(10,-7);
-    double max_my_zoom = std::pow(10,-3);
+    double min_my_zoom = std::pow(10,-6);
+    double max_my_zoom = std::pow(10,-2);
 
     //Particle BIG_A = Particle(100,40, {520,-100});
     //Particle SMALL_B = Particle(10,15,{500,-90});
@@ -973,24 +1083,73 @@ public:
    //  Particle C = Particle(1050,3.0* mscale,-1.0,{110.0 * mscale,100.0 * mscale, 100.0 * mscale});
 
     //first triangle from laura
-    Particle A_t = Particle(1050 ,3.0 * mscale,-1.0,{105.0 * mscale,100.0 * mscale, 100.0 * mscale});
-   Particle B_t = Particle(1050,2.0* mscale,-1.0,{100.0 * mscale,100.0 * mscale, 100.0 * mscale});
-    Particle C_t = Particle(1050,2.0* mscale,-1.0,{100.0 * mscale,104.0 * mscale, 100.0 * mscale});
+  //  Particle A_t = Particle(1050 ,1.5 * mscale,-1.0,{102.5 * mscale,100.0 * mscale, 100.0 * mscale});
+  //Particle B_t = Particle(1050,1.0* mscale,-1.0,{100.0 * mscale,100.0 * mscale, 100.0 * mscale});
+  //  Particle C_t = Particle(1050,1.0* mscale,-1.0,{100.0 * mscale,102.0 * mscale, 100.0 * mscale});
 
 
 
     //dumbel
-  // Particle A = Particle(1050 ,3.0 * mscale,-1.0,{105.0 * mscale,100.0 * mscale, 100.0 * mscale});
-  //  Particle B = Particle(1050,2.0* mscale,-1.0,{100.0 * mscale,100.0 * mscale, 100.0 * mscale});
+   Particle A = Particle(1050 ,1.0 * mscale,-1.0,{101.7 * mscale,100.0 * mscale, 100.0 * mscale});
+    Particle B = Particle(1050,0.7* mscale,-1.0,{100.0 * mscale,100.0 * mscale, 100.0 * mscale});
 
-  //  Particle A_2 = Particle(1050 ,3.0 * mscale,-1.0,{100.0 * mscale,100.0 * mscale, 100.0 * mscale});
-   // Particle B_2 = Particle(1050,2.0* mscale,-1.0,{/*(100.0 + 5/std::sqrt(2))*/ 100 * mscale,/*(100.0 + 5/std::sqrt(2))*/105 * mscale, 100.0 * mscale});
+    Particle A_2 = Particle(1050 ,1.0 * mscale,-1.0,{201.7 * mscale,200.0 * mscale, 100.0 * mscale});
+    Particle B_2 = Particle(1050,0.7* mscale,-1.0,{200.0 * mscale,200.0 * mscale, 100.0 * mscale});
 
-    //Particle A_3 = Particle(1050 ,3.0 * mscale,-1.0,{95.0 * mscale,100.0 * mscale, 100.0 * mscale});
-   // Particle B_3 = Particle(1050,2.0* mscale,-1.0,{100.0 * mscale,100.0 * mscale, 100.0 * mscale});
+    Particle A_3 = Particle(1050 ,1.0 * mscale,-1.0,{1.7 * mscale,0.0 * mscale, 100.0 * mscale});
+    Particle B_3 = Particle(1050,0.7* mscale,-1.0,{0.0 * mscale,0.0 * mscale, 100.0 * mscale});
 
-   // Particle A_4 = Particle(1050 ,3.0 * mscale,-1.0,{100.0 * mscale,95.0 * mscale, 100.0 * mscale});
-   // Particle B_4 = Particle(1050,2.0* mscale,-1.0,{100.0 * mscale,100.0 * mscale, 100.0 * mscale});
+    Particle A_4 = Particle(1050 ,1.0 * mscale,-1.0,{101.7 * mscale,-100.0 * mscale, 100.0 * mscale});
+    Particle B_4 = Particle(1050,0.7* mscale,-1.0,{100.0 * mscale,-100.0 * mscale, 100.0 * mscale});
+
+    Particle A_5 = Particle(1050 ,1.0 * mscale,-1.0,{301.7 * mscale,-100.0 * mscale, 100.0 * mscale});
+    Particle B_5 = Particle(1050,0.7* mscale,-1.0,{300.0 * mscale,-100.0 * mscale, 100.0 * mscale});
+
+    Particle A_6 = Particle(1050 ,1.0 * mscale,-1.0,{101.7 * mscale,-200.0 * mscale, 100.0 * mscale});
+    Particle B_6 = Particle(1050,0.7* mscale,-1.0,{100.0 * mscale,-200.0 * mscale, 100.0 * mscale});
+
+    Particle A_7 = Particle(1050 ,1.0 * mscale,-1.0,{301.7 * mscale,200.0 * mscale, 100.0 * mscale});
+    Particle B_7 = Particle(1050,0.7* mscale,-1.0,{300.0 * mscale,200.0 * mscale, 100.0 * mscale});
+
+    Particle A_8 = Particle(1050 ,1.0 * mscale,-1.0,{-151.7 * mscale,-300.0 * mscale, 100.0 * mscale});
+    Particle B_8 = Particle(1050,0.7* mscale,-1.0,{-150.0 * mscale,-300.0 * mscale, 100.0 * mscale});
+
+    Particle A_9 = Particle(1050 ,1.0 * mscale,-1.0,{1.7 * mscale,250.0 * mscale, 100.0 * mscale});
+    Particle B_9 = Particle(1050,0.7* mscale,-1.0,{0.0 * mscale,250.0 * mscale, 100.0 * mscale});
+
+    Particle A_10 = Particle(1050 ,1.0 * mscale,-1.0,{-101.7 * mscale,300.0 * mscale, 100.0 * mscale});
+    Particle B_10 = Particle(1050,0.7* mscale,-1.0,{-100.0 * mscale,300.0 * mscale, 100.0 * mscale});
+
+
+
+
+
+/*    Particle A_5 = Particle(1050 ,1.5 * mscale,-1.0,{102.5 * mscale,100.0 * mscale, 100.0 * mscale});
+    Particle B_5 = Particle(1050,1.0* mscale,-1.0,{100.0 * mscale,100.0 * mscale, 100.0 * mscale});
+
+    Particle A_6 = Particle(1050 ,1.5 * mscale,-1.0,{102.5 * mscale,100.0 * mscale, 100.0 * mscale});
+    Particle B_6 = Particle(1050,1.0* mscale,-1.0,{100.0 * mscale,100.0 * mscale, 100.0 * mscale});
+
+    Particle A_7 = Particle(1050 ,1.5 * mscale,-1.0,{102.5 * mscale,100.0 * mscale, 100.0 * mscale});
+    Particle B_7 = Particle(1050,1.0* mscale,-1.0,{100.0 * mscale,100.0 * mscale, 100.0 * mscale});
+
+    Particle A_8 = Particle(1050 ,1.5 * mscale,-1.0,{102.5 * mscale,100.0 * mscale, 100.0 * mscale});
+    Particle B_8 = Particle(1050,1.0* mscale,-1.0,{100.0 * mscale,100.0 * mscale, 100.0 * mscale});
+
+    Particle A_9 = Particle(1050 ,1.5 * mscale,-1.0,{102.5 * mscale,100.0 * mscale, 100.0 * mscale});
+    Particle B_9 = Particle(1050,1.0* mscale,-1.0,{100.0 * mscale,100.0 * mscale, 100.0 * mscale});
+
+    Particle A_10 = Particle(1050 ,1.5 * mscale,-1.0,{102.5 * mscale,100.0 * mscale, 100.0 * mscale});
+    Particle B_10 = Particle(1050,1.0* mscale,-1.0,{100.0 * mscale,100.0 * mscale, 100.0 * mscale});*/
+
+   // Particle A_2 = Particle(1050 ,1.5 * mscale,-1.0,{100.0 * mscale,100.0 * mscale, 100.0 * mscale});
+   // Particle B_2 = Particle(1050,1.0* mscale,-1.0,{/*(100.0 + 5/std::sqrt(2))*/ 100 * mscale,/*(100.0 + 5/std::sqrt(2))*/102.5 * mscale, 100.0 * mscale});
+
+  //  Particle A_3 = Particle(1050 ,1.5 * mscale,-1.0,{97.5 * mscale,100.0 * mscale, 100.0 * mscale});
+   // Particle B_3 = Particle(1050,1.0* mscale,-1.0,{100.0 * mscale,100.0 * mscale, 100.0 * mscale});
+
+   // Particle A_4 = Particle(1050 ,1.5 * mscale,-1.0,{100.0 * mscale,97.5 * mscale, 100.0 * mscale});
+   // Particle B_4 = Particle(1050,1.0* mscale,-1.0,{100.0 * mscale,100.0 * mscale, 100.0 * mscale});
 
    //spiral triangle that doesn not do spirals
    //  Particle A = Particle(1050 ,2.0 * mscale,-1.0,{104.0 * mscale,100.0 * mscale, 100.0 * mscale});
@@ -1084,8 +1243,8 @@ public:
     double max_charge = 30.0;
     double min_radius = 1.0 * mscale;
     double max_radius = 200.0 * mscale;
-    double min_lower_electrode_frequency = 1.0;
-    double max_lower_electrode_frequency = 11000.0;
+    double min_lower_electrode_frequency = std::pow(10.0,2.0);
+    double max_lower_electrode_frequency = std::pow(10.0,9.0);
     double min_lower_electrode_peak_voltage = 0.0;
     double max_lower_electrode_peak_voltage = 1000.0;
     double min_permittivity = 0.0;
@@ -1101,10 +1260,23 @@ public:
     bool is_silica_1 = false;
     bool is_silica_2 = false;
     bool first_experiment = false;
-    bool second_experiment = false;
+    bool second_experiment = true;
     bool is_PS_1 = false;
     bool is_PS_2 = false;
     bool run_w_exp = false;
+    bool hundred_step = false;
+    bool five_hundred_step = false;
+    bool thousand_step = false;
+    bool ten_thousand_step = false;
+    bool hundred_thousand_step = false;
+
+    bool set_t_to_1ms = false;
+    bool set_t_to_2ms = false;
+    bool set_t_to_5ms = false;
+    bool set_t_to_10ms = false;
+    bool set_t_to_20ms = false;
+
+
 
     bool switch_view = false;
     bool follow_cam = false;
@@ -1194,6 +1366,15 @@ int main(int, char**)
     }
     myfile.close();*/
 
+    std::ofstream curvature;
+    curvature.open("../../../curvature.csv");
+    curvature<<"x"<<","<<"y"<<","<<"dumbbell_index"<<","<<"time_passed"<<std::endl;
+    for(int i = 0; i<app.simulation.com_x_vector.size(); i++){
+        curvature<<app.simulation.com_x_vector[i]<<","<<app.simulation.com_y_vector[i]<<","<<app.simulation.dumbbell_index_vector[i]<<","<<app.simulation.time_passed_vector[i]<<std::endl;
+        std::cout<<" curvature x"<<app.simulation.com_x_vector[i]<<std::endl;
+    }
+    curvature.close();
+
     std::cout<<"ttest"<<std::endl;
     std::ofstream FMA;
     FMA.open ("../../../FMA.csv");
@@ -1262,23 +1443,23 @@ int main(int, char**)
     std::ofstream position;
     position.open("../../../position.csv");
    position<<"Position in X"<<","<<"Position in Y"<<","<<"Position in X 2"<<","<<"Position in Y 2"<<","<<"Position in X 3"<<","<<"Position in Y 3"<<","<<"Position in X 4"<<","<<"Position in Y 4"<<","<<"Time Step"<<std::endl;
-    /*for(int i = 0; i<app.simulation.position_vec_over_time_in_x.size(); i++){
+    for(int i = 0; i<app.simulation.position_vec_over_time_in_x.size(); i++){
         position<<app.simulation.position_vec_over_time_in_x[i]<<","<<app.simulation.position_vec_over_time_in_y[i]<<","<<app.simulation.position_vec_over_time_in_x_2[i]<<","<<app.simulation.position_vec_over_time_in_y_2[i]<<","<<app.simulation.position_vec_over_time_in_x_3[i]<<","<<app.simulation.position_vec_over_time_in_y_3[i]<<","<<app.simulation.position_vec_over_time_in_x_4[i]<<","<<app.simulation.position_vec_over_time_in_y_4[i]<<","<<i<<std::endl;
         std::cout<<"pos 4"<<app.simulation.position_vec_over_time_in_x_4[i]<<","<<app.simulation.position_vec_over_time_in_y_4[i]<<std::endl;
-    }*/
+    }
     position.close();
 
     std::ofstream triangle_position;
     triangle_position.open("../../../triangle_position.csv");
     triangle_position<<"Triangle Position in X"<<","<<"Triangle Position in Y"<<","<<"Triangle Position in X 2"<<","<<"Triangle Position in Y 2"<<","<<"Triangle Position in X 3"<<","<<"Triangle Position in Y 3"<<","<<"COM Position in X 4"<<","<<"COM Position in Y 4"<<","<<"Time Step"<<std::endl;
-    for(int i = 0; i<app.simulation.triangle_position_vec_over_time_in_x.size(); i++){
+  /* for(int i = 0; i<app.simulation.triangle_position_vec_over_time_in_x.size(); i++){
         double com_x = app.simulation.triangle_position_vec_over_time_in_x[i] + app.simulation.triangle_position_vec_over_time_in_x_2[i] +app.simulation.triangle_position_vec_over_time_in_x_3[i];
         double com_y = app.simulation.triangle_position_vec_over_time_in_y[i] + app.simulation.triangle_position_vec_over_time_in_y_2[i] +app.simulation.triangle_position_vec_over_time_in_y_3[i];
         com_x = com_x/3.0;
         com_y = com_y/3.0;
         triangle_position<<app.simulation.triangle_position_vec_over_time_in_x[i]<<","<<app.simulation.triangle_position_vec_over_time_in_y[i]<<","<<app.simulation.triangle_position_vec_over_time_in_x_2[i]<<","<<app.simulation.triangle_position_vec_over_time_in_y_2[i]<<","<<app.simulation.triangle_position_vec_over_time_in_x_3[i]<<","<<app.simulation.triangle_position_vec_over_time_in_y_3[i]<<","<<com_x<<","<<com_y<<","<<i<<std::endl;
         std::cout<<"com x"<<com_x<<","<<com_y<<std::endl;
-    }
+    }*/
     triangle_position.close();
 
 
@@ -1288,8 +1469,17 @@ int main(int, char**)
     v_w <<" Velocity"<<","<<"Frequency"<<std::endl;
     for(int i = 0; i<app.simulation.frequencies.size();i++){
         v_w<<app.simulation.velocities[i]<<","<<app.simulation.frequencies[i]<<std::endl;
+        std::cout<<app.simulation.frequencies[i]<<std::endl;
     }
     v_w.close();
+
+    std::ofstream v_w_2;
+    v_w_2.open("../../../v_w_2.csv");
+    v_w_2<<"U"<<","<<"frequency"<<","<<"U A"<<","<<"U B"<<","<<"RE CM"<<","<<"IM CM"<<std::endl;
+    for(int i=0; i<app.simulation.U_vec.size(); i++){
+        v_w_2<<app.simulation.U_vec[i]<<","<<app.simulation.frequencies2[i]<<","<<app.simulation.UA_vec[i]<<","<<app.simulation.UB_vec[i]<<","<<app.simulation.Re_CM[i]<<","<<app.simulation.Im_CM[i]<<std::endl;
+    }
+    v_w_2.close();
 
     std::ofstream v_E;
     v_E.open("../../../v_E.csv");
@@ -1304,59 +1494,110 @@ int main(int, char**)
     std::cout<<"test2"<<std::endl;
 
     velocities << "VELX"<<","<<"VELY"<<","<<"friction"<<","<<"time_step"<<std::endl;
-    for(int i = 0; i<app.simulation.velocities_over_time1_in_x.size();i++){
+    /*for(int i = 0; i<app.simulation.velocities_over_time1_in_x.size();i++){
         velocities<<app.simulation.velocities_over_time1_in_x[i]<<","<<app.simulation.velocities_over_time1_in_y[i]<<","<<app.simulation.friction_force_over_time_x[i]<<","<<i<<std::endl;
         std::cout<<app.simulation.velocities_over_time1_in_x[i]<<std::endl;
     }
-    velocities.close();
+    velocities.close();*/
+    std::cout<<" test test 1"<<std::endl;
 
     std::ofstream myfile2;
     myfile2.open("../../../data2.csv");
     myfile2<<"x"<<","<<"y"<<","<<"z1"<<","<<"z2"<<std::endl;
-    for(int i = 0; i<899;i++){
+    /*for(int i = 0; i<899;i++){
         myfile2<<app.simulation.x_values[i]<<","<<app.simulation.y_values[i]<<","<<app.simulation.z_values1[i]<<","<<app.simulation.z_values2[i]<<std::endl;
         //std::cout<<app.simulation.x_values[i]<<std::endl;
        // std::cout<<app.simulation.y_values[i]<<std::endl;
         //std::cout<<app.simulation.z_values1[i]<<std::endl;
-    }
+    }*/
     myfile2.close();
+    std::cout<<" test test 1"<<std::endl;
 
     std::ofstream myfile3;
     myfile3.open("../../../data3.csv");
-    for(int i = 0; i<app.simulation.x_values.size();i++){
+    /*for(int i = 0; i<app.simulation.x_values.size();i++){
         myfile3<<app.simulation.x_values[i]<<","<<app.simulation.y_values[i]<<","<<app.simulation.z_values[i]<<std::endl;
         //std::cout<<app.simulation.x_values[i]<<std::endl;
         //std::cout<<app.simulation.y_values[i]<<std::endl;
         //std::cout<<app.simulation.z_values1[i]<<std::endl;
-    }
+    }*/
     myfile3.close();
+    std::cout<<" test test 1"<<std::endl;
 
     std::ofstream best;
     best.open("../../../best.csv");
     best<<"x"<<","<<"y"<<","<<"z"<<std::endl;
-    best<<app.simulation.best_found[0]<<","<<app.simulation.best_found[1]<<","<<app.simulation.best_found[2]<<std::endl;
+   // best<<app.simulation.best_found[0]<<","<<app.simulation.best_found[1]<<","<<app.simulation.best_found[2]<<std::endl;
     best.close();
 
-
+    std::cout<<" test test 1"<<std::endl;
 
     std::ofstream FD;
     FD.open("../../../FD.csv");
-    FD<<"F_X"<<","<<"DEDX"<<","<<"Difference"<<","<<"FORCE_JACOBIAN"<<","<<"DFDX"<<","<<"DIFFERENCE2"<<","<<"i"<<std::endl;
+    /*FD<<"F_X"<<","<<"DEDX"<<","<<"Difference"<<","<<"FORCE_JACOBIAN"<<","<<"DFDX"<<","<<"DIFFERENCE2"<<","<<"i"<<std::endl;
     for(int i = 0; i<app.simulation.forces_FD.size();i++){
         FD<<app.simulation.forces_FD[i]<<","<<app.simulation.energy_FD[i]<<","<<std::abs(app.simulation.forces_FD[i] - app.simulation.energy_FD[i])<<","<<app.simulation.force_jacobian_FD[i]<<","<<app.simulation.dFx_dx_FD[i]<<","<<std::abs(app.simulation.force_jacobian_FD[i] - app.simulation.dFx_dx_FD[i])<<","<<i<<std::endl;
-    }
+    }*/
     FD.close();
+    std::cout<<" test test 1"<<std::endl;
 
     std::ofstream test_e;
     test_e.open("../../../test_e.csv");
     test_e<<"ex1"<<","<<"ex2"<<","<<"value"<<std::endl;
-    for(int i = 0; i<app.simulation.e_z.size(); i++){
+    /*for(int i = 0; i<app.simulation.e_z.size(); i++){
         test_e<<app.simulation.e_x[i]<<","<<app.simulation.e_y[i]<<","<<app.simulation.e_z[i]<<std::endl;
         //std::cout<<app.simulation.e_z[i];
-    }
-
-
-
+    }*/
     test_e.close();
+    std::cout<<" test test 1"<<std::endl;
+
+    std::ofstream sigma_m;
+    sigma_m.open("../../../sigma_m.csv");
+    sigma_m<<"Medium conductivity"<<","<<"Velocity"<<std::endl;
+    for(int i = 0; i<app.simulation.sigma_m.size(); i++){
+        sigma_m<<app.simulation.sigma_m[i]<<","<<app.simulation.U_sm[i]<<std::endl;
+    }
+    sigma_m.close();
+    std::cout<<" test test 1"<<std::endl;
+
+    std::ofstream sigma_p;
+    sigma_p.open("../../../sigma_p.csv");
+    sigma_p<<"Particle conductivity"<<","<<"Velocity"<<std::endl;
+    for(int i = 0; i<app.simulation.sigma_p.size(); i++){
+        sigma_p<<app.simulation.sigma_p[i]<<","<<app.simulation.U_sp[i]<<std::endl;
+    }
+    sigma_p.close();
+    std::cout<<" test test 1"<<std::endl;
+
+    std::ofstream epsilon_m;
+    epsilon_m.open("../../../epsilon_m.csv");
+    epsilon_m<<"Relative medium permittivity"<<","<<"Velocity"<<std::endl;
+    for(int i = 0; i<app.simulation.epsilon_m.size(); i++){
+        epsilon_m<<app.simulation.epsilon_m[i]<<","<<app.simulation.U_em[i]<<std::endl;
+    }
+    epsilon_m.close();
+    std::cout<<" test test epsilon m"<<std::endl;
+
+    std::ofstream epsilon_p;
+    epsilon_p.open("../../../epsilon_p.csv");
+    epsilon_p<<"Relative particle permittivity"<<","<<"Velocity"<<std::endl;
+    for(int i = 0; i<app.simulation.epsilon_p.size(); i++){
+        epsilon_p<<app.simulation.epsilon_p[i]<<","<<app.simulation.U_ep[i]<<std::endl;
+    }
+    epsilon_p.close();
+    std::cout<<" test test epsilon p"<<std::endl;
+
+    std::ofstream R_A;
+    R_A.open("../../../R_A.csv");
+    R_A<<"Particle radius"<<","<<"Velocity"<<std::endl;
+    for(int i = 0; i<app.simulation.R_A.size(); i++){
+        R_A<<app.simulation.R_A[i]<<","<<app.simulation.U_ra[i]<<std::endl;
+    }
+    R_A.close();
+    std::cout<<" test test final"<<std::endl;
+
+
+
+
     return 0;
 }

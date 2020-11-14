@@ -45,9 +45,12 @@ public:
     bool visited  = false;
     bool visited_ekin = false;
     bool is_silica = false;
-    bool is_PS = false;
+    bool is_PNiPAM_microgel = false;
+    bool is_PS = true;
     bool three_m = false;
     bool two_m = false;
+    bool zero_seven_m = false;
+    bool one_m = false;
 
     //everything in micro
     Particle(double density_ = 1000.0 ,double radius = 10.0, double charge_=0.0 ,Vector3d position = {200,200,0.0}, double permittivity_ = 2.4, double stern_layer_conductance_ =  std::pow(10,-9), double zeta_potential_ = -57.0 * std::pow(10,-3)): density(density_), radius(radius), position(position), charge(charge_), permittivity(permittivity_), stern_layer_conductance(stern_layer_conductance_), zeta_potential(zeta_potential_){
