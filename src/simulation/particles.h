@@ -46,7 +46,7 @@ public:
     bool visited_ekin = false;
     bool is_silica = false;
     bool is_PNiPAM_microgel = false;
-    bool is_PS = true;
+    bool is_PS = false;
     bool three_m = false;
     bool two_m = false;
     bool zero_seven_m = false;
@@ -260,7 +260,7 @@ public:
 
 };
 
-double Particle::time_step =1.0* std::pow(10,-6); // seconds
+double Particle::time_step =2.0* std::pow(10,-3); // seconds
 double Particle::radius_for_spring = 10;
 double Particle::eta = 1.0 * std::pow(10,-3);
 

@@ -130,138 +130,132 @@ fig_V.savefig('epsilon_m.pdf',format='pdf')
 
 
 
+
+
+
 ##begin: plot curvature of experimental dumbell data####
 
 column_names_velocity = ["Velocity"]
 velocities = pd.DataFrame(columns= column_names_velocity)
 
-experimental_data_dumbbell = pd.read_csv('../../Active_dumbbels_trajectories.txt',sep="   ", header=None,skiprows=1)
-experimental_data_dumbbell.columns = ['x','y','frame_id','particle_id']
-experimental_data_dumbbell['x'] = experimental_data_dumbbell['x'] * 0.41
-experimental_data_dumbbell['y'] = experimental_data_dumbbell['y'] * 0.41
+experimental_data_L = pd.read_csv('../../Active_dumbbellsLshape_sel.txt',delimiter = r'\s+', header=None,skiprows=1)
+experimental_data_L.columns = ['x','y','frame_id','a','b','c','d','e']
+del experimental_data_L["a"]
+del experimental_data_L["b"]
+del experimental_data_L["c"]
+del experimental_data_L["d"]
+del experimental_data_L["e"]
+
+
+
+
+experimental_data_L['x'] = experimental_data_L['x'] * 0.41
+experimental_data_L['y'] = experimental_data_L['y'] * 0.41
 #print("hello")
 #print(experimental_data_dumbbell)
-experimental_data_dumbbell['Time passed [s]'] = (experimental_data_dumbbell['frame_id'] - 1) * 100 * pow(10,-3)
+experimental_data_L['Tp'] = (experimental_data_L['frame_id'] - 1) * 100 * pow(10,-3)
 fig_V, ax_V = plt.subplots()
 plt.tight_layout
 column_names = ["radius","curvature","velocity"]
-curvature_data = pd.DataFrame(columns = column_names)
-unique_ids = experimental_data_dumbbell.particle_id.unique()
-print(unique_ids)
-n = unique_ids.shape[0]
-n=15
-print(n)
+curvature_data_L = pd.DataFrame(columns = column_names)
+experimental_data_L = experimental_data_L[experimental_data_L.Tp >= 15]
+experimental_data_L = experimental_data_L.reset_index()
+del experimental_data_L['index']
+print(experimental_data_L)
+
 time = [100,1000]
 print(time)
 for k in time:
-    for i in range(1,15,1):
-        print(i)
-        print(i)
-        is_current_id = experimental_data_dumbbell['particle_id'] == i
-        current_experimental_data = experimental_data_dumbbell[is_current_id]
-        current_experimental_data.reset_index(inplace=True)
-        column_names_velocity = ["Velocity"]
-        velocities = pd.DataFrame(columns= column_names_velocity)
+    column_names_velocity = ["Velocity"]
+    velocities = pd.DataFrame(columns= column_names_velocity)
 
+    fig_C, ax_C = plt.subplots()
+    ax_C.plot(experimental_data_L['x'], experimental_data_L['y'], marker=next(marker),linestyle=next(line),markersize = 0.8)
+    ax_C.set_xlabel("x(t) [µm]",fontdict=None,labelpad=0)
+    ax_C.set_ylabel("y(t) [µm]",fontdict=None,labelpad=0, rotation=90,)
+    ax_C.ticklabel_format(axis='both', style = 'sci')
+    #ax_C.legend(loc='best',fontsize=8)
+    ax_C.grid(True,linestyle='-')
+    #ax_C.set_title("Experimental L -shaped Trajectory time=%i" %k, fontdict= None, loc = 'center',pad=5)
+    fig_C.savefig('plot_results/exp_Lshaped_path_time=%i.pdf' %k ,format='pdf')
 
-        fig_C, ax_C = plt.subplots()
-        ax_C.plot(current_experimental_data['x'], current_experimental_data['y'], marker=next(marker),linestyle=next(line),markersize = 0.8)
-        ax_C.set_xlabel("x(t) [µm]",fontdict=None,labelpad=0)
-        ax_C.set_ylabel("y(t) [µm]",fontdict=None,labelpad=0, rotation=90,)
-        ax_C.ticklabel_format(axis='both', style = 'sci')
-        ax_C.legend(loc='best',fontsize=8)
-        ax_C.grid(True,linestyle='-')
-        ax_C.set_title("Experimental Dumbbell Trajectories %i" %i + "time=%i" %k, fontdict= None, loc = 'center',pad=5)
-        fig_C.savefig('plot_results/exp_path_%i' %i +'_time=%i' %k +'.pdf',format='pdf')
+    cm = plt.cm.get_cmap('RdYlBu')
+    fig_V, ax_V = plt.subplots()
+    plt.tight_layout
+    sc = plt.scatter(x=experimental_data_L['x'],y=experimental_data_L['y'],c=experimental_data_L['Tp'], cmap=cm, s=0.7)
+    plt.colorbar(sc)
+    plt.xlabel("x(t) [µm]",fontdict=None,labelpad=0,fontsize=10)
+    plt.ylabel("y(t) [µm]",fontdict=None,labelpad=0, rotation=90,fontsize=10)
+    plt.legend(loc='best',fontsize=8)
+    plt.title("Experimental L-shaped color trajectory time=%i" %k, fontdict= None, loc = 'center',pad=5)
+    plt.savefig('plot_results/Experimental L-shaped color trajectory time=%i.pdf' %k,format='pdf')
 
-        cm = plt.cm.get_cmap('RdYlBu')
-        fig_V, ax_V = plt.subplots()
-        plt.tight_layout
-        sc = plt.scatter(x=current_experimental_data['x'],y=current_experimental_data['y'],c=current_experimental_data['Time passed [s]'], cmap=cm, s=0.7)
-        plt.colorbar(sc)
-        plt.xlabel("x(t) [µm]",fontdict=None,labelpad=0,fontsize=10)
-        plt.ylabel("y(t) [µm]",fontdict=None,labelpad=0, rotation=90,fontsize=10)
-        plt.legend(loc='best',fontsize=8)
-        plt.title("Experimental Dumbbell Trajectories  %i" %i + "time=%i" %k, fontdict= None, loc = 'center',pad=5)
-        plt.savefig('plot_results/Experimental Dumbbell Trajectories %i' %i +'_time=%i' %k +'.pdf',format='pdf')
+    for j in range(0,experimental_data_L.shape[0]-round(2 * k/100),3): #loop over trajectory for one particle
+        x1 =experimental_data_L.loc[j,'x']
+        x2 =experimental_data_L.loc[j+round(1 * k/100),'x']
+        x3 =experimental_data_L.loc[j+round(2 * k/100),'x']
+        y1 =experimental_data_L.loc[j,'y']
+        y2 =experimental_data_L.loc[j+round(1 * k/100),'y']
+        y3 =experimental_data_L.loc[j+round(2 * k/100),'y']
 
-
-
-
-    #
-
-        for j in range(0,current_experimental_data.shape[0]-round(2 * k/100),): #loop over trajectory for one particle
-            x1 =current_experimental_data.loc[j,'x']
-            x2 =current_experimental_data.loc[j+round(1 * k/100),'x']
-            x3 =current_experimental_data.loc[j+round(2 * k/100),'x']
-            y1 =current_experimental_data.loc[j,'y']
-            y2 =current_experimental_data.loc[j+round(1 * k/100),'y']
-            y3 =current_experimental_data.loc[j+round(2 * k/100),'y']
-
-       #     print(" current exp")
+        #     print(" current exp")
       #      print(current_experimental_data.loc[j])
-     #       print(" next exp")
+      #       print(" next exp")
             #print(current_experimental_data.loc[j+1])
             #print(" nextnext exp")
            # print(current_experimental_data.loc[j+2])
-            r = findCircle(x1,y1,x2,y2,x3,y3)
-            c = 1.0/r
-            #print(" r")
+        r = findCircle(x1,y1,x2,y2,x3,y3)
+        c = 1.0/r
+                #print(" r")
 
-            t1 =pow(x2-x1,2)+pow(y2-y1,2)
-            t2 =pow(x3-x2,2)+pow(y3-y2,2)
-            vel1 = sqrt(t1)/(k * pow(10,-3))
-            vel2 = sqrt(t2)/(k * pow(10,-3))
-            vel = (vel1 + vel2) * 0.5
-            pdvelcurrent1 = pd.DataFrame([[vel1]],columns = column_names_velocity)
-            pdvelcurrent2 = pd.DataFrame([[vel2]],columns = column_names_velocity)
-            ptmp = velocities.append(pdvelcurrent1,ignore_index=True)
-            velocities = ptmp
-            ptmp = velocities.append(pdvelcurrent2,ignore_index=True)
-            velocities = ptmp
-            pd2 = pd.DataFrame([[r,c,vel]], columns = column_names)
-            pd3 = curvature_data.append(pd2,ignore_index=True)
-            curvature_data = pd3
-#
-#
-#
-#
-#
-        fig_V, ax_V = plt.subplots()
-        plt.tight_layout
-        num_bins = 100
-        n, bins, patches = ax_V.hist(velocities["Velocity"], num_bins, density=1)
-        sigma = velocities["Velocity"].std()
-        mu = velocities["Velocity"].mean()
-        print("mu")
-        print(mu)
-        print("sigma")
-        print(sigma)
-        y = ((1 / (np.sqrt(2 * np.pi) * sigma)) *
-             np.exp(-0.5 * (1 / sigma * (bins - mu))**2))
-        ax_V.plot(bins, y, '--')
-        ax_V.set_xlabel("velocity [µm/s]",fontdict=None,labelpad=0, rotation=0,fontsize=10)
-        ax_V.set_ylabel("Probability Density",fontdict=None,labelpad=0,fontsize=10)
-        ax_V.ticklabel_format(axis='both', style = 'sci')
-        #ax_V.legend(loc='best',fontsize=8)
-        ax_V.grid(True,linestyle='-')
-        ax_V.set_title('Histogram for Dumbbell %i' %i + ' and time %i' %k + 'mean is %f' %mu + 'and std is %f' %sigma,fontdict= None, loc = 'center',pad=5)
-        #ax_V.set_title("Experimental Curvature vs. Velocity", fontdict= None, loc = 'center',pad=5)
-        fig_V.tight_layout()
-        fig_V.savefig('plot_results/exp_velocity_histogram %i' %i +' and time %i.pdf' %k,format='pdf')
-#
-#
-#
-#         ax_V.plot(current_experimental_data['x'], current_experimental_data['y'], marker=next(marker),linestyle=next(line),markersize = 0.8)
-#         ax_V.set_xlabel("x(t) [µm]",fontdict=None,labelpad=0)
-#         ax_V.set_ylabel("y(t) [µm]",fontdict=None,labelpad=0, rotation=90,)
-#         ax_V.ticklabel_format(axis='both', style = 'sci')
-#         ax_V.legend(loc='best',fontsize=8)
-#         ax_V.grid(True,linestyle='-')
-#         ax_V.set_title("Experimental Dumbbell Trajectories ", fontdict= None, loc = 'center',pad=5)
-#         fig_V.savefig('exp_path.pdf',format='pdf')
 
-#plt.hist(velocities["velocities"],100,density=True)
+        t1 =pow(x2-x1,2)+pow(y2-y1,2)
+        t2 =pow(x3-x2,2)+pow(y3-y2,2)
+        vel1 = sqrt(t1)/(k * pow(10,-3))
+        vel2 = sqrt(t2)/(k * pow(10,-3))
+        vel = (vel1 + vel2) * 0.5
+        pdvelcurrent1 = pd.DataFrame([[vel1]],columns = column_names_velocity)
+        pdvelcurrent2 = pd.DataFrame([[vel2]],columns = column_names_velocity)
+        ptmp = velocities.append(pdvelcurrent1,ignore_index=True)
+        velocities = ptmp
+        ptmp = velocities.append(pdvelcurrent2,ignore_index=True)
+        velocities = ptmp
+        pd2 = pd.DataFrame([[r,c,vel]], columns = column_names)
+        pd3 = curvature_data_L.append(pd2,ignore_index=True)
+        curvature_data_L = pd3
+
+    fig_V, ax_V = plt.subplots()
+    plt.tight_layout
+    num_bins = 100
+    n, bins, patches = ax_V.hist(velocities["Velocity"], num_bins, density=1)
+    sigma = velocities["Velocity"].std()
+    mu = velocities["Velocity"].mean()
+    print("mu")
+    print(mu)
+    print("sigma")
+    print(sigma)
+    y = ((1 / (np.sqrt(2 * np.pi) * sigma)) *np.exp(-0.5 * (1 / sigma * (bins - mu))**2))
+    ax_V.plot(bins, y, '--')
+    ax_V.set_xlabel("velocity [µm/s]",fontdict=None,labelpad=0, rotation=0,fontsize=10)
+    ax_V.set_ylabel("Probability Density",fontdict=None,labelpad=0,fontsize=10)
+    ax_V.ticklabel_format(axis='both', style = 'sci')
+    #ax_V.legend(loc='best',fontsize=8)
+    ax_V.grid(True,linestyle='-')
+    ax_V.set_title('Histogram for L shaped, time %i' %k + 'mean is %f' %mu + 'and std is %f' %sigma,fontdict= None, loc = 'center',pad=5)
+    #ax_V.set_title("Experimental Curvature vs. Velocity", fontdict= None, loc = 'center',pad=5)
+    fig_V.tight_layout()
+    fig_V.savefig('plot_results/exp_velocity_histogram L shaped, time %i.pdf' %k,format='pdf')
+#
+#
+    fig_V, ax_V = plt.subplots()
+    ax_V.plot(experimental_data_L['x'], experimental_data_L['y'], marker=next(marker),linestyle=next(line),markersize = 0.8)
+    ax_V.set_xlabel("x(t) [µm]",fontdict=None,labelpad=0)
+    ax_V.set_ylabel("y(t) [µm]",fontdict=None,labelpad=0, rotation=90,)
+    ax_V.ticklabel_format(axis='both', style = 'sci')
+    #ax_V.legend(loc='best',fontsize=8)
+    ax_V.grid(True,linestyle='-')
+    ax_V.set_title("Experimental L shaped Trajectories ", fontdict= None, loc = 'center',pad=5)
+    fig_V.savefig('plot_results/exp_Lshaped_path_new.pdf',format='pdf')
 
     fig_V, ax_V = plt.subplots()
     plt.tight_layout
@@ -284,12 +278,387 @@ for k in time:
     #ax_V.set_title("Experimental Curvature vs. Velocity", fontdict= None, loc = 'center',pad=5)
     fig_V.tight_layout()
     plt.show()
-    fig_V.savefig('plot_results/exp_velocity_histogram_time_%i.pdf' %k,format='pdf')
+    fig_V.savefig('plot_results/exp_velocity_histogram_Lshaped_time_%i' %k + 'mu=%f' %mu + 'and sigma= %f' %sigma +'.pdf',format='pdf')
 
-### End: plot curvature of experimental dumbbell data ##
+
+    fig_V, ax_V = plt.subplots()
+    plt.tight_layout
+    curvature_data_L = curvature_data_L[np.abs(curvature_data_L.curvature-curvature_data_L.curvature.mean())<= (3.0 * curvature_data_L.curvature.std())]
+    x = curvature_data_L['velocity']
+    y = curvature_data_L['curvature']
+    coefficients = np.polyfit(x,y,5)
+    poly = np.poly1d(coefficients)
+    new_x = np.linspace(min(x), max(x))
+    new_y = poly(new_x)
+    ax_V.plot(x,y,"o",new_x,new_y)
+    ax_V.scatter(curvature_data_L['velocity'],curvature_data_L['curvature'],s =0.3)
+    ax_V.plot(x,y,"o",new_x,new_y)
+    ax_V.set_xlabel("Velocity [µm/s]",fontdict=None,labelpad=0, rotation=0,)
+    ax_V.set_ylabel("curvature [1/µm]",fontdict=None,labelpad=0)
+    ax_V.ticklabel_format(axis='both', style = 'sci')
+    #ax_V.legend(loc='best',fontsize=8)
+    ax_V.grid(True,linestyle='-')
+    #ax_V.set_title("Experimental Curvature L shaped vs. Velocity", fontdict= None, loc = 'center',pad=5)
+    fig_V.savefig('plot_results/exp_L_shaped_curv time %i.pdf' %k,format='pdf')
+
+
+## Begin: plot curvature of simulated l data ##
+
+column_names_velocity = ["Velocity"]
+total_velocities = pd.DataFrame(columns= column_names_velocity)
+simulated_data_L = pd.read_csv("../../curvature.csv")
+simulated_data_L['x'] = simulated_data_L['x'] * pow(10,6)
+simulated_data_L['y'] = simulated_data_L['y'] * pow(10,6)
+istrue = simulated_data_L['time_passed'] <= 31
+simulated_data_L = simulated_data_L[istrue]
+
+
+fig_V, ax_V = plt.subplots()
+plt.tight_layout
+column_names = ["radius","curvature","velocity"]
+curvature_data_sim_L = pd.DataFrame(columns = column_names)
+
+time = [1000]
+for k in time:
+    for i in range(0,1):
+        print("sim")
+        print(i)
+        is_current_id = simulated_data_L['dumbbell_index'] == i
+        current_simulated_data_L = simulated_data_L[is_current_id]
+        current_simulated_data_L.reset_index(inplace=True)
+
+        column_names_velocity = ["Velocity"]
+        velocities = pd.DataFrame(columns= column_names_velocity)
+
+
+        fig_C, ax_C = plt.subplots()
+        ax_C.plot(current_simulated_data_L['x'], current_simulated_data_L['y'], marker=next(marker),linestyle=next(line),markersize = 0.8)
+        ax_C.set_xlabel("x(t) [µm]",fontdict=None,labelpad=0)
+        ax_C.set_ylabel("y(t) [µm]",fontdict=None,labelpad=0, rotation=90,)
+        ax_C.ticklabel_format(axis='both', style = 'sci')
+        #ax_C.legend(loc='best',fontsize=8)
+        ax_C.grid(True,linestyle='-')
+        #ax_C.set_title("sim dm traj ks25 bm0.3 beta0.15 %i" %i + "time=%i" %k, fontdict= None, loc = 'center',pad=5)
+        fig_C.savefig('plot_results/NEwSimulated L Trajectories ks=25 bm=0.3 beta=0.15_path_%i' %i +'_time=%i' %k +'.pdf',format='pdf')
+
+
+        cm = plt.cm.get_cmap('RdYlBu')
+        fig_V, ax_V = plt.subplots()
+        plt.tight_layout
+        sc = plt.scatter(x=current_simulated_data_L['x'],y=current_simulated_data_L['y'],c=current_simulated_data_L['time_passed'], cmap=cm, s=0.7)
+        plt.colorbar(sc)
+        plt.xlabel("x(t) [µm]",fontdict=None,labelpad=0,fontsize=10)
+        plt.ylabel("y(t) [µm]",fontdict=None,labelpad=0, rotation=90,fontsize=10)
+        #plt.legend(loc='best',fontsize=8)
+        #plt.title("NEWNEWSimulated Dumbbell Trajectories ks=29 bm=0.6 beta=0.15 %i" %i + "time=%i" %k, fontdict= None, loc = 'center',pad=5)
+        plt.savefig('plot_results/NEWNEWSimulated L Trajectories ks=29 bm=0.6 beta=0.15_path_%i' %i +'_time=%i' %k +'.pdf',format='pdf')
+
+
+        for j in range(round(current_simulated_data_L.shape[0]/100),current_simulated_data_L.shape[0]-round(2* k/100),150): #loop over trajectory for one particle
+            current_time_passed = current_simulated_data_L.loc[j,'time_passed']
+            final_row= current_simulated_data_L.tail(1)
+            max_time_passed = current_simulated_data_L['time_passed'].iloc[-1]
+            if(max_time_passed - current_time_passed > (300 * k/100 * pow(10,-3))):
+                next_time_passed = current_time_passed + (100 * k/100 * pow(10,-3))
+                next_next_time_passed = next_time_passed + (100 * k/100 * pow(10,-3))
+                #valid_data_next = current_simulated_data[current_simulated_data['time_passed']==next_time_passed]
+                valid_data_next = current_simulated_data_L.iloc[(current_simulated_data_L['time_passed']-next_time_passed).abs().argsort()[:1]]
+                valid_data_next_next = current_simulated_data_L.iloc[(current_simulated_data_L['time_passed']-next_next_time_passed).abs().argsort()[:1]]
+                #valid_data_next_next = current_simulated_data[current_simulated_data['time_passed']==next_next_time_passed]
+
+                x1 =current_simulated_data_L.loc[j,'x']
+                x2 =valid_data_next['x'].values
+                x3 =valid_data_next_next['x'].values
+                y1 =current_simulated_data_L.loc[j,'y']
+                y2 =valid_data_next['y'].values
+                y3 =valid_data_next_next['y'].values
+                r = findCircle(x1,y1,x2,y2,x3,y3)
+                #print("r")
+                #print(r)
+                #print("                               ")
+                c = 1.0/r
+                t1 =pow(x2-x1,2)+pow(y2-y1,2)
+                t2 =pow(x3-x2,2)+pow(y3-y2,2)
+                vel1 = sqrt(t1)/(100 * k/100 * pow(10,-3))
+                vel2 = sqrt(t2)/(100 * k/100 * pow(10,-3))
+                vel = (vel1 + vel2) * 0.5
+                pdvelcurrent1 = pd.DataFrame([[vel1]],columns = column_names_velocity)
+                pdvelcurrent2 = pd.DataFrame([[vel2]],columns = column_names_velocity)
+                ptmp = velocities.append(pdvelcurrent1,ignore_index=True)
+                velocities = ptmp
+                ptmp = velocities.append(pdvelcurrent2,ignore_index=True)
+                velocities = ptmp
+                pd2 = pd.DataFrame([[r,c,vel]], columns = column_names)
+                pd3 = curvature_data_sim_L.append(pd2,ignore_index=True)
+                curvature_data_sim_L = pd3
+                total_velocities = total_velocities.append(velocities)
+        fig_V, ax_V = plt.subplots()
+        plt.tight_layout
+        num_bins = 100
+        n, bins, patches = ax_V.hist(velocities["Velocity"], num_bins, density=1)
+        sigma = velocities["Velocity"].std()
+        mu = velocities["Velocity"].mean()
+        print("mu")
+        print(mu)
+        print("sigma")
+        print(sigma)
+        y = ((1 / (np.sqrt(2 * np.pi) * sigma)) * np.exp(-0.5 * (1 / sigma * (bins - mu))**2))
+        ax_V.plot(bins, y, '--')
+        ax_V.set_xlabel("velocity [µm/s]",fontdict=None,labelpad=0, rotation=0,fontsize=10)
+        ax_V.set_ylabel("Probability Density",fontdict=None,labelpad=0,fontsize=10)
+        ax_V.ticklabel_format(axis='both', style = 'sci')
+        #ax_V.legend(loc='best',fontsize=8)
+        ax_V.grid(True,linestyle='-')
+        #ax_V.set_title('Hist sim dumb ks29 bm0.6 beta0.15 %i' %i + ' and time %i' %k + 'mean is %f' %mu + 'and std is %f' %sigma,fontdict= None, loc = 'center',pad=5)
+        #ax_V.set_title("Experimental Curvature vs. Velocity", fontdict= None, loc = 'center',pad=5)
+        #fig_V.tight_layout()
+        fig_V.savefig('plot_results/ NEWNew Simulated L ks=29 bm=0.6 beta=0.15_velocity_histogram %i' %i +' and time %i.pdf' %k,format='pdf')
+
+
+
+
+
+        ax_V.plot(current_simulated_data_L['x'], current_simulated_data_L['y'], marker=next(marker),linestyle=next(line),markersize = 0.8)
+        ax_V.set_xlabel("x(t) [µm]",fontdict=None,labelpad=0)
+        ax_V.set_ylabel("y(t) [µm]",fontdict=None,labelpad=0, rotation=90,)
+        ax_V.ticklabel_format(axis='both', style = 'sci')
+        ax_V.grid(True,linestyle='-')
+        ax_V.set_title("Simulated L Trajectories ", fontdict= None, loc = 'center',pad=5)
+        fig_V.savefig('plot_results/sim_L_path.pdf',format='pdf')
+
+    fig_V, ax_V = plt.subplots()
+    plt.tight_layout
+    curvature_data_sim_L = curvature_data_sim_L[np.abs(curvature_data_sim_L.curvature-curvature_data_sim_L.curvature.mean())<= (3.0 * curvature_data_sim_L.curvature.std())]
+    #curvature_data_sim_L = curvature_data_sim_L[curvature_data_sim_L.velocity >=  2.35]
+    #curvature_data_sim_L = curvature_data_sim_L[curvature_data_sim_L.velocity <=  5.0]
+    #curvature_data_sim_L = curvature_data_sim_L[curvature_data_sim_L.velocity >=  4.7]
+
+    x = curvature_data_sim_L['velocity']
+    y = curvature_data_sim_L['curvature']
+    coefficients = np.polyfit(x,y,5)
+    poly = np.poly1d(coefficients)
+    new_x = np.linspace(min(x), max(x))
+    new_y = poly(new_x)
+    ax_V.plot(x,y,"o",new_x,new_y)
+    ax_V.scatter(curvature_data_sim_L['velocity'],curvature_data_sim_L['curvature'],s =0.3)
+    ax_V.plot(x,y,"o",new_x,new_y)
+    ax_V.set_xlabel("Velocity [µm/s]",fontdict=None,labelpad=0, rotation=0,)
+    ax_V.set_ylabel("curvature [1/µm]",fontdict=None,labelpad=0)
+    ax_V.ticklabel_format(axis='both', style = 'sci')
+    #ax_V.legend(loc='best',fontsize=8)
+    ax_V.grid(True,linestyle='-')
+    #ax_V.set_title("Simulated L Curvature vs. Velocity", fontdict= None, loc = 'center',pad=5)
+    fig_V.savefig('plot_results/sim_L_curv time %i.pdf' %k,format='pdf')
+
+    fig_V, ax_V = plt.subplots()
+    plt.tight_layout
+    num_bins = 100
+    n, bins, patches = ax_V.hist(total_velocities["Velocity"], num_bins, density=1)
+    sigma = total_velocities["Velocity"].std()
+    mu = total_velocities["Velocity"].mean()
+    print("mu")
+    print(mu)
+    print("sigma")
+    print(sigma)
+    y = ((1 / (np.sqrt(2 * np.pi) * sigma)) *
+         np.exp(-0.5 * (1 / sigma * (bins - mu))**2))
+    ax_V.plot(bins, y, '--')
+    ax_V.set_xlabel("velocity [µm/s]",fontdict=None,labelpad=0, rotation=0,fontsize=10)
+    ax_V.set_ylabel("Probability Density",fontdict=None,labelpad=0,fontsize=10)
+    ax_V.ticklabel_format(axis='both', style = 'sci')
+    #ax_V.legend(loc='best',fontsize=8)
+    ax_V.grid(True,linestyle='-')
+    #ax_V.set_title("Experimental Curvature vs. Velocity", fontdict= None, loc = 'center',pad=5)
+    fig_V.tight_layout()
+    plt.show()
+    fig_V.savefig('plot_results/simulated_total__L_velocity_histogram time %i' %k  + 'mean is %f' %mu + 'and std is %f' %sigma + ' _.pdf',format='pdf')
+##End : plot curvature of simulated dumbbell data ##
+
+
+## End: plot curvature of experimental L shaped data ##
+
+
 
 
 ## Begin: plot curvature of simulated dumbbell data ##
+
+
+
+
+
+
+
+
+
+
+
+
+
+##begin: plot curvature of experimental dumbell data####
+#
+# column_names_velocity = ["Velocity"]
+# velocities = pd.DataFrame(columns= column_names_velocity)
+#
+# experimental_data_dumbbell = pd.read_csv('../../Active_dumbbels_trajectories.txt',sep="   ", header=None,skiprows=1)
+# experimental_data_dumbbell.columns = ['x','y','frame_id','particle_id']
+# experimental_data_dumbbell = experimental_data_dumbbell[experimental_data_dumbbell.particle_id !=3]
+#
+#
+#
+# experimental_data_dumbbell['x'] = experimental_data_dumbbell['x'] * 0.41
+# experimental_data_dumbbell['y'] = experimental_data_dumbbell['y'] * 0.41
+# #print("hello")
+# #print(experimental_data_dumbbell)
+# experimental_data_dumbbell['Time passed [s]'] = (experimental_data_dumbbell['frame_id'] - 1) * 100 * pow(10,-3)
+# fig_V, ax_V = plt.subplots()
+# plt.tight_layout
+# column_names = ["radius","curvature","velocity"]
+# curvature_data = pd.DataFrame(columns = column_names)
+# unique_ids = experimental_data_dumbbell.particle_id.unique()
+# print(unique_ids)
+# n = unique_ids.shape[0]
+# n=15
+# print(n)
+# time = [1000]
+# print(time)
+# for k in time:
+#     for i in range(1,15,1):
+#         if (i != 3):
+#             print(i)
+#             is_current_id = experimental_data_dumbbell['particle_id'] == i
+#             current_experimental_data = experimental_data_dumbbell[is_current_id]
+#             current_experimental_data.reset_index(inplace=True)
+#             column_names_velocity = ["Velocity"]
+#             velocities = pd.DataFrame(columns= column_names_velocity)
+#
+#
+#             fig_C, ax_C = plt.subplots()
+#             ax_C.plot(current_experimental_data['x'], current_experimental_data['y'], marker=next(marker),linestyle=next(line),markersize = 0.8)
+#             ax_C.set_xlabel("x(t) [µm]",fontdict=None,labelpad=0)
+#             ax_C.set_ylabel("y(t) [µm]",fontdict=None,labelpad=0, rotation=90,)
+#             ax_C.ticklabel_format(axis='both', style = 'sci')
+#             ax_C.legend(loc='best',fontsize=8)
+#             ax_C.grid(True,linestyle='-')
+#             ax_C.set_title("Experimental Dumbbell Trajectories %i" %i + "time=%i" %k, fontdict= None, loc = 'center',pad=5)
+#             fig_C.savefig('plot_results/exp_path_%i' %i +'_time=%i' %k +'.pdf',format='pdf')
+#
+#             cm = plt.cm.get_cmap('RdYlBu')
+#             fig_V, ax_V = plt.subplots()
+#             plt.tight_layout
+#             sc = plt.scatter(x=current_experimental_data['x'],y=current_experimental_data['y'],c=current_experimental_data['Time passed [s]'], cmap=cm, s=0.7)
+#             plt.colorbar(sc)
+#             plt.xlabel("x(t) [µm]",fontdict=None,labelpad=0,fontsize=10)
+#             plt.ylabel("y(t) [µm]",fontdict=None,labelpad=0, rotation=90,fontsize=10)
+#             plt.legend(loc='best',fontsize=8)
+#             plt.title("Experimental Dumbbell Trajectories  %i" %i + "time=%i" %k, fontdict= None, loc = 'center',pad=5)
+#             plt.savefig('plot_results/Experimental Dumbbell Trajectories %i' %i +'_time=%i' %k +'.pdf',format='pdf')
+#
+#
+#
+#
+#         #
+#
+#             for j in range(0,current_experimental_data.shape[0]-round(2 * k/100),3): #loop over trajectory for one particle
+#                 x1 =current_experimental_data.loc[j,'x']
+#                 x2 =current_experimental_data.loc[j+round(1 * k/100),'x']
+#                 x3 =current_experimental_data.loc[j+round(2 * k/100),'x']
+#                 y1 =current_experimental_data.loc[j,'y']
+#                 y2 =current_experimental_data.loc[j+round(1 * k/100),'y']
+#                 y3 =current_experimental_data.loc[j+round(2 * k/100),'y']
+#
+#            #     print(" current exp")
+#           #      print(current_experimental_data.loc[j])
+#          #       print(" next exp")
+#                 #print(current_experimental_data.loc[j+1])
+#                 #print(" nextnext exp")
+#                # print(current_experimental_data.loc[j+2])
+#                 r = findCircle(x1,y1,x2,y2,x3,y3)
+#                 c = 1.0/r
+#                 #print(" r")
+#
+#                 t1 =pow(x2-x1,2)+pow(y2-y1,2)
+#                 t2 =pow(x3-x2,2)+pow(y3-y2,2)
+#                 vel1 = sqrt(t1)/(k * pow(10,-3))
+#                 vel2 = sqrt(t2)/(k * pow(10,-3))
+#                 vel = (vel1 + vel2) * 0.5
+#                 pdvelcurrent1 = pd.DataFrame([[vel1]],columns = column_names_velocity)
+#                 pdvelcurrent2 = pd.DataFrame([[vel2]],columns = column_names_velocity)
+#                 ptmp = velocities.append(pdvelcurrent1,ignore_index=True)
+#                 velocities = ptmp
+#                 ptmp = velocities.append(pdvelcurrent2,ignore_index=True)
+#                 velocities = ptmp
+#                 pd2 = pd.DataFrame([[r,c,vel]], columns = column_names)
+#                 pd3 = curvature_data.append(pd2,ignore_index=True)
+#                 curvature_data = pd3
+#     #
+#     #
+#     #
+#     #
+#     #
+#             fig_V, ax_V = plt.subplots()
+#             plt.tight_layout
+#             num_bins = 100
+#             n, bins, patches = ax_V.hist(velocities["Velocity"], num_bins, density=1)
+#             sigma = velocities["Velocity"].std()
+#             mu = velocities["Velocity"].mean()
+#             print("mu")
+#             print(mu)
+#             print("sigma")
+#             print(sigma)
+#             y = ((1 / (np.sqrt(2 * np.pi) * sigma)) *
+#                  np.exp(-0.5 * (1 / sigma * (bins - mu))**2))
+#             ax_V.plot(bins, y, '--')
+#             ax_V.set_xlabel("velocity [µm/s]",fontdict=None,labelpad=0, rotation=0,fontsize=10)
+#             ax_V.set_ylabel("Probability Density",fontdict=None,labelpad=0,fontsize=10)
+#             ax_V.ticklabel_format(axis='both', style = 'sci')
+#             #ax_V.legend(loc='best',fontsize=8)
+#             ax_V.grid(True,linestyle='-')
+#             ax_V.set_title('Histogram for Dumbbell %i' %i + ' and time %i' %k + 'mean is %f' %mu + 'and std is %f' %sigma,fontdict= None, loc = 'center',pad=5)
+#             #ax_V.set_title("Experimental Curvature vs. Velocity", fontdict= None, loc = 'center',pad=5)
+#             fig_V.tight_layout()
+#             fig_V.savefig('plot_results/exp_velocity_histogram %i' %i +' and time %i.pdf' %k,format='pdf')
+# #
+# #
+#             fig_V, ax_V = plt.subplots()
+#             ax_V.plot(current_experimental_data['x'], current_experimental_data['y'], marker=next(marker),linestyle=next(line),markersize = 0.8)
+#             ax_V.set_xlabel("x(t) [µm]",fontdict=None,labelpad=0)
+#             ax_V.set_ylabel("y(t) [µm]",fontdict=None,labelpad=0, rotation=90,)
+#             ax_V.ticklabel_format(axis='both', style = 'sci')
+#             #ax_V.legend(loc='best',fontsize=8)
+#             ax_V.grid(True,linestyle='-')
+#             ax_V.set_title("Experimental Dumbbell Trajectories ", fontdict= None, loc = 'center',pad=5)
+#             fig_V.savefig('plot_results/exp_path_new.pdf',format='pdf')
+#
+# #plt.hist(velocities["velocities"],100,density=True)
+#
+#     fig_V, ax_V = plt.subplots()
+#     plt.tight_layout
+#     num_bins = 100
+#     n, bins, patches = ax_V.hist(velocities["Velocity"], num_bins, density=1)
+#     sigma = velocities["Velocity"].std()
+#     mu = velocities["Velocity"].mean()
+#     print("mu")
+#     print(mu)
+#     print("sigma")
+#     print(sigma)
+#     y = ((1 / (np.sqrt(2 * np.pi) * sigma)) *
+#          np.exp(-0.5 * (1 / sigma * (bins - mu))**2))
+#     ax_V.plot(bins, y, '--')
+#     ax_V.set_xlabel("velocity [µm/s]",fontdict=None,labelpad=0, rotation=0,fontsize=10)
+#     ax_V.set_ylabel("Probability Density",fontdict=None,labelpad=0,fontsize=10)
+#     ax_V.ticklabel_format(axis='both', style = 'sci')
+#     #ax_V.legend(loc='best',fontsize=8)
+#     ax_V.grid(True,linestyle='-')
+#     #ax_V.set_title("Experimental Curvature vs. Velocity", fontdict= None, loc = 'center',pad=5)
+#     fig_V.tight_layout()
+#     plt.show()
+#     fig_V.savefig('plot_results/exp_velocity_histogram_time_%i' %k + '_without3_mu=%f' %mu + 'and sigma= %f' %sigma +'.pdf',format='pdf')
+#
+ ## End: plot curvature of experimental dumbbell data ##
+
+
+## Begin: plot curvature of simulated dumbbell data ##
+
 column_names_velocity = ["Velocity"]
 total_velocities = pd.DataFrame(columns= column_names_velocity)
 simulated_data_dumbbell = pd.read_csv("../../curvature.csv")
@@ -301,9 +670,12 @@ column_names = ["radius","curvature","velocity"]
 curvature_data_sim = pd.DataFrame(columns = column_names)
 unique_ids = simulated_data_dumbbell.dumbbell_index.unique()
 n = unique_ids.shape[0]
-time = [100,1000]
+print(n)
+time = [100]
 for k in time:
-    for i in range(0,n,1):
+    for i in range(0,n):
+        print("sim")
+        print(i)
         is_current_id = simulated_data_dumbbell['dumbbell_index'] == i
         current_simulated_data = simulated_data_dumbbell[is_current_id]
         current_simulated_data.reset_index(inplace=True)
@@ -317,10 +689,10 @@ for k in time:
         ax_C.set_xlabel("x(t) [µm]",fontdict=None,labelpad=0)
         ax_C.set_ylabel("y(t) [µm]",fontdict=None,labelpad=0, rotation=90,)
         ax_C.ticklabel_format(axis='both', style = 'sci')
-        ax_C.legend(loc='best',fontsize=8)
+        #ax_C.legend(loc='best',fontsize=8)
         ax_C.grid(True,linestyle='-')
-        ax_C.set_title("Simulated Dumbbell Trajectories ks=25 bm=0.3 beta=0.15 %i" %i + "time=%i" %k, fontdict= None, loc = 'center',pad=5)
-        fig_C.savefig('plot_results/Simulated Dumbbell Trajectories ks=25 bm=0.3 beta=0.15_path_%i' %i +'_time=%i' %k +'.pdf',format='pdf')
+        #ax_C.set_title("sim dm traj ks25 bm0.3 beta0.15 %i" %i + "time=%i" %k, fontdict= None, loc = 'center',pad=5)
+        fig_C.savefig('plot_results/NEwSimulated Dumbbell Trajectories ks=25 bm=0.3 beta=0.15_path_%i' %i +'_time=%i' %k +'.pdf',format='pdf')
 
 
         cm = plt.cm.get_cmap('RdYlBu')
@@ -330,28 +702,23 @@ for k in time:
         plt.colorbar(sc)
         plt.xlabel("x(t) [µm]",fontdict=None,labelpad=0,fontsize=10)
         plt.ylabel("y(t) [µm]",fontdict=None,labelpad=0, rotation=90,fontsize=10)
-        plt.legend(loc='best',fontsize=8)
-        plt.title("Simulated Dumbbell Trajectories ks=25 bm=0.3 beta=0.15 %i" %i + "time=%i" %k, fontdict= None, loc = 'center',pad=5)
-        plt.savefig('plot_results/Simulated Dumbbell Trajectories ks=25 bm=0.3 beta=0.15_path_%i' %i +'_time=%i' %k +'.pdf',format='pdf')
+        #plt.legend(loc='best',fontsize=8)
+        #plt.title("NEWNEWSimulated Dumbbell Trajectories ks=29 bm=0.6 beta=0.15 %i" %i + "time=%i" %k, fontdict= None, loc = 'center',pad=5)
+        plt.savefig('plot_results/NEWNEWSimulated Dumbbell Trajectories ks=29 bm=0.6 beta=0.15_path_%i' %i +'_time=%i' %k +'.pdf',format='pdf')
 
 
-        for j in range(round(current_simulated_data.shape[0]/6),current_simulated_data.shape[0]-2,10): #loop over trajectory for one particle
+        for j in range(round(current_simulated_data.shape[0]/100),current_simulated_data.shape[0]-round(2* k/100),20): #loop over trajectory for one particle
             current_time_passed = current_simulated_data.loc[j,'time_passed']
             final_row= current_simulated_data.tail(1)
             max_time_passed = current_simulated_data['time_passed'].iloc[-1]
-            if(max_time_passed - current_time_passed > (300 * pow(10,-3))):
-                next_time_passed = current_time_passed + (100 * pow(10,-3))
-                next_next_time_passed = next_time_passed + (100 * pow(10,-3))
+            if(max_time_passed - current_time_passed > (300 * k/100 * pow(10,-3))):
+                next_time_passed = current_time_passed + (100 * k/100 * pow(10,-3))
+                next_next_time_passed = next_time_passed + (100 * k/100 * pow(10,-3))
                 #valid_data_next = current_simulated_data[current_simulated_data['time_passed']==next_time_passed]
                 valid_data_next = current_simulated_data.iloc[(current_simulated_data['time_passed']-next_time_passed).abs().argsort()[:1]]
                 valid_data_next_next = current_simulated_data.iloc[(current_simulated_data['time_passed']-next_next_time_passed).abs().argsort()[:1]]
                 #valid_data_next_next = current_simulated_data[current_simulated_data['time_passed']==next_next_time_passed]
-                print("current")
-                print(current_simulated_data.loc[j])
-                print("next")
-                print(valid_data_next)
-                print("next next")
-                print(valid_data_next_next)
+
                 x1 =current_simulated_data.loc[j,'x']
                 x2 =valid_data_next['x'].values
                 x3 =valid_data_next_next['x'].values
@@ -359,14 +726,14 @@ for k in time:
                 y2 =valid_data_next['y'].values
                 y3 =valid_data_next_next['y'].values
                 r = findCircle(x1,y1,x2,y2,x3,y3)
-                print("r")
-                print(r)
-                print("                               ")
+                #print("r")
+                #print(r)
+                #print("                               ")
                 c = 1.0/r
                 t1 =pow(x2-x1,2)+pow(y2-y1,2)
                 t2 =pow(x3-x2,2)+pow(y3-y2,2)
-                vel1 = sqrt(t1)/(100 * pow(10,-3))
-                vel2 = sqrt(t2)/(100 * pow(10,-3))
+                vel1 = sqrt(t1)/(100 * k/100 * pow(10,-3))
+                vel2 = sqrt(t2)/(100 * k/100 * pow(10,-3))
                 vel = (vel1 + vel2) * 0.5
                 pdvelcurrent1 = pd.DataFrame([[vel1]],columns = column_names_velocity)
                 pdvelcurrent2 = pd.DataFrame([[vel2]],columns = column_names_velocity)
@@ -395,10 +762,10 @@ for k in time:
         ax_V.ticklabel_format(axis='both', style = 'sci')
         #ax_V.legend(loc='best',fontsize=8)
         ax_V.grid(True,linestyle='-')
-        ax_V.set_title('Histogram for Simulated Dumbbell ks=25 bm=0.3 beta=0.15 %i' %i + ' and time %i' %k + 'mean is %f' %mu + 'and std is %f' %sigma,fontdict= None, loc = 'center',pad=5)
+        #ax_V.set_title('Hist sim dumb ks29 bm0.6 beta0.15 %i' %i + ' and time %i' %k + 'mean is %f' %mu + 'and std is %f' %sigma,fontdict= None, loc = 'center',pad=5)
         #ax_V.set_title("Experimental Curvature vs. Velocity", fontdict= None, loc = 'center',pad=5)
-        fig_V.tight_layout()
-        fig_V.savefig('plot_results/Simulated Dumbbell ks=25 bm=0.3 beta=0.15_velocity_histogram %i' %i +' and time %i.pdf' %k,format='pdf')
+        #fig_V.tight_layout()
+        fig_V.savefig('plot_results/ NEWNew Simulated Dumbbell ks=29 bm=0.6 beta=0.15_velocity_histogram %i' %i +' and time %i.pdf' %k,format='pdf')
 
 
 
@@ -453,7 +820,7 @@ for k in time:
     #ax_V.set_title("Experimental Curvature vs. Velocity", fontdict= None, loc = 'center',pad=5)
     fig_V.tight_layout()
     plt.show()
-    fig_V.savefig('plot_results/simulated_total_velocity_histogram time %i_.pdf' %k,format='pdf')
+    fig_V.savefig('plot_results/simulated_total_velocity_histogram time %i' %k  + 'mean is %f' %mu + 'and std is %f' %sigma + ' _.pdf',format='pdf')
 ##End : plot curvature of simulated dumbbell data ##
 
 
@@ -462,34 +829,24 @@ for k in time:
 position = pd.read_csv("../../position.csv")
 rotator_position = pd.read_csv("../../rotator_position.csv")
 triangle_position = pd.read_csv("../../triangle_position.csv")
-print("triangle positions")
-print(triangle_position)
-print("rotator_position")
-print(rotator_position)
 FMA = pd.read_csv("../../FMA.csv")
 brownian = pd.read_csv("../../brownian.csv")
 drag = pd.read_csv("../../drag.csv")
-print("brownian")
-print(brownian)
+
 #print(position)
 ehd = pd.read_csv("../../ehd.csv")
 spring = pd.read_csv("../../spring.csv")
-print("spring")
-print(spring)
-print("ehd")
-print(ehd)
+
 amount = pd.read_csv("../../amount.csv")
-print(amount)
-print("position")
-print(position)
+
 
 data = pd.read_csv("../../data.csv")
 data2 = pd.read_csv("../../data2.csv")
 v_w_data = pd.read_csv("../../v_w.csv")
 
-print("v_W_data")
+
 pd.set_option("display.max_rows", None, "display.max_columns", None)
-print(v_w_data)
+
 
 v_E_data = pd.read_csv("../../v_E.csv")
 #print(v_E_data)

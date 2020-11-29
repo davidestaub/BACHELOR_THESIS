@@ -41,16 +41,23 @@ public:
 
 
         //frist triangle from laura
-       // simulation.connect(A_t,B_t,(A_t.radius+B_t.radius),connected_particles);
+        //simulation.connect(A_t,B_t,(A_t.radius+B_t.radius),connected_particles);
        // simulation.connect(B_t,C_t,(B_t.radius + C_t.radius), connected_particles);
-       // simulation.connect(A_t,C_t,(std::sqrt(std::pow(B_t.radius + A_t.radius,2) + std::pow(B_t.radius+C_t.radius,2))), connected_particles);
+        //simulation.connect(A_t,C_t,(std::sqrt(std::pow(B_t.radius + A_t.radius,2) + std::pow(B_t.radius+C_t.radius,2))), connected_particles);
+
+        //experimental dual directional triangle
+         //simulation.connect(A_d,B_d,(A_d.radius+B_d.radius),connected_particles);
+        //simulation.connect(B_d,C_d,(B_d.radius + C_d.radius), connected_particles);
+        //simulation.connect(A_d,C_d,(A_d.radius + C_d.radius), connected_particles);
+
+
 
         //dumbel
         simulation.connect(A,B,(A.radius+B.radius),connected_particles);
-        simulation.connect(A_2,B_2,(A_2.radius+B_2.radius),connected_particles);
-        simulation.connect(A_3,B_3,(A_3.radius+B_3.radius),connected_particles);
-        /*simulation.connect(A_4,B_4,(A_4.radius+B_4.radius),connected_particles);
-        simulation.connect(A_5,B_5,(A_5.radius+B_5.radius),connected_particles);
+        //simulation.connect(A_2,B_2,(A_2.radius+B_2.radius),connected_particles);
+        //simulation.connect(A_3,B_3,(A_3.radius+B_3.radius),connected_particles);
+        //simulation.connect(A_4,B_4,(A_4.radius+B_4.radius),connected_particles);
+        /*simulation.connect(A_5,B_5,(A_5.radius+B_5.radius),connected_particles);
         simulation.connect(A_6,B_6,(A_6.radius+B_6.radius),connected_particles);
         simulation.connect(A_7,B_7,(A_7.radius+B_7.radius),connected_particles);
         simulation.connect(A_8,B_8,(A_8.radius+B_8.radius),connected_particles);
@@ -59,35 +66,10 @@ public:
 
         //rotator
        // simulation.connect(A,B,(A.radius+B.radius),connected_particles);
-      //  simulation.connect(B,C,(B.radius+C.radius),connected_particles);
-      //  simulation.connect(C,D,(C.radius+D.radius),connected_particles);
-      //  simulation.connect(A,C,(std::sqrt(std::pow((A.radius + B.radius),2) + std::pow((B.radius + C.radius),2))),connected_particles);
-      //  simulation.connect(B,D,(std::sqrt(std::pow((B.radius + C.radius),2) + std::pow((C.radius + D.radius),2))),connected_particles);
-
-        //spiral triangle that does not do spirals
-        // simulation.connect(A,B,(A.radius+B.radius),connected_particles);
-       //    double fix_rest = std::sqrt(std::pow(mscale *(100.0 - (104.0 + 5.0/std::sqrt(2))),2) + std::pow(mscale *(100.0 - (100.0 + 5.0/std::sqrt(2))),2));
-        //   simulation.connect(B,C,(fix_rest), connected_particles);
-        //  simulation.connect(A,C,A.radius + C.radius, connected_particles);
-
-
-        //spiral triangle
-       // simulation.connect(A,B,(A.radius+B.radius),connected_particles);
-       // double fix_rest_2 = std::sqrt(std::pow(mscale *(100.0 - (105.0 + 4.0/std::sqrt(2))),2) + std::pow(mscale *(100.0 - (100.0 + 4.0/std::sqrt(2))),2));
-        //simulation.connect(B,C,(fix_rest_2), connected_particles);
-        //simulation.connect(A,C,A.radius + C.radius, connected_particles);
-
-
-
-        // L shaped particle system
-       //simulation.connect(A,B,(A.radius+B.radius),connected_particles);
-       // simulation.connect(B,C,(B.radius + 2.0 *A.radius + C.radius),connected_particles);
-       // simulation.connect(A,C,(A.radius+C.radius),connected_particles);
-       //simulation.connect(C,D,(C.radius+D.radius),connected_particles);
-       // simulation.connect(Up,B,(Up.radius+B.radius),connected_particles);
-       // simulation.connect(D,B,(2.0 *A.radius+B.radius + 2.0 * C.radius + D.radius),connected_particles);
-       // simulation.connect(A,D,(A.radius+ 2.0 *C.radius + D.radius),connected_particles);
-       // simulation.connect(Up,A,(std::sqrt(std::pow(B.radius + A.radius,2) + std::pow(B.radius+Up.radius,2))), connected_particles);
+        //simulation.connect(B,C,(B.radius+C.radius),connected_particles);
+        //simulation.connect(C,D,(C.radius+D.radius),connected_particles);
+        //simulation.connect(A,C,(std::sqrt(std::pow((A.radius + B.radius),2) + std::pow((B.radius + C.radius),2))),connected_particles);
+        //simulation.connect(B,D,(std::sqrt(std::pow((B.radius + C.radius),2) + std::pow((C.radius + D.radius),2))),connected_particles);
 
 
 
@@ -114,19 +96,24 @@ public:
           //  simulation.connect_new(A,C,(A.radius + 2.0 * B.radius + C.radius), connected_particles,2);
 
 
-            //first triangle from laura
-          //  simulation.connect_new(A_t,B_t,(A_t.radius+B_t.radius),connected_particles,0);
-          //  simulation.connect_new(B_t,C_t,(B_t.radius + C_t.radius), connected_particles,1);
-         //   simulation.connect_new(A_t,C_t,(std::sqrt(std::pow(B_t.radius + A_t.radius,2) + std::pow(B_t.radius+C_t.radius,2))), connected_particles,2);
+            //L-shaped PS-PS-microgel from laura
+            //simulation.connect_new(A_t,B_t,(A_t.radius+B_t.radius),connected_particles,0);
+            //simulation.connect_new(B_t,C_t,(B_t.radius + C_t.radius), connected_particles,1);
+            //simulation.connect_new(A_t,C_t,(std::sqrt(std::pow(B_t.radius + A_t.radius,2) + std::pow(B_t.radius+C_t.radius,2))), connected_particles,2);
 
+
+            //experimental dual directional triangle
+           // simulation.connect_new(A_d,B_d,(A_d.radius+B_d.radius),connected_particles,0);
+           // simulation.connect_new(B_d,C_d,(B_d.radius + C_d.radius), connected_particles,1);
+           // simulation.connect_new(A_d,C_d,(A_d.radius + C_d.radius), connected_particles,2);
 
 
             //dumbel
             simulation.connect_new(A,B,(A.radius + B.radius), connected_particles,0);
-            simulation.connect_new(A_2,B_2,(A_2.radius+B_2.radius),connected_particles,1);
-            simulation.connect_new(A_3,B_3,(A_3.radius+B_3.radius),connected_particles,2);
-           /* simulation.connect_new(A_4,B_4,(A_4.radius+B_4.radius),connected_particles,3);
-            simulation.connect_new(A_5,B_5,(A_5.radius+B_5.radius),connected_particles,4);
+           // simulation.connect_new(A_2,B_2,(A_2.radius+B_2.radius),connected_particles,1);
+            //simulation.connect_new(A_3,B_3,(A_3.radius+B_3.radius),connected_particles,2);
+            //simulation.connect_new(A_4,B_4,(A_4.radius+B_4.radius),connected_particles,3);
+            /*simulation.connect_new(A_5,B_5,(A_5.radius+B_5.radius),connected_particles,4);
             simulation.connect_new(A_6,B_6,(A_6.radius+B_6.radius),connected_particles,5);
             simulation.connect_new(A_7,B_7,(A_7.radius+B_7.radius),connected_particles,6);
             simulation.connect_new(A_8,B_8,(A_8.radius+B_8.radius),connected_particles,7);
@@ -135,38 +122,14 @@ public:
 
 
             //rotator
-         //   simulation.connect_new(A,B,(A.radius+B.radius),connected_particles,0);
-         //   simulation.connect_new(B,C,(B.radius+C.radius),connected_particles,1);
-          //  simulation.connect_new(C,D,(C.radius+D.radius),connected_particles,2);
-         //   simulation.connect_new(A,C,(std::sqrt(std::pow((A.radius + B.radius),2) + std::pow((B.radius + C.radius),2))),connected_particles,3);
-         //   simulation.connect_new(B,D,(std::sqrt(std::pow((B.radius + C.radius),2) + std::pow((C.radius + D.radius),2))),connected_particles,4);
+            //simulation.connect_new(A,B,(A.radius+B.radius),connected_particles,0);
+            //simulation.connect_new(B,C,(B.radius+C.radius),connected_particles,1);
+            //simulation.connect_new(C,D,(C.radius+D.radius),connected_particles,2);
+            //simulation.connect_new(A,C,(std::sqrt(std::pow((A.radius + B.radius),2) + std::pow((B.radius + C.radius),2))),connected_particles,3);
+            //simulation.connect_new(B,D,(std::sqrt(std::pow((B.radius + C.radius),2) + std::pow((C.radius + D.radius),2))),connected_particles,4);
 
 
 
-            //spiral triangle that does not do spirals
-          //  simulation.connect_new(A,B,(A.radius+B.radius),connected_particles,0);
-          //  double fix_rest = std::sqrt(std::pow(mscale *(100.0 - (104.0 + 5.0/std::sqrt(2))),2) + std::pow(mscale *(100.0 - (100.0 + 5.0/std::sqrt(2))),2));
-          //  simulation.connect_new(B,C,(fix_rest), connected_particles,1);
-          //  simulation.connect_new(A,C,A.radius + C.radius, connected_particles,2);
-
-            //spiral triangle
-           // simulation.connect_new(A,B,(A.radius+B.radius),connected_particles,0);
-            //double fix_rest_2 = std::sqrt(std::pow(mscale *(100.0 - (105.0 + 4.0/std::sqrt(2))),2) + std::pow(mscale *(100.0 - (100.0 + 4.0/std::sqrt(2))),2));
-            //simulation.connect_new(B,C,(fix_rest_2), connected_particles,1);
-            //simulation.connect_new(A,C,A.radius + C.radius, connected_particles,2);
-
-
-            // L shaped particle system
-         // simulation.connect_new(A,B,(A.radius+B.radius),connected_particles,0);
-         /*   simulation.connect_new(B,C,(B.radius + 2.0 *A.radius + C.radius),connected_particles,1);
-            simulation.connect_new(A,C,(A.radius+C.radius),connected_particles,2);
-
-            simulation.connect_new(C,D,(C.radius+D.radius),connected_particles,3);
-            simulation.connect_new(Up,B,(Up.radius+B.radius),connected_particles,4);
-            simulation.connect_new(D,B,(2.0 *A.radius+B.radius + 2.0 * C.radius + D.radius),connected_particles,5);
-            simulation.connect_new(A,D,(A.radius+ 2.0 *C.radius + D.radius),connected_particles,6);
-            simulation.connect_new(Up,A,(std::sqrt(std::pow(B.radius + A.radius,2) + std::pow(B.radius+Up.radius,2))), connected_particles,7);
-*/
 
 
     // move image if right mouse button is pressed
@@ -377,7 +340,7 @@ public:
                             A.density = 2650.0;
                             A.mass = A.density * (4.0/3.0) * M_PI * std::pow(A.radius,3); //new
                             A.stern_layer_conductance = 0.05 * std::pow(10,-9);
-                            A.zeta_potential = -1.0 * 43 * std::pow(10,-3);
+                            A.zeta_potential = -1.0 * 67 * std::pow(10,-3);
                         }
                         std::string PS_label = label;
                         std::string PS = " PS";
@@ -513,7 +476,7 @@ public:
 
                             B.mass = B.density * (4.0/3.0) * M_PI * std::pow(B.radius,3);
                             B.stern_layer_conductance = 0.05 * std::pow(10,-9);
-                            A.zeta_potential = -1.0 * 43 * std::pow(10,-3);
+                            B.zeta_potential = -1.0 * 64 * std::pow(10,-3);
                         }
                         std::string PS_label = label;
                         std::string PS = " PS";
@@ -539,7 +502,7 @@ public:
                         if(Checkbox(PNiPAM_microgel_label_, &B.is_PNiPAM_microgel)){
                             B.permittivity = 2000;
                             B.density = 1100;
-                            B.mass = A.density * (4.0/3.0) * M_PI * std::pow(A.radius,3);
+                            B.mass = B.density * (4.0/3.0) * M_PI * std::pow(B.radius,3);
                             B.stern_layer_conductance = 5 * std::pow(10,-9);
                             B.zeta_potential = -10.0 * std::pow(10,-3); //check if mv or V
 
@@ -602,8 +565,8 @@ public:
                     simulation.upper_electrode.position[2] = simulation.lower_electrode.position[2] + 100.0 * mscale;
 
                 }
-                if(Checkbox(" SETUP Microgel - PS Experiment", &second_experiment)){
-                    simulation.beta_ehd = 0.1478;
+                if(Checkbox(" SETUP Microgel - PS Experiment", &third_experiment)){
+                    simulation.beta_ehd = 1.034 * 2.0 *0.1478;
                     //simulation.lower_electrode.frequency = 500.0;
                     simulation.lower_electrode.peak_voltage = 5.0;
                     simulation.lower_electrode.frequency = 300.0;
@@ -633,6 +596,7 @@ public:
                                  &max_time_step)) {
                     std::cout << simulation.time_step;
                 }
+                Checkbox("Slipstream",&simulation.slipstream);
                 if(Checkbox("Set Time Step to 1ms",&set_t_to_1ms)){
                     simulation.time_step = 1.0 * std::pow(10.0,-3.0);
                 }
@@ -1082,27 +1046,32 @@ public:
    //  Particle B = Particle(1050,2.0* mscale,-1.0,{105.0 * mscale,100.0 * mscale, 100.0 * mscale});
    //  Particle C = Particle(1050,3.0* mscale,-1.0,{110.0 * mscale,100.0 * mscale, 100.0 * mscale});
 
-    //first triangle from laura
-  //  Particle A_t = Particle(1050 ,1.5 * mscale,-1.0,{102.5 * mscale,100.0 * mscale, 100.0 * mscale});
-  //Particle B_t = Particle(1050,1.0* mscale,-1.0,{100.0 * mscale,100.0 * mscale, 100.0 * mscale});
-  //  Particle C_t = Particle(1050,1.0* mscale,-1.0,{100.0 * mscale,102.0 * mscale, 100.0 * mscale});
+    //L shaped PS-PS-microgel  from laura
+   // Particle A_t = Particle(1050 ,1.0 * mscale,-1.0,{100.0 * mscale,102.0 * mscale, 100.0 * mscale});
+   // Particle B_t = Particle(1050,1.0* mscale,-1.0,{100.0 * mscale,100.0 * mscale, 100.0 * mscale});
+   // Particle C_t = Particle(1050,0.7* mscale,-1.0,{101.7 * mscale,100.0 * mscale, 100.0 * mscale});
+
+    //experimental dual directional triangle
+    //Particle A_d = Particle(1050 ,1.0 * mscale,-1.0,{100.0 * mscale,100.0 * mscale, 100.0 * mscale});
+    //Particle B_d = Particle(1050,2.0* mscale,-1.0,{100.0 * mscale,103.0 * mscale, 100.0 * mscale});
+    //Particle C_d = Particle(1050,0.7* mscale,-1.0,{(100.0+1.5173075569) * mscale,(100.0+ 0.7666666667) * mscale, 100.0 * mscale});
 
 
 
-    //dumbel
+    //dumbel uncomment this to use the dumbbel (need to uncomment the dumbbell stuff at line 56 and 112 aswell)
    Particle A = Particle(1050 ,1.0 * mscale,-1.0,{101.7 * mscale,100.0 * mscale, 100.0 * mscale});
     Particle B = Particle(1050,0.7* mscale,-1.0,{100.0 * mscale,100.0 * mscale, 100.0 * mscale});
 
-    Particle A_2 = Particle(1050 ,1.0 * mscale,-1.0,{201.7 * mscale,200.0 * mscale, 100.0 * mscale});
-    Particle B_2 = Particle(1050,0.7* mscale,-1.0,{200.0 * mscale,200.0 * mscale, 100.0 * mscale});
+    //Particle A_2 = Particle(1050 ,1.0 * mscale,-1.0,{201.7 * mscale,200.0 * mscale, 100.0 * mscale});
+   // Particle B_2 = Particle(1050,0.7* mscale,-1.0,{200.0 * mscale,200.0 * mscale, 100.0 * mscale});
 
-    Particle A_3 = Particle(1050 ,1.0 * mscale,-1.0,{1.7 * mscale,0.0 * mscale, 100.0 * mscale});
-    Particle B_3 = Particle(1050,0.7* mscale,-1.0,{0.0 * mscale,0.0 * mscale, 100.0 * mscale});
+   // Particle A_3 = Particle(1050 ,1.0 * mscale,-1.0,{1.7 * mscale,0.0 * mscale, 100.0 * mscale});
+   // Particle B_3 = Particle(1050,0.7* mscale,-1.0,{0.0 * mscale,0.0 * mscale, 100.0 * mscale});
 
-    Particle A_4 = Particle(1050 ,1.0 * mscale,-1.0,{101.7 * mscale,-100.0 * mscale, 100.0 * mscale});
-    Particle B_4 = Particle(1050,0.7* mscale,-1.0,{100.0 * mscale,-100.0 * mscale, 100.0 * mscale});
+    /*Particle A_4 = Particle(1050 ,1.0 * mscale,-1.0,{101.7 * mscale,-100.0 * mscale, 100.0 * mscale});
+    Particle B_4 = Particle(1050,0.7* mscale,-1.0,{100.0 * mscale,-100.0 * mscale, 100.0 * mscale});*/
 
-    Particle A_5 = Particle(1050 ,1.0 * mscale,-1.0,{301.7 * mscale,-100.0 * mscale, 100.0 * mscale});
+   /* Particle A_5 = Particle(1050 ,1.0 * mscale,-1.0,{301.7 * mscale,-100.0 * mscale, 100.0 * mscale});
     Particle B_5 = Particle(1050,0.7* mscale,-1.0,{300.0 * mscale,-100.0 * mscale, 100.0 * mscale});
 
     Particle A_6 = Particle(1050 ,1.0 * mscale,-1.0,{101.7 * mscale,-200.0 * mscale, 100.0 * mscale});
@@ -1118,63 +1087,17 @@ public:
     Particle B_9 = Particle(1050,0.7* mscale,-1.0,{0.0 * mscale,250.0 * mscale, 100.0 * mscale});
 
     Particle A_10 = Particle(1050 ,1.0 * mscale,-1.0,{-101.7 * mscale,300.0 * mscale, 100.0 * mscale});
-    Particle B_10 = Particle(1050,0.7* mscale,-1.0,{-100.0 * mscale,300.0 * mscale, 100.0 * mscale});
+    Particle B_10 = Particle(1050,0.7* mscale,-1.0,{-100.0 * mscale,300.0 * mscale, 100.0 * mscale});*/
 
-
-
-
-
-/*    Particle A_5 = Particle(1050 ,1.5 * mscale,-1.0,{102.5 * mscale,100.0 * mscale, 100.0 * mscale});
-    Particle B_5 = Particle(1050,1.0* mscale,-1.0,{100.0 * mscale,100.0 * mscale, 100.0 * mscale});
-
-    Particle A_6 = Particle(1050 ,1.5 * mscale,-1.0,{102.5 * mscale,100.0 * mscale, 100.0 * mscale});
-    Particle B_6 = Particle(1050,1.0* mscale,-1.0,{100.0 * mscale,100.0 * mscale, 100.0 * mscale});
-
-    Particle A_7 = Particle(1050 ,1.5 * mscale,-1.0,{102.5 * mscale,100.0 * mscale, 100.0 * mscale});
-    Particle B_7 = Particle(1050,1.0* mscale,-1.0,{100.0 * mscale,100.0 * mscale, 100.0 * mscale});
-
-    Particle A_8 = Particle(1050 ,1.5 * mscale,-1.0,{102.5 * mscale,100.0 * mscale, 100.0 * mscale});
-    Particle B_8 = Particle(1050,1.0* mscale,-1.0,{100.0 * mscale,100.0 * mscale, 100.0 * mscale});
-
-    Particle A_9 = Particle(1050 ,1.5 * mscale,-1.0,{102.5 * mscale,100.0 * mscale, 100.0 * mscale});
-    Particle B_9 = Particle(1050,1.0* mscale,-1.0,{100.0 * mscale,100.0 * mscale, 100.0 * mscale});
-
-    Particle A_10 = Particle(1050 ,1.5 * mscale,-1.0,{102.5 * mscale,100.0 * mscale, 100.0 * mscale});
-    Particle B_10 = Particle(1050,1.0* mscale,-1.0,{100.0 * mscale,100.0 * mscale, 100.0 * mscale});*/
-
-   // Particle A_2 = Particle(1050 ,1.5 * mscale,-1.0,{100.0 * mscale,100.0 * mscale, 100.0 * mscale});
-   // Particle B_2 = Particle(1050,1.0* mscale,-1.0,{/*(100.0 + 5/std::sqrt(2))*/ 100 * mscale,/*(100.0 + 5/std::sqrt(2))*/102.5 * mscale, 100.0 * mscale});
-
-  //  Particle A_3 = Particle(1050 ,1.5 * mscale,-1.0,{97.5 * mscale,100.0 * mscale, 100.0 * mscale});
-   // Particle B_3 = Particle(1050,1.0* mscale,-1.0,{100.0 * mscale,100.0 * mscale, 100.0 * mscale});
-
-   // Particle A_4 = Particle(1050 ,1.5 * mscale,-1.0,{100.0 * mscale,97.5 * mscale, 100.0 * mscale});
-   // Particle B_4 = Particle(1050,1.0* mscale,-1.0,{100.0 * mscale,100.0 * mscale, 100.0 * mscale});
-
-   //spiral triangle that doesn not do spirals
-   //  Particle A = Particle(1050 ,2.0 * mscale,-1.0,{104.0 * mscale,100.0 * mscale, 100.0 * mscale});
-   //  Particle B = Particle(1050,2.0* mscale,-1.0,{100.0 * mscale,100.0 * mscale, 100.0 * mscale});
-    // Particle C = Particle(1050,3.0* mscale,-1.0,{(104.0  + 5.0/std::sqrt(2.0))* mscale,(100.0 + 5.0/std::sqrt(2.0)) * mscale, 100.0 * mscale});
-
-    //spiral triangle that doesn not do spirals
-    //Particle A = Particle(1050 ,3.0 * mscale,-1.0,{105.0 * mscale,100.0 * mscale, 100.0 * mscale});
-    //Particle B = Particle(1050,2.0* mscale,-1.0,{100.0 * mscale,100.0 * mscale, 100.0 * mscale});
-    //Particle C = Particle(1050,2.0* mscale,-1.0,{(105.0  + 4.0/std::sqrt(2.0))* mscale,(100.0 + 4.0/std::sqrt(2.0)) * mscale, 100.0 * mscale});
 
 
     //rotator
- // Particle A = Particle(1050 ,3.0 * mscale,-1.0,{100.0 * mscale,100.0 * mscale, 100.0 * mscale});
- // Particle B = Particle(1050,2.0* mscale,-1.0,{105.0 * mscale,100.0 * mscale, 100.0 * mscale});
- // Particle C = Particle(1050,2.0* mscale,-1.0,{105.0 * mscale,104.0 * mscale, 100.0 * mscale});
- // Particle D = Particle(1050,3.0* mscale,-1.0,{110.0 * mscale,104.0 * mscale, 100.0 * mscale});
+  //Particle A = Particle(1050 ,1.5 * mscale,-1.0,{100.0 * mscale,100.0 * mscale, 100.0 * mscale});
+  //Particle B = Particle(1050,1.0* mscale,-1.0,{102.5 * mscale,100.0 * mscale, 100.0 * mscale});
+  //Particle C = Particle(1050,1.0* mscale,-1.0,{102.5 * mscale,102.0 * mscale, 100.0 * mscale});
+  //Particle D = Particle(1050,1.5* mscale,-1.0,{105.0 * mscale,102.0 * mscale, 100.0 * mscale});
 
 
-    //l shaped
-   // Particle A = Particle(1050 ,2.0 * mscale,-1.0,{104.0 * mscale,100.0 * mscale, 100.0 * mscale});
-   // Particle B = Particle(1050,2.0* mscale,-1.0,{100.0 * mscale,100.0 * mscale, 100.0 * mscale});
-   // Particle Up = Particle(1050,3.0* mscale,-1.0,{100.0 * mscale,105.0 * mscale, 100.0 * mscale});
-   // Particle C = Particle(1050,2.0* mscale,-1.0,{108.0 * mscale,100.0 * mscale, 100.0 * mscale});
-   // Particle D = Particle(1050,2.0* mscale,-1.0,{112.0 * mscale,100.0 * mscale, 100.0 * mscale});
 
 
 
@@ -1244,7 +1167,7 @@ public:
     double min_radius = 1.0 * mscale;
     double max_radius = 200.0 * mscale;
     double min_lower_electrode_frequency = std::pow(10.0,2.0);
-    double max_lower_electrode_frequency = std::pow(10.0,9.0);
+    double max_lower_electrode_frequency = 20000;
     double min_lower_electrode_peak_voltage = 0.0;
     double max_lower_electrode_peak_voltage = 1000.0;
     double min_permittivity = 0.0;
@@ -1260,7 +1183,8 @@ public:
     bool is_silica_1 = false;
     bool is_silica_2 = false;
     bool first_experiment = false;
-    bool second_experiment = true;
+    bool second_experiment = false;
+    bool third_experiment = false;
     bool is_PS_1 = false;
     bool is_PS_2 = false;
     bool run_w_exp = false;
@@ -1278,7 +1202,7 @@ public:
 
 
 
-    bool switch_view = false;
+    bool switch_view = true;
     bool follow_cam = false;
 
 
