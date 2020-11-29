@@ -34,25 +34,25 @@ public:
     TestApp(int w, int h, const char * title) : Application(title, w, h) {
         lastFrame = std::chrono::high_resolution_clock::now();
 
-        //flat triangle from laura
+        //flat triangle from laura must uncomment all if want to use
        // simulation.connect(A,B,(A.radius+B.radius),connected_particles);
        // simulation.connect(B,C,(B.radius + C.radius), connected_particles);
        // simulation.connect(A,C,(A.radius + 2.0 * B.radius + C.radius), connected_particles);
 
 
-        //frist triangle from laura
+        //frist triangle from laura must uncomment all if want to use
         //simulation.connect(A_t,B_t,(A_t.radius+B_t.radius),connected_particles);
        // simulation.connect(B_t,C_t,(B_t.radius + C_t.radius), connected_particles);
         //simulation.connect(A_t,C_t,(std::sqrt(std::pow(B_t.radius + A_t.radius,2) + std::pow(B_t.radius+C_t.radius,2))), connected_particles);
 
-        //experimental dual directional triangle
+        //experimental dual directional triangle must uncomment all if want to use
          //simulation.connect(A_d,B_d,(A_d.radius+B_d.radius),connected_particles);
         //simulation.connect(B_d,C_d,(B_d.radius + C_d.radius), connected_particles);
         //simulation.connect(A_d,C_d,(A_d.radius + C_d.radius), connected_particles);
 
 
 
-        //dumbel
+        //dumbel see line 1045, uncomment here as well they amount of dumbbels you want to use
         simulation.connect(A,B,(A.radius+B.radius),connected_particles);
         //simulation.connect(A_2,B_2,(A_2.radius+B_2.radius),connected_particles);
         //simulation.connect(A_3,B_3,(A_3.radius+B_3.radius),connected_particles);
@@ -64,7 +64,7 @@ public:
         simulation.connect(A_9,B_9,(A_9.radius+B_9.radius),connected_particles);
         simulation.connect(A_10,B_10,(A_10.radius+B_10.radius),connected_particles);*/
 
-        //rotator
+        //rotator must uncomment all if want to use
        // simulation.connect(A,B,(A.radius+B.radius),connected_particles);
         //simulation.connect(B,C,(B.radius+C.radius),connected_particles);
         //simulation.connect(C,D,(C.radius+D.radius),connected_particles);
@@ -90,25 +90,25 @@ public:
 
 
         if(runSim) {
-           //flat triangle from laura
+           //flat triangle from laura must uncomment all if want to use
           //  simulation.connect_new(A,B,(A.radius+B.radius),connected_particles,0);
           //  simulation.connect_new(B,C,(B.radius + C.radius), connected_particles,1);
           //  simulation.connect_new(A,C,(A.radius + 2.0 * B.radius + C.radius), connected_particles,2);
 
 
-            //L-shaped PS-PS-microgel from laura
+            //L-shaped PS-PS-microgel from laura must uncomment all if want to use
             //simulation.connect_new(A_t,B_t,(A_t.radius+B_t.radius),connected_particles,0);
             //simulation.connect_new(B_t,C_t,(B_t.radius + C_t.radius), connected_particles,1);
             //simulation.connect_new(A_t,C_t,(std::sqrt(std::pow(B_t.radius + A_t.radius,2) + std::pow(B_t.radius+C_t.radius,2))), connected_particles,2);
 
 
-            //experimental dual directional triangle
+            //experimental dual directional triangle must uncomment all if want to use
            // simulation.connect_new(A_d,B_d,(A_d.radius+B_d.radius),connected_particles,0);
            // simulation.connect_new(B_d,C_d,(B_d.radius + C_d.radius), connected_particles,1);
            // simulation.connect_new(A_d,C_d,(A_d.radius + C_d.radius), connected_particles,2);
 
 
-            //dumbel
+            //dumbel see line 1045, must uncomment here as well if want to use
             simulation.connect_new(A,B,(A.radius + B.radius), connected_particles,0);
            // simulation.connect_new(A_2,B_2,(A_2.radius+B_2.radius),connected_particles,1);
             //simulation.connect_new(A_3,B_3,(A_3.radius+B_3.radius),connected_particles,2);
@@ -121,7 +121,7 @@ public:
             simulation.connect_new(A_10,B_10,(A_10.radius+B_10.radius),connected_particles,9);*/
 
 
-            //rotator
+            //rotator must uncomment all if want to use
             //simulation.connect_new(A,B,(A.radius+B.radius),connected_particles,0);
             //simulation.connect_new(B,C,(B.radius+C.radius),connected_particles,1);
             //simulation.connect_new(C,D,(C.radius+D.radius),connected_particles,2);
@@ -207,7 +207,7 @@ public:
             if(Checkbox("Erase Dimer Tracers", &simulation.erase_dimer_tracers)){
                 simulation.dimer_tracers = false;
             }
-            if(Checkbox("Follow cam",&follow_cam)) {
+            /*if(Checkbox("Follow cam",&follow_cam)) {
                 Vector3d com = Eigen::VectorXd::Zero(3);
                 double count = 0.0;
                 for (auto &particle_pair : connected_particles) {
@@ -227,7 +227,7 @@ public:
                     center_of_frame = com;
                 }
                 simulation.reset_flags(connected_particles);
-            }
+            }*/
             ImGui::EndMenu();
         }
         EndMainMenuBar();
@@ -1041,24 +1041,24 @@ public:
 
     double mscale = std::pow(10,-6);
 
-    //flat triangle from laura
+    //flat triangle from laura must uncomment all if want to use
    //  Particle A = Particle(1050 ,3.0 * mscale,-1.0,{100.0 * mscale,100.0 * mscale, 100.0 * mscale});
    //  Particle B = Particle(1050,2.0* mscale,-1.0,{105.0 * mscale,100.0 * mscale, 100.0 * mscale});
    //  Particle C = Particle(1050,3.0* mscale,-1.0,{110.0 * mscale,100.0 * mscale, 100.0 * mscale});
 
-    //L shaped PS-PS-microgel  from laura
+    //L shaped PS-PS-microgel  from laura must uncomment all if want to use
    // Particle A_t = Particle(1050 ,1.0 * mscale,-1.0,{100.0 * mscale,102.0 * mscale, 100.0 * mscale});
    // Particle B_t = Particle(1050,1.0* mscale,-1.0,{100.0 * mscale,100.0 * mscale, 100.0 * mscale});
    // Particle C_t = Particle(1050,0.7* mscale,-1.0,{101.7 * mscale,100.0 * mscale, 100.0 * mscale});
 
-    //experimental dual directional triangle
+    //experimental dual directional triangle must uncomment all if want to use
     //Particle A_d = Particle(1050 ,1.0 * mscale,-1.0,{100.0 * mscale,100.0 * mscale, 100.0 * mscale});
     //Particle B_d = Particle(1050,2.0* mscale,-1.0,{100.0 * mscale,103.0 * mscale, 100.0 * mscale});
     //Particle C_d = Particle(1050,0.7* mscale,-1.0,{(100.0+1.5173075569) * mscale,(100.0+ 0.7666666667) * mscale, 100.0 * mscale});
 
 
 
-    //dumbel uncomment this to use the dumbbel (need to uncomment the dumbbell stuff at line 56 and 112 aswell)
+    //dumbell: uncomment this to use the dumbbel (need to uncomment the dumbbell stuff at line 56 and 112 aswell) uncomment as many as you want but make sure that they are always in pairs
    Particle A = Particle(1050 ,1.0 * mscale,-1.0,{101.7 * mscale,100.0 * mscale, 100.0 * mscale});
     Particle B = Particle(1050,0.7* mscale,-1.0,{100.0 * mscale,100.0 * mscale, 100.0 * mscale});
 
@@ -1091,7 +1091,7 @@ public:
 
 
 
-    //rotator
+    //rotator must uncomment all if want to use
   //Particle A = Particle(1050 ,1.5 * mscale,-1.0,{100.0 * mscale,100.0 * mscale, 100.0 * mscale});
   //Particle B = Particle(1050,1.0* mscale,-1.0,{102.5 * mscale,100.0 * mscale, 100.0 * mscale});
   //Particle C = Particle(1050,1.0* mscale,-1.0,{102.5 * mscale,102.0 * mscale, 100.0 * mscale});
